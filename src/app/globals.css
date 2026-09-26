@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/*
+  Design tokens lifted from the Figma frame
+  "pixles-popers / ui deisgn" (node 25:14).
+*/
+
+@font-face {
+  font-family: "Nevera";
+  src: url("/assets/fonts/Nevera-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Haas-Grot";
+  src: url("/assets/fonts/neuehaasgrot.otf") format("opentype");
+}
+
+:root {
+  /* Palette */
+  --cream: #ffe5d7;
+  --ink: #220128;
+  --grape: #6a4b97;
+  --blush: #f27793;
+  --lagoon: #3fb7c7;
+  --sunbeam: #f5c255;
+  --mist: #d9d9d9;
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-ink: var(--ink);
+  --color-grape: var(--grape);
+  --color-blush: var(--blush);
+  --color-lagoon: var(--lagoon);
+  --color-sunbeam: var(--sunbeam);
+  --color-mist: var(--mist);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /*
+    Figma uses two licensed faces:
+      - "Nevera"                → display headlines
+      - "Haas Grot Disp Trial"  → body + heavy sub-headlines
+    Neither is redistributable, so each stack starts with the licensed
+    name (drop the webfont in and it takes over automatically) and falls
+    back to the closest freely licensed match.
+  */
+  --font-display: "Nevera", var(--font-michroma), "Eurostile", sans-serif;
+  --font-grotesk: "Haas Grot Disp Trial", var(--font-archivo), "Helvetica Neue",
+    Arial, sans-serif;
+  --font-pop: var(--font-modak), "Modak", system-ui, sans-serif;
+
+  /* Fluid type scale — the px values are the 1920px Figma measurements. */
+  --text-nav: clamp(0.8125rem, 1.04vw, 1.25rem);
+  /* 20px  */
+  --text-body: clamp(1rem, 1.15vw, 1.375rem);
+  /* 22px  */
+  --text-service: clamp(1.25rem, 2.5vw, 3rem);
+  /* 48px  */
+  --text-eyebrow: clamp(1.5rem, 2.92vw, 3.5rem);
+  /* 56px  */
+  --text-section: clamp(1.5rem, 4.48vw, 5.375rem);
+  /* 86px  */
+  --text-hero-sm: clamp(2rem, 5.73vw, 6.875rem);
+  /* 110px */
+  --text-hero-md: clamp(2.5rem, 7.92vw, 9.5rem);
+  /* 152px */
+  --text-hero-lg: clamp(3.5rem, 10.86vw, 13.031rem);
+  /* 208px */
+
+  --radius-card: 10px;
+  --shadow-card: 0 4px 5.2px 0 rgb(0 0 0 / 0.25);
+}
+
+/*
+  Several sections deliberately bleed past the viewport (background glows, the
+  full-width device stage, rotated artwork). Clip horizontally at the root so
+  that bleed never produces a horizontal scrollbar.
+*/
+html {
+  overflow-x: clip;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-grotesk);
+  overflow-x: clip;
+}
+
+/* Section shell: 1920px design canvas, centred and gutter-padded. */
+@utility shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1920px;
+  padding-inline: clamp(1.25rem, 8.65vw, 10.375rem);
+}
+
+/*
+  Animated targets ship hidden so they never flash in their final state before
+  GSAP initialises. `visibility` (rather than `opacity` alone) is what pairs
+  with GSAP's `autoAlpha`, which writes an inline `visibility` that wins over
+  this class once the entrance runs.
+*/
+@utility gsap-reveal {
+  visibility: hidden;
+}
