@@ -55,11 +55,12 @@ export default function HeroBlob() {
           { strokeDashoffset: TRACE_LENGTH },
           { strokeDashoffset: 0, duration: HERO_MOTION.blobDraw, ease: "power1.inOut" },
           0,
-        ).to(
-          "[data-hero-blob='group']",
-          { autoAlpha: HERO_MOTION.blobOpacity, duration: HERO_MOTION.blobFade, ease: "power2.out" },
-          0,
-        );
+        )
+          .to(
+            "[data-hero-blob='group']",
+            { autoAlpha: HERO_MOTION.blobOpacity, duration: HERO_MOTION.blobFade, ease: "power2.out" },
+            0,
+          );
 
         // Idle float, handed off once the trace lands. It transforms the whole
         // SVG rather than the masked group so the mask is not re-rasterised

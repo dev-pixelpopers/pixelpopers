@@ -13,6 +13,11 @@ export type ServiceFill = "outline" | "grape" | "sunbeam" | "photo";
  */
 export type TilePoint = { x: number; y: number };
 
+/** Artwork revealed inside a letter on hover. */
+export type ServiceMedia =
+  | { type: "image"; src: string }
+  | { type: "video"; src: string; poster?: string };
+
 export type Service = {
   id: string;
   /** The oversized Modak character that forms the tile. */
@@ -22,6 +27,8 @@ export type Service = {
   label: TilePoint;
   /** Omitted where the glyph itself carries the artwork. */
   dot?: TilePoint;
+  /** Shown through the glyph on hover. Omit for a letter with no reveal. */
+  media?: ServiceMedia;
 };
 
 /** Reading across the grid the letters spell the second half of the brand. */
@@ -30,24 +37,27 @@ export const services: Service[] = [
     id: "brand-identity",
     letter: "p",
     title: "Brand Identity",
-    fill: "outline",
+    fill: "photo",
     label: { x: 0.147, y: 0.561 },
     dot: { x: 0.084, y: 0.198 },
+    media: { type: "image", src: "/assets/service-photo.png" },
   },
   {
     id: "ui-ux-design",
     letter: "o",
     title: "UI/UX Design",
     fill: "photo",
-    label: { x: 0.339, y: 0.732 },
+    label: { x: 0.339, y: 0.632 },
+    media: { type: "video", src: "/assets/videos/snackbar-video.mp4" },
   },
   {
     id: "digital-marketing",
     letter: "p",
     title: "Digital Marketing",
-    fill: "outline",
+    fill: "photo",
     label: { x: 0.157, y: 0.534 },
     dot: { x: 0.071, y: 0.198 },
+    media: { type: "image", src: "/assets/featured-snackbar.png" },
   },
   {
     id: "web-development",
@@ -56,14 +66,16 @@ export const services: Service[] = [
     fill: "grape",
     label: { x: 0.147, y: 0.708 },
     dot: { x: 0.067, y: 0.316 },
+    media: { type: "image", src: "/assets/hero-band.png" },
   },
   {
     id: "motion-graphic",
     letter: "r",
     title: "Motion Graphic",
-    fill: "outline",
+    fill: "photo",
     label: { x: 0.216, y: 0.51 },
     dot: { x: 0.06, y: 0.166 },
+    media: { type: "video", src: "/assets/videos/snackbar-video.mp4" },
   },
   {
     id: "content-writing",
@@ -72,6 +84,7 @@ export const services: Service[] = [
     fill: "sunbeam",
     label: { x: 0.183, y: 0.773 },
     dot: { x: 0.525, y: 0.43 },
+    media: { type: "image", src: "/assets/brand-folder.png" },
   },
 ];
 
@@ -238,5 +251,109 @@ export const projects: Project[] = [
     poster: "/assets/featured-snackbar.png",
     posterWidth: 1934,
     posterHeight: 1214,
+  },
+];
+
+export type Owner = {
+  name: string;
+  role: string;
+  /** Placeholder until real headshots land. */
+  avatar: string;
+  /** Ring colour around the avatar — one of the brand palette tokens. */
+  accent: "blush" | "lagoon" | "sunbeam";
+  /** Per-card tilt, in degrees, matching the scattered client cards. */
+  rotate: number;
+};
+
+export const owners: Owner[] = [
+  {
+    name: "Adan J.",
+    role: "Partner & Technical Lead",
+    avatar: "/assets/images/adan-j.png",
+    accent: "sunbeam",
+    rotate: -1.2,
+  },
+  {
+    name: "James Allen",
+    role: "Co-Founder & Head of Strategy",
+    avatar: "/assets/images/james-allen.png",
+    accent: "lagoon",
+    rotate: 1.8,
+  },
+  {
+    name: "Barry Allen",
+    role: "Founder & Creative Director",
+    avatar: "/assets/images/barry-allen.png",
+    accent: "blush",
+    rotate: -2.5,
+  },
+];
+
+export type StudioStat = {
+  value: number;
+  suffix: string;
+  label: string;
+};
+
+export const studioStats: StudioStat[] = [
+  { value: 8, suffix: "+", label: "Years Popping" },
+  { value: 120, suffix: "+", label: "Brands Launched" },
+  { value: 17, suffix: "", label: "Long-Term Partners" },
+];
+
+export type BlogPost = {
+  slug: string;
+  title: string;
+  tag: string;
+  /** Pill colour behind the tag. */
+  tone: "blush" | "lagoon" | "sunbeam" | "grape";
+  /** ISO date; formatted for display at render time. */
+  date: string;
+  thumbnail: string;
+  href: string;
+  excerpt: string;
+};
+
+/** Placeholder posts — swap for CMS data when the blog goes live. */
+export const blogPosts: BlogPost[] = [
+  {
+    slug: "bold-brands-win-the-scroll",
+    title: "Why Bold Brands Win The Scroll",
+    tag: "Branding",
+    tone: "blush",
+    date: "2026-09-22",
+    thumbnail: "/assets/featured-snackbar.png",
+    href: "#blog",
+    excerpt: "In a world of infinite scrolling, bold brands win the scroll by cutting through the noise with striking visuals, confident messaging, and a clear point of view."
+  },
+  {
+    slug: "interfaces-people-enjoy",
+    title: "Designing Interfaces People Actually Enjoy",
+    tag: "UI/UX",
+    tone: "lagoon",
+    date: "2026-09-10",
+    thumbnail: "/assets/showcase-devices.png",
+    href: "#blog",
+    excerpt: "Good design should feel invisible — functional, intuitive, and beautiful enough to fade into the background while the product shines."
+  },
+  {
+    slug: "snack-bar-campaign-playbook",
+    title: "The Campaign Playbook Behind Snack Bar",
+    tag: "Marketing",
+    tone: "sunbeam",
+    date: "2026-08-28",
+    thumbnail: "/assets/hero-band.png",
+    href: "#blog",
+    excerpt: "How we turned a simple idea into a full-blown campaign with scroll-stopping visuals, strategic messaging, and a launch plan that drove real results."
+  },
+  {
+    slug: "motion-that-means-something",
+    title: "Motion That Means Something",
+    tag: "Motion",
+    tone: "grape",
+    date: "2026-08-14",
+    thumbnail: "/assets/service-photo.png",
+    href: "#blog",
+    excerpt: "Motion is more than just animation — it's how we bring brands to life, create meaningful connections, and make digital experiences unforgettable."
   },
 ];

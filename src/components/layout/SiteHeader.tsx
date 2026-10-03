@@ -11,7 +11,7 @@ export default function SiteHeader() {
         Menu
       </a>
 
-      <a href="#top" aria-label="Pixel Popers — home">
+      <a href="/" aria-label="Pixel Popers — home">
         <BrandLogo priority />
       </a>
 

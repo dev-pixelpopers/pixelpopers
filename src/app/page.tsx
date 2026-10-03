@@ -1,9 +1,11 @@
 "use client";
+import SiteFooter from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
 import AgencySection from "@/components/sections/AgencySection";
-import ClientsSection from "@/components/sections/ClientsSection";
+import BlogSection from "@/components/sections/BlogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import HeroSection from "@/components/sections/HeroSection";
+import LeadershipSection from "@/components/sections/LeadershipSection";
 import ProjectCarouselSection from "@/components/sections/ProjectCarouselSection";
 import HeroBlob from "@/components/ui/HeroBlob";
 import ServicesSection from "@/components/sections/ServicesSection";
@@ -72,9 +74,11 @@ export default function Home() {
         <ServicesSection />
         <ShowcaseSection />
         <AgencySection />
-        <ClientsSection />
         <ContactSection />
+        <LeadershipSection />
+        <BlogSection />
       </main>
+      <SiteFooter />
     </div>
   );
 }

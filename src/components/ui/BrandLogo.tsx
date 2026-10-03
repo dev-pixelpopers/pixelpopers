@@ -3,6 +3,8 @@ import Image from "next/image";
 type BrandLogoProps = {
   className?: string;
   priority?: boolean;
+  /** On dark backgrounds the export's own white "PIXEL" reads as-is, so the dark overlay is skipped. */
+  onDark?: boolean;
 };
 
 /**
@@ -14,6 +16,7 @@ type BrandLogoProps = {
 export default function BrandLogo({
   className = "",
   priority = false,
+  onDark = false,
 }: BrandLogoProps) {
   return (
     <span className={`grid w-[clamp(7rem,9.9vw,11.875rem)] ${className}`}>
@@ -25,16 +28,18 @@ export default function BrandLogo({
         priority={priority}
         className="col-start-1 row-start-1 h-auto w-full"
       />
-      <span
-        aria-hidden
-        className="col-start-1 row-start-1 h-full w-full bg-black"
-        style={{
-          maskImage: "url(/assets/logo-wordmark-mask.png)",
-          maskSize: "60.81% 38.37%",
-          maskPosition: "74.03% 23.82%",
-          maskRepeat: "no-repeat",
-        }}
-      />
+      {onDark ? null : (
+        <span
+          aria-hidden
+          className="col-start-1 row-start-1 h-full w-full bg-black"
+          style={{
+            maskImage: "url(/assets/logo-wordmark-mask.png)",
+            maskSize: "60.81% 38.37%",
+            maskPosition: "74.03% 23.82%",
+            maskRepeat: "no-repeat",
+          }}
+        />
+      )}
     </span>
   );
 }

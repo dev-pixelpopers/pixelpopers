@@ -6,9 +6,9 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="isolate flex flex-col pt-[clamp(3rem,7vw,8rem)] pb-[clamp(2rem,9vw,11rem)]"
+      className="isolate flex flex-col pt-[clamp(3rem,7vw,8rem)]"
     >
-      <div className="shell grid gap-y-10 lg:grid-cols-2 lg:items-start lg:gap-x-16">
+      <div className="shell flex lg:items-start lg:gap-x-16">
         <header className="flex min-w-0 flex-col gap-2">
           <p className="text-eyebrow leading-none font-bold text-blush uppercase">
             Let’s Build Something
@@ -39,14 +39,14 @@ export default function ContactSection() {
         it under the copy and a negative stacking order keeps it behind, so it
         is never clipped and the section grows with it.
       */}
-      <Image
+      {/* <Image
         aria-hidden
         src="/icons/cta-ellipse.svg"
         alt=""
         width={1673}
         height={1673}
         className="pointer-events-none relative -z-10 -mt-[24%] h-auto w-[87.1%] max-w-[1673px] self-center"
-      />
+      /> */}
     </section>
   );
 }

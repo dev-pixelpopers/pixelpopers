@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
 /*
+  `stage:` — viewports large enough to hold a whole section inside a single
+  sticky 100vh stage. Below this the sections fall back to normal flow.
+*/
+@custom-variant stage (@media (min-width: 64rem) and (min-height: 43rem));
+
+/*
   Design tokens lifted from the Figma frame
   "pixles-popers / ui deisgn" (node 25:14).
 */
