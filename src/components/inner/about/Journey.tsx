@@ -1,0 +1,35 @@
+import { journey } from "@/lib/pages/about";
+
+/**
+ * "Our journey" 2019 → 2026. Columns have no gap so each column's track
+ * segment meets the next one, drawing one continuous timeline on desktop.
+ */
+export default function Journey() {
+  return (
+    <section aria-labelledby="journey-title" className="shell">
+      <div data-reveal>
+        <p className="font-haas text-eyebrow leading-none text-blush uppercase">{journey.eyebrow}</p>
+        <h2 id="journey-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
+          {journey.heading[0]}
+          <br className="hidden sm:block" /> {journey.heading[1]}
+        </h2>
+      </div>
+
+      <ol data-reveal-stagger className="mt-[clamp(2rem,2.5vw,3rem)] grid grid-cols-2 gap-y-10 lg:grid-cols-5">
+        {journey.milestones.map((m) => (
+          <li key={m.year} className="flex flex-col">
+            <span className={`font-pop text-[clamp(3.5rem,5vw,6rem)] leading-[1.15] ${m.color}`}>{m.year}</span>
+            <div aria-hidden className="-mt-1.5 flex items-center">
+              <span className={`size-7 shrink-0 rounded-full border-[5px] border-cream ${m.dot}`} />
+              <span className="h-1 flex-1 rounded-full bg-ink/15 max-lg:hidden" />
+            </div>
+            <h3 className="mt-[clamp(0.75rem,1vw,1.25rem)] pr-6 font-display text-[clamp(1.125rem,1.15vw,1.375rem)] leading-[1.27] text-grape uppercase">
+              {m.title}
+            </h3>
+            <p className="mt-3 max-w-[18rem] pr-6 font-copy text-[clamp(0.9375rem,0.94vw,1.125rem)] leading-[1.56] text-ink/80">{m.body}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
