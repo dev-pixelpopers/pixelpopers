@@ -7,7 +7,7 @@ const layer = "col-start-1 row-start-1";
 export default function Studio() {
   return (
     <>
-      <section aria-labelledby="perks-title" className="shell">
+      <section id="studio" aria-labelledby="perks-title" className="shell scroll-mt-8">
         <div data-reveal>
           <p className="font-haas text-eyebrow leading-none text-blush uppercase">{perks.eyebrow}</p>
           <h2 id="perks-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
@@ -29,9 +29,10 @@ export default function Studio() {
 
       <div className="mx-auto mt-[clamp(4rem,5.2vw,6.25rem)] w-full max-w-[1920px] px-[clamp(1.25rem,6.25vw,7.5rem)]">
         <section
+          id="careers"
           aria-labelledby="hiring-title"
           data-reveal
-          className="grid overflow-hidden rounded-[clamp(2rem,2.5vw,3rem)] bg-blush text-white shadow-[0_20px_50px_rgb(0_0_0/0.13)]"
+          className="grid scroll-mt-8 overflow-hidden rounded-[clamp(2rem,2.5vw,3rem)] bg-blush text-white shadow-[0_20px_50px_rgb(0_0_0/0.13)]"
         >
           <span
             aria-hidden

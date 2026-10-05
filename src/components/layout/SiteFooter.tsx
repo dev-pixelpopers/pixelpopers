@@ -2,32 +2,34 @@
 
 import { useId, useState, type FormEvent, type ReactNode } from "react";
 
+import Link from "next/link";
+
 import BrandLogo from "@/components/ui/BrandLogo";
 
 type FooterLink = { label: string; href: string; pill?: string };
 
-/** Demo destinations: in-page anchors where a section exists, `#` otherwise. */
+/** Footer destinations — the inner pages and each service page. */
 const navGroups: { title: string; links: FooterLink[] }[] = [
   {
     title: "Navigation",
     links: [
-      { label: "Work", href: "#agency" },
-      { label: "Services", href: "#services" },
-      { label: "About", href: "#leadership" },
-      { label: "Studio", href: "#studio" },
-      { label: "Careers", href: "#", pill: "We’re hiring" },
-      { label: "Blog", href: "#", pill: "We’re hiring" },
+      { label: "Work", href: "/work" },
+      { label: "Services", href: "/services" },
+      { label: "About", href: "/about" },
+      { label: "Studio", href: "/about#studio" },
+      { label: "Careers", href: "/about#careers", pill: "We’re hiring" },
+      { label: "Blog", href: "/blog" },
     ],
   },
   {
     title: "Services",
     links: [
-      { label: "Web Development", href: "#blog" },
-      { label: "Mobile App", href: "#agency" },
-      { label: "Branding", href: "#" },
-      { label: "Social Media Marketing", href: "#" },
-      { label: "Search Engine Optimization", href: "#" },
-      { label: "Performance Optimization", href: "#" },
+      { label: "Web Development", href: "/services/web-development" },
+      { label: "Mobile App", href: "/services/ui-ux-design" },
+      { label: "Branding", href: "/services/brand-identity" },
+      { label: "Social Media Marketing", href: "/services/digital-marketing" },
+      { label: "Search Engine Optimization", href: "/services/content-writing" },
+      { label: "Performance Optimization", href: "/services/web-development" },
     ],
   },
 ];
@@ -234,9 +236,9 @@ export default function SiteFooter() {
               <ul className="flex flex-col gap-3 pb-5 lg:pb-0">
                 {group.links.map((link) => (
                   <li key={link.label} className="flex flex-wrap items-center gap-2">
-                    <a href={link.href} className={`text-cream/80 hover:text-cream ${underline}`}>
+                    <Link href={link.href} className={`text-cream/80 hover:text-cream ${underline}`}>
                       {link.label}
-                    </a>
+                    </Link>
                     {link.pill ? (
                       <span className="rounded-full bg-sunbeam px-2 py-0.5 text-[0.6875rem] font-bold whitespace-nowrap text-ink uppercase">
                         {link.pill}
