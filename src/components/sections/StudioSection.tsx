@@ -7,7 +7,8 @@ import Image from "next/image";
 import { useRef } from "react";
 
 import PopButton from "@/components/ui/PopButton";
-import StudioCube, { CUBE_POSE } from "@/components/ui/StudioCube";
+import StudioCube from "@/components/ui/StudioCube";
+import { addCubeEntry, V5_TRAVEL_VH, type CubeEntry } from "@/components/ui/studio-cube-entries";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -40,14 +41,20 @@ const BADGES = [
  * scroll range, so only the proportions matter):
  *
  *   0.0  entry   — ribbon starts tracing
- *   0.4  cube    — slides in from the right edge; tumbles with scroll until 7
+ *   0.4  cube    — enters (see `studio-cube-entries.ts`); tumbles with scroll until 7
  *   1.0  reveal  — headline words rise through their masks, badges pop
  *   3.0  detail  — swoosh draws, paragraph wipes in, CTA springs
  *   4.5  focus   — cube swells, badges drift
  *   7.0  exit    — words peel up, swoosh draws off, cube spins away
  */
-export default function StudioSection() {
+type StudioSectionProps = {
+  /** How the cube enters — TEMPORARY while the entrance versions are compared. */
+  cubeEntry?: CubeEntry;
+};
+
+export default function StudioSection({ cubeEntry = "original" }: StudioSectionProps) {
   const rootRef = useRef<HTMLElement>(null);
+  const morph = cubeEntry === "v5";
 
   useGSAP(
     () => {
@@ -101,22 +108,12 @@ export default function StudioSection() {
           });
 
           const cube = q("[data-studio='cube']");
-          const spin = q("[data-studio='cube-spin']");
-          // Distance that parks the cube just past the right edge of the
-          // viewport. Measured from layout (offset metrics ignore transforms),
-          // so it is correct at any scroll position on refresh.
-          const offRight = () => {
-            const el = cube[0] as HTMLElement;
-            const parent = el.offsetParent as HTMLElement | null;
-            const left = (parent?.getBoundingClientRect().left ?? 0) + el.offsetLeft;
-            // Extra margin: mid-spin, perspective throws the near faces wider
-            // than the cube's own box.
-            return window.innerWidth - left + el.offsetWidth * 0.4;
-          };
           const words = q("[data-studio='word']");
           const badges = q("[data-studio='badge']");
 
           // ── Entry ────────────────────────────────────────────────
+          addCubeEntry(tl, cubeEntry, q, 0.4);
+
           tl.fromTo(
             q("[data-studio='trace']"),
             { strokeDashoffset: TRACE_LENGTH },
@@ -135,35 +132,6 @@ export default function StudioSection() {
               { autoAlpha: 1, scale: 1, duration: 2.5 },
               0,
             )
-            // Slides across from the right edge to its column. Starts once the
-            // stage is mostly on screen and runs at an even pace, so the
-            // right-to-left travel is actually seen rather than finishing
-            // below the fold.
-            .fromTo(
-              cube,
-              { x: offRight, scale: 0.85 },
-              { x: 0, scale: 1, duration: 3.5, ease: "power1.inOut" },
-              0.4,
-            )
-            // The spin itself is tied to scroll for the whole time the ribbon
-            // draws (until 7): a steady tumble — two turns on each axis — that
-            // keeps going after the cube has landed and only comes to rest in
-            // its pose as the ribbon finishes. `none` keeps it 1:1 with scroll.
-            .fromTo(
-              spin,
-              {
-                rotationY: CUBE_POSE.rotationY + 720,
-                rotationX: CUBE_POSE.rotationX - 720,
-              },
-              {
-                rotationY: CUBE_POSE.rotationY,
-                rotationX: CUBE_POSE.rotationX,
-                duration: 6.6,
-                ease: "none",
-              },
-              0.4,
-            )
-
             // ── Reveal ───────────────────────────────────────────────
             .fromTo(
               words,
@@ -272,6 +240,9 @@ export default function StudioSection() {
       id="studio"
       ref={rootRef}
       className="relative h-[240vh] md:h-[300vh] motion-reduce:h-auto"
+      // V5: tucked up under the slider, whose pinned stage carries the video
+      // cube down over this section as it scrolls in.
+      style={morph ? { marginTop: `-${V5_TRAVEL_VH}vh` } : undefined}
     >
       <div className="sticky top-0 isolate flex h-svh items-center overflow-hidden motion-reduce:relative motion-reduce:h-auto motion-reduce:py-[clamp(4rem,10vw,12rem)]">
         {/* Background ribbon, drawn on via a tracing mask like the hero blob. */}
@@ -337,7 +308,7 @@ export default function StudioSection() {
               height={2128}
               className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70 [mask-image:radial-gradient(circle,black_30%,transparent_65%)]"
             />
-            <StudioCube />
+            <StudioCube video={morph} />
 
             {BADGES.map((badge) => (
               <span
