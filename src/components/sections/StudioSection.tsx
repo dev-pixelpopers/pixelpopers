@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRef } from "react";
 
 import PopButton from "@/components/ui/PopButton";
+import StudioCube, { CUBE_POSE } from "@/components/ui/StudioCube";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -38,10 +39,11 @@ const BADGES = [
  * Scrubbed timeline, in timeline units (the whole thing maps onto the sticky
  * scroll range, so only the proportions matter):
  *
- *   0.0  entry   — ribbon starts tracing, cube spins + scales in
+ *   0.0  entry   — ribbon starts tracing
+ *   0.4  cube    — slides in from the right edge; tumbles with scroll until 7
  *   1.0  reveal  — headline words rise through their masks, badges pop
  *   3.0  detail  — swoosh draws, paragraph wipes in, CTA springs
- *   4.5  focus   — cube turns and swells, badges drift
+ *   4.5  focus   — cube swells, badges drift
  *   7.0  exit    — words peel up, swoosh draws off, cube spins away
  */
 export default function StudioSection() {
@@ -68,7 +70,7 @@ export default function StudioSection() {
           mobile: "(max-width: 767px)",
         },
         (context) => {
-          const { motion, mobile } = context.conditions as { motion: boolean; mobile: boolean };
+          const { motion } = context.conditions as { motion: boolean };
           if (!motion) return;
 
           const tl = gsap.timeline({
@@ -81,10 +83,36 @@ export default function StudioSection() {
               // The pin is CSS `sticky`; ScrollTrigger only reports progress.
               end: "bottom bottom",
               scrub: 1,
+              // The cube's off-screen start depends on the viewport width.
+              invalidateOnRefresh: true,
+              // Invalidating reverts every tween, but only the ones at the
+              // playhead re-render — the headline, badges, copy and CTA start
+              // later, so they would sit fully visible until scrolled into and
+              // then snap hidden. Sweeping to the end and back re-renders them
+              // all at the current progress. (`self.animation`, not `tl`: the
+              // first refresh can fire while the timeline is being built.)
+              onRefresh: (self) => {
+                const anim = self.animation;
+                if (!anim) return;
+                const progress = anim.progress();
+                anim.progress(1, true).progress(progress, true);
+              },
             },
           });
 
           const cube = q("[data-studio='cube']");
+          const spin = q("[data-studio='cube-spin']");
+          // Distance that parks the cube just past the right edge of the
+          // viewport. Measured from layout (offset metrics ignore transforms),
+          // so it is correct at any scroll position on refresh.
+          const offRight = () => {
+            const el = cube[0] as HTMLElement;
+            const parent = el.offsetParent as HTMLElement | null;
+            const left = (parent?.getBoundingClientRect().left ?? 0) + el.offsetLeft;
+            // Extra margin: mid-spin, perspective throws the near faces wider
+            // than the cube's own box.
+            return window.innerWidth - left + el.offsetWidth * 0.4;
+          };
           const words = q("[data-studio='word']");
           const badges = q("[data-studio='badge']");
 
@@ -107,11 +135,33 @@ export default function StudioSection() {
               { autoAlpha: 1, scale: 1, duration: 2.5 },
               0,
             )
+            // Slides across from the right edge to its column. Starts once the
+            // stage is mostly on screen and runs at an even pace, so the
+            // right-to-left travel is actually seen rather than finishing
+            // below the fold.
             .fromTo(
               cube,
-              { autoAlpha: 0, scale: 0.3, rotation: -75, yPercent: mobile ? 30 : 60 },
-              { autoAlpha: 1, scale: 1, rotation: 0, yPercent: 0, duration: 2.5 },
-              0,
+              { x: offRight, scale: 0.85 },
+              { x: 0, scale: 1, duration: 3.5, ease: "power1.inOut" },
+              0.4,
+            )
+            // The spin itself is tied to scroll for the whole time the ribbon
+            // draws (until 7): a steady tumble — two turns on each axis — that
+            // keeps going after the cube has landed and only comes to rest in
+            // its pose as the ribbon finishes. `none` keeps it 1:1 with scroll.
+            .fromTo(
+              spin,
+              {
+                rotationY: CUBE_POSE.rotationY + 720,
+                rotationX: CUBE_POSE.rotationX - 720,
+              },
+              {
+                rotationY: CUBE_POSE.rotationY,
+                rotationX: CUBE_POSE.rotationX,
+                duration: 6.6,
+                ease: "none",
+              },
+              0.4,
             )
 
             // ── Reveal ───────────────────────────────────────────────
@@ -156,7 +206,7 @@ export default function StudioSection() {
             )
 
             // ── Focus ────────────────────────────────────────────────
-            .to(cube, { rotation: 14, scale: 1.08, duration: 2.5, ease: "sine.inOut" }, 4.5)
+            .to(cube, { scale: 1.08, duration: 2.5, ease: "sine.inOut" }, 4.5)
             .to(
               badges,
               { yPercent: (i) => [-60, 40, -30][i] ?? 0, duration: 2.5, ease: "sine.inOut" },
@@ -276,7 +326,8 @@ export default function StudioSection() {
         </svg>
 
         <div className="shell flex flex-col items-center gap-8 md:flex-row md:gap-10">
-          <div className="relative flex w-[60%] justify-center md:w-[30%]">
+          {/* Container for the cube's `cqw` sizing — its depth scales with it. */}
+          <div className="@container relative flex w-[60%] justify-center md:w-[30%]">
             <Image
               data-studio="glow"
               src="/icons/hero-ellipse-glow.svg"
@@ -286,17 +337,7 @@ export default function StudioSection() {
               height={2128}
               className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70 [mask-image:radial-gradient(circle,black_30%,transparent_65%)]"
             />
-            <div data-studio="cube" className="w-[min(100%,32rem)]">
-              <Image
-                src="/assets/studio-cube.png"
-                alt=""
-                aria-hidden
-                width={783}
-                height={851}
-                sizes="(max-width: 768px) 60vw, 30vw"
-                className="h-auto w-full -rotate-[38.8deg]"
-              />
-            </div>
+            <StudioCube />
 
             {BADGES.map((badge) => (
               <span

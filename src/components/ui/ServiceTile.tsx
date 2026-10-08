@@ -140,7 +140,7 @@ export default function ServiceTile({ service }: ServiceTileProps) {
       {dot ? (
         <span
           aria-hidden
-          className="relative z-10 rounded-full bg-mist"
+          className="relative z-10 rounded-full bg-mist transition-opacity duration-500 ease-out group-hover:opacity-0 motion-reduce:transition-none"
           style={{
             ...offsetStyle(dot),
             width: `${DOT_SIZE * 100}cqw`,

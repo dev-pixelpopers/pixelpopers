@@ -159,6 +159,20 @@ export default function AgencySection() {
             end: "bottom bottom",
             scrub: 1,
             invalidateOnRefresh: true,
+            // Invalidating clears every tween's recorded start, but only the
+            // ones at the playhead re-render. Before the section is reached
+            // the playhead sits at 0, so the folder/cards tweens (which start
+            // later) would show their un-animated layout — the cards already
+            // in the grid — until scrolled into. Sweeping to the end and back
+            // re-renders all of them at the current progress.
+            // `self.animation`, not `tl`: the first refresh can fire while the
+            // timeline is still being constructed.
+            onRefresh: (self) => {
+              const anim = self.animation;
+              if (!anim) return;
+              const progress = anim.progress();
+              anim.progress(1, true).progress(progress, true);
+            },
           },
         });
 

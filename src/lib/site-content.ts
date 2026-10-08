@@ -237,10 +237,11 @@ export type Project = {
   title: string;
   /** Muted, looping clip played while the tile is centred in the carousel. */
   video: string;
-  /** Base layer of the tile — shown before the clip is ready and on off-centre tiles. */
-  poster: string;
-  posterWidth: number;
-  posterHeight: number;
+  /**
+   * Base layer of the tile — shown before the clip is ready and on off-centre
+   * tiles. Without one, the tile keeps its video mounted and shows its first frame.
+   */
+  poster?: { src: string; width: number; height: number };
 };
 
 export const projects: Project[] = [
@@ -248,9 +249,32 @@ export const projects: Project[] = [
     id: "snackbar",
     title: "Snackbar — bold flavor meets cutting edge tech",
     video: "/assets/videos/snackbar-video.mp4",
-    poster: "/assets/featured-snackbar.png",
-    posterWidth: 1934,
-    posterHeight: 1214,
+    poster: { src: "/assets/featured-snackbar.png", width: 1934, height: 1214 },
+  },
+  {
+    id: "habitat-pools",
+    title: "Habitat Pools",
+    video: "/assets/videos/habitat-pools.mp4",
+  },
+  {
+    id: "october-glory",
+    title: "October Glory",
+    video: "/assets/videos/october-glory.mp4",
+  },
+  {
+    id: "the-reserve",
+    title: "The Reserve",
+    video: "/assets/videos/the-reserve.mp4",
+  },
+  {
+    id: "threshold-design-lab",
+    title: "Threshold Design Lab",
+    video: "/assets/videos/thres-hold-design-lab.mp4",
+  },
+  {
+    id: "aw",
+    title: "AW",
+    video: "/assets/videos/aw-video.mp4",
   },
 ];
 

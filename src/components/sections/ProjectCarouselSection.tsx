@@ -16,7 +16,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
  * back (flat and scaled down), right-behind, right.
  */
 const RING_SLOTS = 6;
-/** Viewport heights of scrolling per slot — the ring turns once over the section. */
+/** Viewport heights of scrolling per step from one tile to the next. */
 const SCROLL_PER_SLOT = 50;
 /** >1 opens a gap between tiles; 1.0 seats them edge-to-edge around the circle. */
 const GAP_RATIO = 1.5;
@@ -28,6 +28,8 @@ const PERSPECTIVE_RATIO = 2.6;
  * far side of the ring becomes visible.
  */
 const RING_TILT = 0;
+/** Seconds the ring takes to swing to the next tile once a clip ends. */
+const AUTO_ADVANCE_DURATION = 1.2;
 
 /**
  * The ring never has fewer than RING_SLOTS positions — with fewer projects the
@@ -46,6 +48,8 @@ export default function ProjectCarouselSection() {
   const ringRef = useRef<HTMLUListElement>(null);
   const videoRefs = useRef(new Map<number, HTMLVideoElement>());
   const activeRef = useRef(0);
+  /** Set inside the GSAP context; called when the front clip finishes. */
+  const advanceRef = useRef<() => void>(() => { });
 
   const [activeSlot, setActiveSlot] = useState(0);
   /** Nothing plays until the section is actually on screen. */
@@ -80,9 +84,19 @@ export default function ProjectCarouselSection() {
         gsap.set(ring, { z: -radius, rotationX: RING_TILT });
       };
 
+      /**
+       * The ring's position is the sum of two sources: the scroll scrub and
+       * the auto-advance that steps one slot whenever a clip ends. Keeping
+       * them separate lets either move without the other fighting it, and
+       * auto-advance never has to scroll the page.
+       */
+      const scroll = { progress: 0 };
+      const auto = { offset: 0 };
+
       // The only per-frame work: one property on one element. The browser
       // depth-sorts the tiles from `transform-style: preserve-3d`.
-      const spin = (progress: number) => {
+      const spin = () => {
+        const progress = scroll.progress + auto.offset;
         gsap.set(ring, { rotationY: -progress * SLOT_ANGLE });
 
         // Tile i sits at (i - progress) × SLOT_ANGLE, so the tile nearest the
@@ -99,7 +113,7 @@ export default function ProjectCarouselSection() {
       };
 
       measure();
-      spin(0);
+      spin();
 
       const media = gsap.matchMedia();
 
@@ -120,18 +134,32 @@ export default function ProjectCarouselSection() {
           onRefresh: (self) => setInView(self.isActive),
         });
 
-        const state = { progress: 0 };
+        // Steps from the current target, not the live value, so a clip that
+        // ends mid-swing still lands squarely on the following tile.
+        let autoTarget = 0;
+        advanceRef.current = () => {
+          autoTarget = Math.round(autoTarget) + 1;
+          gsap.to(auto, {
+            offset: autoTarget,
+            duration: AUTO_ADVANCE_DURATION,
+            ease: "power3.inOut",
+            overwrite: true,
+            onUpdate: spin,
+          });
+        };
 
         // fromTo, not to: the start value must stay pinned at 0. A plain `to`
-        // re-reads whatever `state.progress` happens to be on each refresh,
-        // which shortens the sweep so the ring never completes a revolution.
+        // re-reads whatever `scroll.progress` happens to be on each refresh,
+        // which shortens the sweep so the ring stops short of the last tile.
         // (This is also why `invalidateOnRefresh` must stay off here — the
         // endpoints are constants, and resize geometry is handled in onRefresh.)
         gsap.fromTo(
-          state,
+          scroll,
           { progress: 0 },
           {
-            progress: count, // exactly one revolution across the section
+            // First tile to last, then stop. A full revolution (`count`) would
+            // land back on the first tile as the section ends.
+            progress: count - 1,
             ease: "none", // required for a 1:1 scroll-to-rotation mapping
             immediateRender: false,
             scrollTrigger: {
@@ -142,15 +170,18 @@ export default function ProjectCarouselSection() {
               scrub: 1,
               onRefresh: () => {
                 measure();
-                spin(state.progress);
+                spin();
               },
             },
-            onUpdate: () => spin(state.progress),
+            onUpdate: spin,
           },
         );
       });
 
-      return () => pauseAll();
+      return () => {
+        advanceRef.current = () => { };
+        pauseAll();
+      };
     },
     { scope: sectionRef },
   );
@@ -185,12 +216,17 @@ export default function ProjectCarouselSection() {
       if (!document.hidden) start();
     };
 
+    // Clips don't loop: when the front one finishes, the ring swings on.
+    const advance = () => advanceRef.current();
+
     start();
     active.addEventListener("canplay", start);
+    active.addEventListener("ended", advance);
     document.addEventListener("visibilitychange", restart);
 
     return () => {
       active.removeEventListener("canplay", start);
+      active.removeEventListener("ended", advance);
       document.removeEventListener("visibilitychange", restart);
     };
   }, [activeSlot, inView]);
@@ -203,7 +239,8 @@ export default function ProjectCarouselSection() {
       ref={sectionRef}
       aria-label="Selected projects"
       className="w-full"
-      style={{ height: `${count * SCROLL_PER_SLOT}vh` }}
+      // One sticky 100vh stage plus SCROLL_PER_SLOT of travel per step.
+      style={{ height: `${(count - 1) * SCROLL_PER_SLOT + 100}vh` }}
     >
       <div
         ref={stageRef}
