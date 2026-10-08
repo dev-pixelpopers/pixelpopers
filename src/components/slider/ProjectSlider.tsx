@@ -32,6 +32,10 @@ const PERSPECTIVE_RATIO = 2.6;
 
 /** Extra sticky scroll, in viewport heights, given to folding the ring into a cube. */
 const FOLD_VH = 80;
+/** Extra full turns the ring whirls through as it closes up into the cube. */
+const WHIRL_TURNS = 1;
+/** Fold progress at which the cube snaps shut — the flaps land and it swells. */
+const CLOSE_AT = 0.86;
 /** The Studio cube's faces fill this share of its box (`inset-[13%]` in StudioCube). */
 const STUDIO_FACE_SHARE = 0.74;
 
@@ -132,6 +136,15 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
         }
         fold.style.visibility = over ? "hidden" : "";
         studioCube.style.opacity = over ? "1" : "0";
+        // Taking the cube back: undo any turns it made to show other faces,
+        // so it matches this cube again when it is handed over next time.
+        if (!over) {
+          const turn = studioCube.querySelector<HTMLElement>("[data-cube='turn']");
+          if (turn) {
+            gsap.killTweensOf(turn);
+            gsap.set(turn, { rotationY: 0, rotationX: 0 });
+          }
+        }
       };
 
       /**
@@ -156,15 +169,20 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
       };
 
       const travelEase = gsap.parseEase("power2.inOut");
-      const pullEase = gsap.parseEase("power2.inOut");
-      const flapEase = gsap.parseEase("power2.inOut");
+      const pullEase = gsap.parseEase("power3.inOut");
+      const flapEase = gsap.parseEase("back.out(1.8)");
+      const whirlEase = gsap.parseEase("power2.inOut");
 
       const apply = () => {
         const f = folded.value;
         // The cube comes to rest in the Studio cube's yaw, the nearest way round.
         const restYaw = CUBE_POSE.rotationY + 360 * Math.round((ringRotation - CUBE_POSE.rotationY) / 360);
+        // Whirl: one extra turn on the way in, carrying on in the ring's own
+        // direction, so the faces swirl together. Whole turns, so it still
+        // lands in the Studio cube's pose.
+        const whirlTo = restYaw - (foldIntoCube ? 360 * WHIRL_TURNS : 0);
         gsap.set(ring, {
-          rotationY: lerp(ringRotation, restYaw, f),
+          rotationY: lerp(ringRotation, whirlTo, whirlEase(f)),
           // Tilt on the ring itself, after its yaw — the same order as the
           // Studio cube's pose (rotate, rotateY, rotateX), so they match.
           rotationX: lerp(0, CUBE_POSE.rotationX, f),
@@ -206,11 +224,13 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
         //   2. those two flaps swing shut on their hinge edge.
         // The closed flaps land exactly on rotateY(ry) rotateX(±90deg)
         // translateZ(push), the Studio cube's top and bottom faces.
-        const pull = pullEase(gsap.utils.clamp(0, 1, f / 0.55));
-        const flap = flapEase(gsap.utils.clamp(0, 1, (f - 0.45) / 0.55));
+        // Flaps snap shut with a little overshoot, finishing at CLOSE_AT.
+        const flap = flapEase(gsap.utils.clamp(0, 1, (f - 0.45) / (CLOSE_AT - 0.45)));
         const push = FACE_PUSH * height;
         tiles.forEach((tile, i) => {
           const face = VIDEO_CUBE_FACES[i % VIDEO_CUBE_FACES.length];
+          // Tiles gather one after another — a quick ripple round the ring.
+          const pull = pullEase(gsap.utils.clamp(0, 1, (f - i * 0.035) / 0.5));
           // -1 for the top flap (up is -y), +1 for the bottom, 0 for a wall.
           const dir = face.rx > 0 ? -1 : face.rx < 0 ? 1 : 0;
           const ry = lerp(i * SLOT_ANGLE, face.ry, pull);
@@ -234,7 +254,10 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
         const e = travelEase(travelled);
         const x = e * target.x;
         const y = e * target.y;
-        const scale = lerp(1, target.scale, e);
+        // The snap: a quick swell and settle as the flaps land.
+        const snap = gsap.utils.clamp(0, 1, (f - CLOSE_AT) / (1 - CLOSE_AT));
+        const pop = 1 + 0.08 * Math.sin(Math.PI * snap);
+        const scale = lerp(1, target.scale, e) * pop;
         // Raw string for scale3d: a 2D scale would leave the cube's depth at
         // full size and stretch it into a box as it shrinks.
         fold.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${lerp(0, CUBE_POSE.rotationZ, f)}deg) scale3d(${scale}, ${scale}, ${scale})`;
