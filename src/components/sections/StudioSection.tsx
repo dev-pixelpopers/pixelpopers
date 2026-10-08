@@ -252,7 +252,11 @@ export default function StudioSection() {
     <section
       id="studio"
       ref={rootRef}
-      className="relative z-10 h-[calc(240vh+var(--exit,0vh))] motion-safe:-mt-[var(--tuck)] motion-reduce:h-auto md:h-[calc(300vh+var(--exit,0vh))]"
+      // pointer-events-none: the services section is tucked up under this one,
+      // so this section's box (and its stage, once the pin lets go) lies right
+      // over the services top row — transparent, but it would still swallow
+      // the letters' hover. The button opts back in.
+      className="pointer-events-none relative z-10 h-[calc(240vh+var(--exit,0vh))] motion-safe:-mt-[var(--tuck)] motion-reduce:h-auto md:h-[calc(300vh+var(--exit,0vh))]"
       // Tucked up under the video slider, whose pinned stage carries its
       // folded cube down over this section as it scrolls in.
       style={
@@ -400,7 +404,7 @@ export default function StudioSection() {
               From strategy to execution, we offer a full suite of creative services
               designed to elevate your brand and captivate your audience.
             </p>
-            <div data-studio="cta" className="origin-left">
+            <div data-studio="cta" className="pointer-events-auto origin-left">
               <PopButton href="#contact" label="Start a Project" />
             </div>
           </div>
