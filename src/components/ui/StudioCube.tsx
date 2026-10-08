@@ -2,8 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import Image from "next/image";
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 
 import { VIDEO_CUBE_FACES } from "@/components/ui/cube-faces";
 import { projects } from "@/lib/site-content";
@@ -17,41 +16,20 @@ gsap.registerPlugin(useGSAP);
  */
 export const CUBE_POSE = { rotationX: -18, rotationY: 24, rotationZ: -6 } as const;
 
-type Face = {
-  /** Where the face sits on the cube, before it is pushed out from the centre. */
-  turn: string;
-  /** Panel colour, sampled from the Figma render. */
-  color: string;
-  /** Full-bleed photo on the panel colour. */
-  photo?: string;
-  /** Round portrait centred on the panel, used where no full photo exists. */
-  avatar?: string;
-  logo?: boolean;
-};
-
-const FACES: Face[] = [
-  { turn: "rotateY(0deg)", color: "#ee9fab", photo: "/assets/studio-cube/face-pink.webp" },
-  { turn: "rotateX(90deg)", color: "#ea5f7c", photo: "/assets/studio-cube/face-red.webp" },
-  { turn: "rotateY(180deg)", color: "#a9ccd8", avatar: "/assets/images/barry-allen.png" },
-  { turn: "rotateY(-90deg)", color: "#d7c8ef", avatar: "/assets/images/adan-j.png" },
-  { turn: "rotateY(90deg)", color: "#ffc857", avatar: "/assets/images/james-allen.png" },
-  { turn: "rotateX(-90deg)", color: "#ff9f3a", logo: true },
-];
-
 /**
- * A real six-sided CSS 3D cube in the style of the old flat render: rounded
- * panels with heavy black outlines, pushed slightly apart so the edges read as
- * separate cards. Everything is sized in `cqw` of the parent container, so the
- * cube — including its 3D depth — scales as one unit.
+ * The Studio section's cube: a real six-sided CSS 3D cube whose faces are the
+ * project clips — the cube the video slider folds into and hands over, laid
+ * out to match it exactly (see `cube-faces.ts`). Rounded panels with heavy
+ * black outlines, pushed slightly apart so the edges read as separate cards.
+ * Everything is sized in `cqw` of the parent container, so the cube —
+ * including its 3D depth — scales as one unit.
  *
- * Two nested transforms, both driven by the section's scroll timeline:
- *   [data-studio='cube']       — 2D: slide in from the right, scale
- *   [data-studio='cube-spin']  — 3D: tumble and resting pose
- *
- * With `video`, the faces are the project clips instead — the cube the video
- * slider folds into, laid out to match it exactly (see `cube-faces.ts`).
+ * Nested transforms, each with its own owner:
+ *   [data-studio='cube']       — 2D: scale (section scroll timeline)
+ *   [data-studio='cube-spin']  — 3D: tumble and resting pose (section scroll)
+ *   [data-cube='turn']         — 3D: a quarter turn each time a clip ends
  */
-export default function StudioCube({ video = false }: { video?: boolean }) {
+export default function StudioCube() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Only the face pointing at the camera plays; the rest hold their frame.
@@ -63,7 +41,7 @@ export default function StudioCube({ video = false }: { video?: boolean }) {
     const root = rootRef.current;
     const spin = root?.querySelector<HTMLElement>("[data-studio='cube-spin']");
     const turn = root?.querySelector<HTMLElement>("[data-cube='turn']");
-    if (!video || !root || !spin || !turn) return;
+    if (!root || !spin || !turn) return;
     const clips = Array.from(root.querySelectorAll<HTMLVideoElement>("[data-cube='video-face'] video"));
     let playing = -1;
 
@@ -107,7 +85,7 @@ export default function StudioCube({ video = false }: { video?: boolean }) {
       stop();
       clips.forEach((clip) => clip.removeEventListener("ended", advance));
     };
-  }, [video]);
+  }, []);
 
   useGSAP(
     () => {
@@ -131,75 +109,22 @@ export default function StudioCube({ video = false }: { video?: boolean }) {
         // Matches CUBE_POSE so the server render is already in pose.
         style={{ transform: "rotate(-6deg) rotateY(24deg) rotateX(-18deg)" }}
       >
-        {video ? (
-          // Turn layer: steps the cube to the next face when a clip ends.
-          <div data-cube="turn" className="absolute inset-0 [transform-style:preserve-3d]">
-            {projects.map((project, i) => (
-              <VideoFace key={project.id} index={i} />
-            ))}
-          </div>
-        ) : (
-          FACES.map((face) => <CubeFace key={face.turn} face={face} />)
-        )}
+        {/* Turn layer: steps the cube to the next face when a clip ends. */}
+        <div data-cube="turn" className="absolute inset-0 [transform-style:preserve-3d]">
+          {projects.map((project, i) => (
+            <VideoFace key={project.id} index={i} />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-function CubeFace({ face }: { face: Face }) {
-  return (
-    <div
-      data-cube="face"
-      className="absolute inset-[3%] overflow-hidden rounded-[13%] border-[1.6cqw] border-black [backface-visibility:hidden]"
-      style={
-        {
-          backgroundColor: face.color,
-          // Half the cube (37cqw) plus a little, so the panels separate at the
-          // edges like the original render instead of meeting in a seam.
-          // `--explode` lets an entrance fly the faces in from further out.
-          transform: `${face.turn} translateZ(var(--explode, 39cqw))`,
-          // Comic-book slab thickness along the bottom-right edge.
-          boxShadow: "inset -1.2cqw -1.4cqw 0 0 rgb(0 0 0 / 0.18)",
-        } as CSSProperties
-      }
-    >
-      {face.photo ? (
-        <Image src={face.photo} alt="" fill sizes="(max-width: 768px) 40vw, 20vw" className="object-cover" />
-      ) : null}
-
-      {face.avatar ? (
-        <span className="absolute inset-0 grid place-items-center">
-          <Image
-            src={face.avatar}
-            alt=""
-            width={118}
-            height={118}
-            className="w-[55%] rounded-full border-[1cqw] border-black bg-white/40"
-          />
-        </span>
-      ) : null}
-
-      {face.logo ? (
-        <span className="absolute inset-0 grid place-items-center">
-          <Image
-            src="/assets/logo-pixelpopers.png"
-            alt=""
-            width={190}
-            height={84}
-            className="w-[70%]"
-          />
-        </span>
-      ) : null}
-    </div>
-  );
-}
-
 /**
- * One clip on the video cube, styled like the photo faces (`CubeFace`): inset
- * so the faces separate, heavy black outline, rounded corners and the slab
- * shading — drawn over the clip so the footage can't cover it. Unlike the
- * photo faces, both sides render, so the inner walls show through the gaps —
- * matching the slider's folded cube, which it replaces seamlessly.
+ * One clip on the cube: inset so the faces separate, heavy black outline,
+ * rounded corners and the slab shading — drawn over the clip so the footage
+ * can't cover it. Both sides render, so the inner walls show through the gaps
+ * — matching the slider's folded cube, which it replaces seamlessly.
  */
 function VideoFace({ index }: { index: number }) {
   const project = projects[index];

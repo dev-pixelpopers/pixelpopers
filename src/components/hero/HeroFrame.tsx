@@ -22,9 +22,9 @@ type HeroFrameProps = {
  */
 export default function HeroFrame({ ref, chars, children }: HeroFrameProps) {
   return (
-    // z-10: the slider can fold into a cube that travels down over the next
+    // z-20: the slider folds into a cube that travels down over the Studio
     // section, so the whole hero block paints above what follows it.
-    <div ref={ref} className="relative isolate z-10 flex w-full flex-col items-center justify-center">
+    <div ref={ref} className="relative isolate z-20 flex w-full flex-col items-center justify-center">
       <div
         data-hero-frame="glow"
         aria-hidden

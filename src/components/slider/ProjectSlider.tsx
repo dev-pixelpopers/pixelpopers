@@ -18,7 +18,7 @@ import {
   FACE_SIZE,
   VIDEO_CUBE_FACES,
 } from "@/components/ui/cube-faces";
-import { V5_TRAVEL_VH } from "@/components/ui/studio-cube-entries";
+import { CUBE_TRAVEL_VH } from "@/components/ui/studio-cube-motion";
 import { projects } from "@/lib/site-content";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -44,7 +44,8 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 type ProjectSliderProps = {
   /**
    * Fold the ring into a video cube at the end of the section and carry it
-   * down to become the Studio section's cube (the V5 cube entry).
+   * down to become the Studio section's cube. On by default — the home page
+   * relies on it; off leaves a plain ring slider.
    */
   foldIntoCube?: boolean;
 };
@@ -59,7 +60,7 @@ type ProjectSliderProps = {
  *   - a caption under the ring — "01 / 06", the project name and a bar that
  *     fills as the clip plays — swaps with each tile
  */
-export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderProps) {
+export default function ProjectSlider({ foldIntoCube = true }: ProjectSliderProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const foldRef = useRef<HTMLDivElement>(null);
@@ -273,7 +274,7 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
         count: COUNT,
         mode: "ring",
         snap: true,
-        endInset: foldIntoCube ? () => vh(FOLD_VH + V5_TRAVEL_VH) : undefined,
+        endInset: foldIntoCube ? () => vh(FOLD_VH + CUBE_TRAVEL_VH) : undefined,
         // Once the fold has begun the ring is closing up — a finished clip
         // replays rather than turning it.
         isHeld: () => folded.value > 0,
@@ -312,8 +313,8 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
               immediateRender: false,
               scrollTrigger: {
                 trigger: section,
-                start: () => `bottom-=${vh(FOLD_VH + V5_TRAVEL_VH)} bottom`,
-                end: () => `bottom-=${vh(V5_TRAVEL_VH)} bottom`,
+                start: () => `bottom-=${vh(FOLD_VH + CUBE_TRAVEL_VH)} bottom`,
+                end: () => `bottom-=${vh(CUBE_TRAVEL_VH)} bottom`,
                 scrub: 1,
               },
               onUpdate: apply,
@@ -325,7 +326,7 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
           // the hand-off lands exactly as this stage lets go.
           ScrollTrigger.create({
             trigger: section,
-            start: () => `bottom-=${vh(V5_TRAVEL_VH)} bottom`,
+            start: () => `bottom-=${vh(CUBE_TRAVEL_VH)} bottom`,
             end: "bottom bottom",
             onUpdate: (self) => {
               travelled = self.progress;
@@ -364,7 +365,7 @@ export default function ProjectSlider({ foldIntoCube = false }: ProjectSliderPro
       className="w-full"
       style={{
         height: foldIntoCube
-          ? `calc(${sectionHeight(COUNT)} + ${FOLD_VH + V5_TRAVEL_VH}vh)`
+          ? `calc(${sectionHeight(COUNT)} + ${FOLD_VH + CUBE_TRAVEL_VH}vh)`
           : sectionHeight(COUNT),
       }}
     >

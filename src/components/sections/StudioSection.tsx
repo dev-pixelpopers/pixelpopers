@@ -4,11 +4,16 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, type CSSProperties } from "react";
 
 import PopButton from "@/components/ui/PopButton";
 import StudioCube from "@/components/ui/StudioCube";
-import { addCubeEntry, V5_TRAVEL_VH, type CubeEntry } from "@/components/ui/studio-cube-entries";
+import {
+  addCubeTumble,
+  CUBE_TRAVEL_VH,
+  STUDIO_EXIT_VH,
+  STUDIO_UNWIND_VH,
+} from "@/components/ui/studio-cube-motion";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -29,6 +34,16 @@ const TRACE_LENGTH = 1000;
 /** Hand-drawn swoosh under the headline. */
 const SWOOSH_PATH = "M4 30C120 6 260 4 420 14C520 20 600 30 676 22";
 
+/** Confetti thrown when the cube pops on the way out. */
+const POP_PIECES = 14;
+const POP_TONES = ["bg-blush", "bg-lagoon", "bg-sunbeam", "bg-grape"];
+
+/** Stable pseudo-random 0–1 per index, so the confetti is the same every time. */
+const rand = (i: number, salt = 1) => {
+  const x = Math.sin(i * 12.9898 * salt + salt * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+
 /** Floating service badges orbiting the cube. */
 const BADGES = [
   { label: "Strategy", rotate: -8, exitX: -160, exitY: -120, className: "top-[4%] left-[2%] bg-sunbeam text-ink" },
@@ -41,20 +56,15 @@ const BADGES = [
  * scroll range, so only the proportions matter):
  *
  *   0.0  entry   — ribbon starts tracing
- *   0.4  cube    — enters (see `studio-cube-entries.ts`); tumbles with scroll until 7
+ *   ~1.6 cube    — handed over by the video slider, which folds into it and
+ *                  carries it here; tumbles with scroll from 2.2 until 7
  *   1.0  reveal  — headline words rise through their masks, badges pop
  *   3.0  detail  — swoosh draws, paragraph wipes in, CTA springs
  *   4.5  focus   — cube swells, badges drift
  *   7.0  exit    — words peel up, swoosh draws off, cube spins away
  */
-type StudioSectionProps = {
-  /** How the cube enters — TEMPORARY while the entrance versions are compared. */
-  cubeEntry?: CubeEntry;
-};
-
-export default function StudioSection({ cubeEntry = "original" }: StudioSectionProps) {
+export default function StudioSection() {
   const rootRef = useRef<HTMLElement>(null);
-  const morph = cubeEntry === "v5";
 
   useGSAP(
     () => {
@@ -88,7 +98,8 @@ export default function StudioSection({ cubeEntry = "original" }: StudioSectionP
               // so the stage is never empty when it sticks.
               start: "top 40%",
               // The pin is CSS `sticky`; ScrollTrigger only reports progress.
-              end: "bottom bottom",
+              // The last stretch belongs to the exit (see `addExit`).
+              end: () => `bottom-=${vh(STUDIO_EXIT_VH)} bottom`,
               scrub: 1,
               // The cube's off-screen start depends on the viewport width.
               invalidateOnRefresh: true,
@@ -112,7 +123,7 @@ export default function StudioSection({ cubeEntry = "original" }: StudioSectionP
           const badges = q("[data-studio='badge']");
 
           // ── Entry ────────────────────────────────────────────────
-          addCubeEntry(tl, cubeEntry, q, 0.4);
+          addCubeTumble(tl, q);
 
           tl.fromTo(
             q("[data-studio='trace']"),
@@ -181,7 +192,9 @@ export default function StudioSection({ cubeEntry = "original" }: StudioSectionP
               4.5,
             )
 
-          // ── Exit ─────────────────────────────────────────────────
+          addExit(q, rootRef.current!, badgeRotation);
+
+          // ── Exit (old draft, unused) ─────────────────────────────
           // .to(
           //   words,
           //   { yPercent: -115, rotation: -6, duration: 1.2, stagger: 0.15, ease: "power2.in" },
@@ -239,10 +252,17 @@ export default function StudioSection({ cubeEntry = "original" }: StudioSectionP
     <section
       id="studio"
       ref={rootRef}
-      className="relative h-[240vh] md:h-[300vh] motion-reduce:h-auto"
-      // V5: tucked up under the slider, whose pinned stage carries the video
-      // cube down over this section as it scrolls in.
-      style={morph ? { marginTop: `-${V5_TRAVEL_VH}vh` } : undefined}
+      className="relative z-10 h-[calc(240vh+var(--exit,0vh))] motion-safe:-mt-[var(--tuck)] motion-reduce:h-auto md:h-[calc(300vh+var(--exit,0vh))]"
+      // Tucked up under the video slider, whose pinned stage carries its
+      // folded cube down over this section as it scrolls in.
+      style={
+        {
+          // Only with motion (the class above): under reduced motion nothing
+          // pins, so tucking under the slider would just overlap it.
+          "--tuck": `${CUBE_TRAVEL_VH}vh`,
+          "--exit": `${STUDIO_EXIT_VH}vh`,
+        } as CSSProperties
+      }
     >
       <div className="sticky top-0 isolate flex h-svh items-center overflow-hidden motion-reduce:relative motion-reduce:h-auto motion-reduce:py-[clamp(4rem,10vw,12rem)]">
         {/* Background ribbon, drawn on via a tracing mask like the hero blob. */}
@@ -308,7 +328,27 @@ export default function StudioSection({ cubeEntry = "original" }: StudioSectionP
               height={2128}
               className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70 [mask-image:radial-gradient(circle,black_30%,transparent_65%)]"
             />
-            <StudioCube video={morph} />
+            <StudioCube />
+
+            {
+              // The cube's pop on the way out: a ring and confetti from its
+              // centre, hidden until then (driven by the exit timeline).
+              <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
+                <span
+                  data-studio="pop-ring"
+                  className="absolute top-1/2 left-1/2 -mt-[37cqw] -ml-[37cqw] size-[74cqw] rounded-full border-[1.6cqw] border-solid border-blush opacity-0"
+                />
+                {Array.from({ length: POP_PIECES }, (_, i) => (
+                  <span
+                    key={i}
+                    data-studio="pop-piece"
+                    className={`absolute top-1/2 left-1/2 opacity-0 ${POP_TONES[i % POP_TONES.length]} ${
+                      i % 2 ? "-mt-[1cqw] -ml-[3.2cqw] h-[2cqw] w-[6.4cqw] rounded-[1cqw]" : "-mt-[2cqw] -ml-[2cqw] size-[4cqw] rounded-full"
+                    }`}
+                  />
+                ))}
+              </div>
+            }
 
             {BADGES.map((badge) => (
               <span
@@ -367,5 +407,126 @@ export default function StudioSection({ cubeEntry = "original" }: StudioSectionP
         </div>
       </div>
     </section>
+  );
+}
+
+const vh = (n: number) => (n / 100) * window.innerHeight;
+
+/**
+ * The Studio section's exit: while the stage is still pinned, everything
+ * that came in plays back out in reverse order — the button, the paragraph,
+ * the swoosh, the badges, the headline, the glow and the ribbon — and last
+ * the cube swells and pops into a ring and confetti, leaving an empty screen
+ * for the services letters pinned underneath. Scrubbed, so it reverses.
+ *
+ * Every tween is a `fromTo` from the main timeline's end state with
+ * `immediateRender: false`, so this never fights the entrance: before the
+ * exit starts it renders exactly the state the entrance left.
+ */
+function addExit(
+  q: (selector: string) => Element[],
+  section: HTMLElement,
+  badgeRotation: (i: number, el: Element) => number,
+) {
+  const off = { immediateRender: false } as const;
+  const tl = gsap.timeline({
+    defaults: { ease: "power2.in" },
+    scrollTrigger: {
+      trigger: section,
+      start: () => `bottom-=${vh(STUDIO_EXIT_VH)} bottom`,
+      end: () => `bottom-=${vh(STUDIO_EXIT_VH - STUDIO_UNWIND_VH)} bottom`,
+      scrub: 1,
+    },
+  });
+
+  // Last in, first out.
+  tl.fromTo(
+    q("[data-studio='cta']"),
+    { autoAlpha: 1, scale: 1, rotation: 0 },
+    { autoAlpha: 0, scale: 0.4, rotation: -12, duration: 0.6, ...off },
+    0,
+  )
+    .fromTo(
+      q("[data-studio='copy']"),
+      { clipPath: "inset(0% 0% 0% 0%)", y: 0 },
+      { clipPath: "inset(0% 100% 0% 0%)", y: 24, duration: 0.8, ...off },
+      0.15,
+    )
+    .fromTo(
+      q("[data-studio='swoosh']"),
+      { strokeDashoffset: 0 },
+      { strokeDashoffset: 1000, duration: 0.6, ...off },
+      0.3,
+    )
+    .fromTo(
+      q("[data-studio='badge']"),
+      { autoAlpha: 1, scale: 1, rotation: badgeRotation },
+      {
+        autoAlpha: 0,
+        scale: 0,
+        rotation: (i, el) => badgeRotation(i, el) - 40,
+        duration: 0.5,
+        stagger: 0.12,
+        ease: "back.in(2)",
+        ...off,
+      },
+      0.4,
+    )
+    .fromTo(
+      q("[data-studio='word']"),
+      { yPercent: 0, rotation: 0 },
+      { yPercent: 115, rotation: 7, duration: 0.7, stagger: 0.08, ...off },
+      0.55,
+    )
+    .fromTo(
+      q("[data-studio='glow']"),
+      { autoAlpha: 1, scale: 1 },
+      { autoAlpha: 0, scale: 0.3, duration: 0.8, ...off },
+      0.9,
+    )
+    .fromTo(
+      q("[data-studio='trace']"),
+      { strokeDashoffset: 0 },
+      { strokeDashoffset: 1000, duration: 1.1, ease: "power1.in", ...off },
+      0.6,
+    )
+    .fromTo(
+      q("[data-studio='ribbon']"),
+      { autoAlpha: 0.5 },
+      { autoAlpha: 0, duration: 0.4, ease: "none", ...off },
+      1.3,
+    )
+    // The cube goes last: it swells and strains…
+    .fromTo(
+      q("[data-studio='cube']"),
+      { scale: 1.08 },
+      { scale: 1.22, duration: 0.35, ease: "power1.in", ...off },
+      1.45,
+    )
+    // …and pops.
+    .fromTo(
+      q("[data-studio='cube']"),
+      { scale: 1.22, autoAlpha: 1 },
+      { scale: 0, autoAlpha: 0, duration: 0.15, ...off },
+      1.8,
+    )
+    .set(q("[data-studio='pop-ring']"), { scale: 0.4, autoAlpha: 1 }, 1.8)
+    .to(q("[data-studio='pop-ring']"), { scale: 2, autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 1.8);
+
+  const pieces = q("[data-studio='pop-piece']");
+  const column = q("[data-studio='cube']")[0] as HTMLElement | undefined;
+  const reach = () => (column?.offsetWidth ?? 300) * 0.9;
+  tl.set(pieces, { x: 0, y: 0, rotation: 0, scale: 1.3, autoAlpha: 1 }, 1.8).to(
+    pieces,
+    {
+      x: (i) => Math.cos((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.5),
+      y: (i) => Math.sin((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.5),
+      rotation: (i) => (rand(i, 3) - 0.5) * 600,
+      scale: 0.3,
+      autoAlpha: 0,
+      duration: 0.6,
+      ease: "power3.out",
+    },
+    1.8,
   );
 }

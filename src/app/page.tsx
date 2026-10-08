@@ -9,22 +9,15 @@ import ServicesSection from "@/components/sections/ServicesSection";
 import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import StudioSection from "@/components/sections/StudioSection";
 import ProjectSlider from "@/components/slider/ProjectSlider";
-import CubeEntryPicker from "@/components/ui/CubeEntryPicker";
-import { toCubeEntry } from "@/components/ui/studio-cube-entries";
-
-export default async function Home({ searchParams }: PageProps<"/">) {
-  // TEMPORARY: `?cube=` picks a cube entrance to compare (see CubeEntryPicker).
-  // Read on the server so every section renders in normal order.
-  const cubeEntry = toCubeEntry((await searchParams).cube);
-
+export default function Home() {
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cream">
       <SiteHeader />
       <main className="flex flex-1 flex-col">
         <HeroFinal>
-          <ProjectSlider foldIntoCube={cubeEntry === "v5"} />
+          <ProjectSlider />
         </HeroFinal>
-        <StudioSection cubeEntry={cubeEntry} />
+        <StudioSection />
         <ServicesSection />
         <ShowcaseSection />
         <AgencySection />
@@ -33,7 +26,6 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         <BlogSection />
       </main>
       <SiteFooter />
-      <CubeEntryPicker current={cubeEntry} />
     </div>
   );
 }

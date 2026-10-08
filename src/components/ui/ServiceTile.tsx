@@ -39,9 +39,19 @@ function offsetStyle({ x, y }: TilePoint): CSSProperties {
 
 type ServiceTileProps = {
   service: Service;
+  /**
+   * Render the burst layer — a bubble, a ring and confetti over the letter,
+   * all hidden until a services entrance animates them. The value is the
+   * brand colour token the burst is tinted with.
+   */
+  fxTone?: "blush" | "lagoon" | "sunbeam" | "grape";
 };
 
-export default function ServiceTile({ service }: ServiceTileProps) {
+/** Confetti per letter: alternating dots and strips. */
+const PARTICLES = 16;
+const PARTICLE_TONES = ["var(--blush)", "var(--lagoon)", "var(--sunbeam)", "var(--grape)"];
+
+export default function ServiceTile({ service, fxTone }: ServiceTileProps) {
   const { letter, title, fill, label, dot, media } = service;
 
   const glyphRef = useRef<HTMLSpanElement>(null);
@@ -67,11 +77,14 @@ export default function ServiceTile({ service }: ServiceTileProps) {
     if (!media || !glyph || !baseline || !reveal || !clipText) return;
 
     const measure = () => {
-      // userSpaceOnUse on an HTML element is CSS px from its border-box origin.
-      const origin = reveal.getBoundingClientRect();
-      const box = glyph.getBoundingClientRect();
-      clipText.setAttribute("x", String(box.left - origin.left));
-      clipText.setAttribute("y", String(baseline.getBoundingClientRect().bottom - origin.top));
+      // userSpaceOnUse on an HTML element is CSS px from its border-box
+      // origin. Offset metrics, not screen rects: an entrance animation may be
+      // scaling or moving the letter when this runs, and screen rects would
+      // bake that transform into the clip and misplace the hover reveal.
+      // Both the reveal box and the baseline marker are measured against the
+      // glyph (their offset parent), so the glyph's own transform drops out.
+      clipText.setAttribute("x", String(-reveal.offsetLeft));
+      clipText.setAttribute("y", String(baseline.offsetTop + baseline.offsetHeight - reveal.offsetTop));
       clipText.style.fontSize = getComputedStyle(glyph).fontSize;
     };
 
@@ -90,9 +103,10 @@ export default function ServiceTile({ service }: ServiceTileProps) {
 
   return (
     <article
+      data-service="tile"
       onPointerEnter={play}
       onPointerLeave={pause}
-      className="@container group grid aspect-[509/586] w-full grid-cols-1 grid-rows-1 [&>*]:col-start-1 [&>*]:row-start-1 [&>*]:self-start [&>*]:justify-self-start"
+      className="@container group relative grid aspect-[509/586] w-full grid-cols-1 grid-rows-1 [&>*]:col-start-1 [&>*]:row-start-1 [&>*]:self-start [&>*]:justify-self-start"
     >
       {/*
         Figma sets a 867px glyph on a 734px line inside a 586px box, so the
@@ -106,6 +120,7 @@ export default function ServiceTile({ service }: ServiceTileProps) {
       */}
       <span
         ref={glyphRef}
+        data-service="glyph"
         aria-hidden
         className={`pointer-events-none relative block w-max text-[170cqw] leading-[0.846] font-pop uppercase select-none ${fillClasses[fill]}`}
       >
@@ -139,6 +154,7 @@ export default function ServiceTile({ service }: ServiceTileProps) {
 
       {dot ? (
         <span
+          data-service="dot"
           aria-hidden
           className="relative z-10 rounded-full bg-mist transition-opacity duration-500 ease-out group-hover:opacity-0 motion-reduce:transition-none"
           style={{
@@ -150,12 +166,59 @@ export default function ServiceTile({ service }: ServiceTileProps) {
       ) : null}
 
       <h3
+        data-service="label"
         className={`relative z-10 max-w-[60cqw] text-service leading-none font-bold uppercase text-black group-hover:text-white`}
         style={offsetStyle(label)}
       >
         {title}
       </h3>
+      {fxTone ? <BurstLayer tone={fxTone} /> : null}
     </article>
+  );
+}
+
+/**
+ * Hidden-by-default burst pieces over the letter: a glossy bubble, a
+ * shockwave ring and a spray of confetti, all centred on the same point so an
+ * entrance can pop them from there. The point and the bubble's size come from
+ * `--fx-x`, `--fx-y` and `--fx-size`, which the entrance sets from the
+ * letter itself (falling back to the tile's middle).
+ */
+function BurstLayer({ tone }: { tone: NonNullable<ServiceTileProps["fxTone"]> }) {
+  const colour = `var(--${tone})`;
+  return (
+    <div aria-hidden data-service="fx" className="pointer-events-none absolute inset-0 z-20">
+      <span
+        data-service="bubble"
+        className="absolute rounded-full border-[1.2cqw] border-solid border-ink opacity-0"
+        style={{
+          ...centredOn("var(--fx-size, 76cqw)"),
+          background:
+            `radial-gradient(circle at 32% 28%, rgb(255 255 255 / 0.9) 0 7%, transparent 8%), ` +
+            `radial-gradient(circle at 50% 55%, color-mix(in srgb, ${colour} 55%, white) 0%, ${colour} 72%)`,
+          boxShadow: "inset -2cqw -3cqw 0 0 rgb(0 0 0 / 0.15)",
+        }}
+      />
+      <span
+        data-service="ring"
+        className="absolute rounded-full border-[1.4cqw] border-solid opacity-0"
+        style={{ ...centredOn("calc(var(--fx-size, 76cqw) * 0.8)"), borderColor: colour }}
+      />
+      {Array.from({ length: PARTICLES }, (_, i) => {
+        const strip = i % 2 === 1;
+        return (
+          <span
+            key={i}
+            data-service="particle"
+            data-index={i}
+            className={`absolute top-[var(--fx-y,45%)] left-[var(--fx-x,50%)] opacity-0 ${
+              strip ? "-mt-[0.8cqw] -ml-[2.6cqw] h-[1.6cqw] w-[5.2cqw] rounded-[1cqw]" : "-mt-[1.6cqw] -ml-[1.6cqw] size-[3.2cqw] rounded-full"
+            }`}
+            style={{ background: PARTICLE_TONES[i % PARTICLE_TONES.length] }}
+          />
+        );
+      })}
+    </div>
   );
 }
 
@@ -188,4 +251,16 @@ function ServiceMediaFill({
   return (
     <Image src={media.src} alt="" fill sizes="(max-width: 640px) 100vw, 40vw" className={mediaClasses} />
   );
+}
+
+/** A square of side `size`, centred on the burst point. */
+function centredOn(size: string): CSSProperties {
+  return {
+    left: "var(--fx-x, 50%)",
+    top: "var(--fx-y, 45%)",
+    width: size,
+    height: size,
+    marginLeft: `calc(${size} / -2)`,
+    marginTop: `calc(${size} / -2)`,
+  };
 }
