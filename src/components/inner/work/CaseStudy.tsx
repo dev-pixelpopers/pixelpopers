@@ -67,7 +67,8 @@ export function CaseHero({ project }: { project: Project }) {
             alt={p.cover.alt}
             width={p.cover.w}
             height={p.cover.h}
-            priority
+            loading="eager"
+            fetchPriority="high"
             sizes="(min-width: 1920px) 1680px, 92vw"
             style={{ objectPosition: p.cover.position ?? "50% 50%" }}
             className="size-full object-cover"

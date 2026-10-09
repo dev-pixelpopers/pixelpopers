@@ -167,7 +167,8 @@ export function PostPhone({ className = "" }: { className?: string }) {
             width={857}
             height={1200}
             sizes="(min-width: 1024px) 16vw, 60vw"
-            priority
+            loading="eager"
+            fetchPriority="high"
             className="mt-[4.38cqw] aspect-square w-full object-cover"
           />
           <p className="mt-[4.38cqw] px-[5.63cqw] text-[max(0.75rem,6.9cqw)] leading-none">

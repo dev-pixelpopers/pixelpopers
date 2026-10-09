@@ -150,7 +150,7 @@ function VideoFace({ index }: { index: number }) {
     >
       <video
         src={project.video}
-        poster={project.poster?.src}
+        poster={project.poster?.small}
         muted
         playsInline
         // Nothing loads until a face is actually played (see the effect above).

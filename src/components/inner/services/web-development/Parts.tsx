@@ -109,7 +109,8 @@ export function BrowserPreview({ className = "", priority = false }: { className
           width={1600}
           height={951}
           sizes="(min-width: 1024px) 33vw, 85vw"
-          priority={priority}
+          loading={priority ? "eager" : undefined}
+          fetchPriority={priority ? "high" : undefined}
           className="aspect-[620/386] w-full object-cover"
         />
       </div>

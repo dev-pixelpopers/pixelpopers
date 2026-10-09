@@ -3,7 +3,6 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
 import { useRef, type CSSProperties } from "react";
 
 import PopButton from "@/components/ui/PopButton";
@@ -14,6 +13,7 @@ import {
   STUDIO_EXIT_VH,
   STUDIO_UNWIND_VH,
 } from "@/components/ui/studio-cube-motion";
+import GlowOrb, { STUDIO_FALLOFF } from "@/components/ui/GlowOrb";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -332,14 +332,10 @@ export default function StudioSection() {
         <div className="shell flex flex-col items-center gap-8 md:flex-row md:gap-10">
           {/* Container for the cube's `cqw` sizing — its depth scales with it. */}
           <div className="@container relative flex w-[60%] justify-center md:w-[30%]">
-            <Image
+            <GlowOrb
               data-studio="glow"
-              src="/icons/hero-ellipse-glow.svg"
-              alt=""
-              aria-hidden
-              width={2128}
-              height={2128}
-              className="pointer-events-none absolute top-1/2 left-1/2 -z-10 aspect-square h-auto w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70 [mask-image:radial-gradient(circle,black_30%,transparent_65%)]"
+              falloff={STUDIO_FALLOFF}
+              className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70"
             />
             <StudioCube />
 

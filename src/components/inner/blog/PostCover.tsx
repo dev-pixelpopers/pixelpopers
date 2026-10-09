@@ -33,7 +33,8 @@ export default function PostCover({
         width={cover.width}
         height={cover.height}
         sizes={sizes}
-        priority={priority}
+        loading={priority ? "eager" : undefined}
+        fetchPriority={priority ? "high" : undefined}
         className={`size-full ${contain && cover.bg ? "object-contain" : "object-cover"} ${cover.bg ? "mix-blend-multiply" : ""}`}
       />
     </div>

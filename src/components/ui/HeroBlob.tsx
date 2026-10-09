@@ -15,15 +15,6 @@ const BLOB_PATH =
 
 /** Stroke width of the visible ribbon, straight from the Figma export. */
 const RIBBON_WIDTH = 100.942;
-/** The tracing mask must be wider than the ribbon or it shaves its edges. */
-const TRACE_WIDTH = RIBBON_WIDTH * 1.4;
-/**
- * `pathLength` normalises the path for dash maths, so the trace needs no
- * getTotalLength() measurement and stays SSR-safe. It must NOT be 1: GSAP
- * rounds px values, which would leave the tween only two integer steps and
- * snap 1 -> 0 at the midpoint instead of easing. 1000 gives ample resolution.
- */
-const TRACE_LENGTH = 1000;
 
 export default function HeroBlob() {
   const rootRef = useRef<SVGSVGElement>(null);
@@ -42,31 +33,27 @@ export default function HeroBlob() {
       const media = gsap.matchMedia();
 
       media.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set("[data-hero-blob='trace']", { strokeDashoffset: 0 });
         gsap.set("[data-hero-blob='group']", { autoAlpha: HERO_MOTION.blobOpacity });
       });
 
       media.add("(prefers-reduced-motion: no-preference)", () => {
+        // The reveal moves the whole SVG — opacity and scale on its own
+        // composited layer — so the ribbon (a 100px stroke cut into thousands
+        // of 4px dashes) is rasterised once. It used to be traced on through
+        // an animated mask, which re-rasterised all of it every frame for the
+        // first 2.4s: the bulk of the desktop main-thread time at load.
+        gsap.set("[data-hero-blob='group']", { autoAlpha: HERO_MOTION.blobOpacity });
         const tl = gsap.timeline();
-
-        // Runs against the normalised TRACE_LENGTH, so no getTotalLength()
-        // measurement is needed and the markup can ship already hidden.
         tl.fromTo(
-          "[data-hero-blob='trace']",
-          { strokeDashoffset: TRACE_LENGTH },
-          { strokeDashoffset: 0, duration: HERO_MOTION.blobDraw, ease: "power1.inOut" },
+          svg,
+          { autoAlpha: 0, scale: 0.9 },
+          { autoAlpha: 1, scale: 1, duration: HERO_MOTION.blobDraw * 0.6, ease: "power2.out" },
           0,
-        )
-          .to(
-            "[data-hero-blob='group']",
-            { autoAlpha: HERO_MOTION.blobOpacity, duration: HERO_MOTION.blobFade, ease: "power2.out" },
-            0,
-          );
+        );
 
-        // Idle float, handed off once the trace lands — only after the first
-        // interaction and while the blob is on screen (see `ambient`). It
-        // transforms the whole SVG rather than the masked group so the mask
-        // is not re-rasterised every frame.
+        // Idle float, once the reveal has landed — only after the first
+        // interaction and while the blob is on screen (see `ambient`). Like
+        // the reveal it transforms the whole SVG, never the ribbon inside it.
         let stopIdle: (() => void) | undefined;
         tl.call(
           contextSafe!(() => {
@@ -81,7 +68,7 @@ export default function HeroBlob() {
             stopIdle = ambient(float, svg);
           }),
           [],
-          HERO_MOTION.blobDraw,
+          HERO_MOTION.blobDraw * 0.6,
         );
         return () => stopIdle?.();
       });
@@ -112,40 +99,10 @@ export default function HeroBlob() {
           <stop offset="1" stopColor="#6A4B97" />
         </linearGradient>
 
-        {/*
-          The ribbon's own `strokeDasharray` is what gives it its combed
-          texture, so it cannot double as a draw-on. A second, solid path
-          masks it instead: tracing the mask reveals the ribbon while leaving
-          its dash pattern untouched.
-        */}
-        <mask
-          id="hero-blob-reveal"
-          maskUnits="userSpaceOnUse"
-          x={-TRACE_WIDTH}
-          y={-TRACE_WIDTH}
-          width={2128.4 + TRACE_WIDTH * 2}
-          height={2091.13 + TRACE_WIDTH * 2}
-        >
-          <path
-            data-hero-blob="trace"
-            d={BLOB_PATH}
-            fill="none"
-            stroke="white"
-            strokeWidth={TRACE_WIDTH}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            pathLength={TRACE_LENGTH}
-            strokeDasharray={TRACE_LENGTH}
-            // Starts fully offset so the blob is hidden in the SSR markup —
-            // there is nothing to flash before GSAP takes over.
-            strokeDashoffset={TRACE_LENGTH}
-          />
-        </mask>
       </defs>
 
       <g
         data-hero-blob="group"
-        mask="url(#hero-blob-reveal)"
         style={{ opacity: 0, visibility: "hidden" }}
       >
         <path

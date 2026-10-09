@@ -20,7 +20,8 @@ export default function FeaturedCard({ project }: { project: Project }) {
           alt={p.cover.alt}
           width={p.cover.w}
           height={p.cover.h}
-          priority
+          loading="eager"
+          fetchPriority="high"
           sizes="(min-width: 1920px) 1680px, 92vw"
           className={`${cell} size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]`}
         />

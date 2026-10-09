@@ -243,7 +243,8 @@ export type Project = {
    * video loads until one plays. Without one, the tile keeps its video
    * mounted and shows its first frame.
    */
-  poster?: { src: string; width: number; height: number };
+  /** `small`: a 540px copy for `<video poster>`, which no image optimiser resizes. */
+  poster?: { src: string; small: string; width: number; height: number };
 };
 
 export const projects: Project[] = [
@@ -251,37 +252,37 @@ export const projects: Project[] = [
     id: "snackbar",
     title: "Snackbar — bold flavor meets cutting edge tech",
     video: "/assets/videos/snackbar-video.mp4",
-    poster: { src: "/assets/posters/snackbar-video.webp", width: 960, height: 540 },
+    poster: { src: "/assets/posters/snackbar-video.webp", small: "/assets/posters/snackbar-video-sm.webp", width: 960, height: 540 },
   },
   {
     id: "habitat-pools",
     title: "Habitat Pools",
     video: "/assets/videos/habitat-pools.mp4",
-    poster: { src: "/assets/posters/habitat-pools.webp", width: 960, height: 540 },
+    poster: { src: "/assets/posters/habitat-pools.webp", small: "/assets/posters/habitat-pools-sm.webp", width: 960, height: 540 },
   },
   {
     id: "october-glory",
     title: "October Glory",
     video: "/assets/videos/october-glory.mp4",
-    poster: { src: "/assets/posters/october-glory.webp", width: 960, height: 540 },
+    poster: { src: "/assets/posters/october-glory.webp", small: "/assets/posters/october-glory-sm.webp", width: 960, height: 540 },
   },
   {
     id: "the-reserve",
     title: "The Reserve",
     video: "/assets/videos/the-reserve.mp4",
-    poster: { src: "/assets/posters/the-reserve.webp", width: 960, height: 540 },
+    poster: { src: "/assets/posters/the-reserve.webp", small: "/assets/posters/the-reserve-sm.webp", width: 960, height: 540 },
   },
   {
     id: "threshold-design-lab",
     title: "Threshold Design Lab",
     video: "/assets/videos/thres-hold-design-lab.mp4",
-    poster: { src: "/assets/posters/thres-hold-design-lab.webp", width: 960, height: 540 },
+    poster: { src: "/assets/posters/thres-hold-design-lab.webp", small: "/assets/posters/thres-hold-design-lab-sm.webp", width: 960, height: 540 },
   },
   {
     id: "aw",
     title: "AW",
     video: "/assets/videos/aw-video.mp4",
-    poster: { src: "/assets/posters/aw-video.webp", width: 960, height: 494 },
+    poster: { src: "/assets/posters/aw-video.webp", small: "/assets/posters/aw-video-sm.webp", width: 960, height: 494 },
   },
 ];
 

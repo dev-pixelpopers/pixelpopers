@@ -163,7 +163,8 @@ export default function Hero() {
                   alt={img.alt}
                   width={img.w}
                   height={img.h}
-                  priority={i === 1}
+                  loading={i === 1 ? "eager" : undefined}
+                  fetchPriority={i === 1 ? "high" : undefined}
                   sizes="(min-width: 1920px) 600px, 33vw"
                   className="h-auto w-full rounded-[clamp(0.875rem,2.08vw,2.5rem)] object-cover"
                 />

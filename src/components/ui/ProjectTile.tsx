@@ -49,7 +49,7 @@ export default function ProjectTile({
         <video
           ref={registerVideo}
           src={project.video}
-          poster={poster?.src}
+          poster={poster?.small}
           muted
           playsInline
           preload={poster ? "none" : "metadata"}

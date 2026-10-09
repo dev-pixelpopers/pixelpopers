@@ -42,7 +42,8 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
         alt="Animation editor style frame with an easing graph, keyframe timeline and colourful layers"
         width={1120}
         height={980}
-        priority
+        loading="eager"
+        fetchPriority="high"
         sizes="(min-width: 1024px) 43vw, 92vw"
         className={`${layer} h-full w-full object-cover ${playing ? "invisible" : ""}`}
       />

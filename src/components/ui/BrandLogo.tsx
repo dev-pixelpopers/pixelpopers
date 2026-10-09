@@ -25,7 +25,8 @@ export default function BrandLogo({
         alt="Pixel Popers"
         width={190}
         height={84}
-        priority={priority}
+        loading={priority ? "eager" : undefined}
+        fetchPriority={priority ? "high" : undefined}
         className="col-start-1 row-start-1 h-auto w-full"
       />
       {onDark ? null : (

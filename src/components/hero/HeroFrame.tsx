@@ -1,6 +1,6 @@
-import Image from "next/image";
 import type { ReactNode, Ref } from "react";
 
+import GlowOrb from "@/components/ui/GlowOrb";
 import HeroHeadline from "@/components/hero/HeroHeadline";
 import HeroBlob from "@/components/ui/HeroBlob";
 
@@ -36,14 +36,8 @@ export default function HeroFrame({ ref, chars, children }: HeroFrameProps) {
         // headline instead.
         className="pointer-events-none absolute inset-x-0 top-[calc(-95.4vh-5.9vw)] -z-10 flex justify-center max-lg:top-[calc(40svh-70vw)]"
       >
-        <Image
-          src="/icons/hero-ellipse-glow.svg"
-          alt=""
-          width={2128}
-          height={2128}
-          loading="eager"
-          className="aspect-square h-auto w-[140%] max-w-none opacity-80 [mask-image:radial-gradient(circle,black_40%,transparent_70%)]"
-        />
+        {/* Fixed square box from the first paint (see GlowOrb). */}
+        <GlowOrb className="w-[140%] max-w-none shrink-0 opacity-80" />
       </div>
       <div
         data-hero-frame="blob"

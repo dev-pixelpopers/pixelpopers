@@ -105,7 +105,8 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 width={980}
                 height={640}
                 sizes="(min-width: 1024px) 28vw, 60vw"
-                priority
+                loading="eager"
+                fetchPriority="high"
                 className="h-full w-full object-cover"
               />
             </div>

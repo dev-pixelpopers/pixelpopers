@@ -16,21 +16,7 @@
   away in the fallback face instead of staying invisible while it loads.
   Both are preloaded from the root layout.
 */
-@font-face {
-  font-family: "Nevera";
-  src:
-    url("/assets/fonts/Nevera-Regular.woff2") format("woff2"),
-    url("/assets/fonts/Nevera-Regular.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Haas-Grot";
-  src:
-    url("/assets/fonts/neuehaasgrot.woff2") format("woff2"),
-    url("/assets/fonts/neuehaasgrot.otf") format("opentype");
-  font-display: swap;
-}
+/* Nevera and Haas-Grot load through next/font/local (app/layout.tsx). */
 
 :root {
   /* Palette */
@@ -73,7 +59,7 @@
     name (drop the webfont in and it takes over automatically) and falls
     back to the closest freely licensed match.
   */
-  --font-display: "Nevera", var(--font-michroma), "Eurostile", sans-serif;
+  --font-display: var(--font-nevera), var(--font-michroma), "Eurostile", sans-serif;
   --font-grotesk: "Haas Grot Disp Trial", var(--font-archivo), "Helvetica Neue",
     Arial, sans-serif;
   --font-pop: var(--font-modak), "Modak", system-ui, sans-serif;
@@ -154,7 +140,7 @@ body {
     Bold cut, so running text falls back to Archivo until a Roman/Light
     Haas Grot file is added (then point --font-copy at it).
   */
-  --font-haas: "Haas-Grot", var(--font-archivo), "Helvetica Neue", Arial,
+  --font-haas: var(--font-haas-grot), var(--font-archivo), "Helvetica Neue", Arial,
     sans-serif;
   --font-copy: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
 

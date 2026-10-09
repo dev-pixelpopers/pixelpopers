@@ -1,18 +1,35 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Michroma, Modak } from "next/font/google";
-import { preload } from "react-dom";
+import localFont from "next/font/local";
 
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
-// None of the next/font faces is preloaded: Archivo is body copy, Michroma
-// only stands in until Nevera loads (so it's rarely fetched at all) and Modak
-// is decorative. Preloaded, they competed with the first paint for bandwidth.
+// Only the faces in the home hero headline are preloaded: Nevera ("We make",
+// "Poppin'") and Archivo ("Your website" — the grotesk stack's first choice,
+// "Haas Grot Disp Trial", isn't shipped). Every face gets a metric-matched
+// fallback from next/font, so the swap doesn't move text. Michroma only
+// stands in until Nevera loads (so it's rarely fetched at all), Modak is
+// decorative and Haas-Grot appears on inner pages only.
+const nevera = localFont({
+  src: "../../public/assets/fonts/Nevera-Regular.woff2",
+  variable: "--font-nevera",
+  display: "swap",
+  adjustFontFallback: "Arial",
+});
+
+const haasGrot = localFont({
+  src: "../../public/assets/fonts/neuehaasgrot.woff2",
+  variable: "--font-haas-grot",
+  display: "swap",
+  adjustFontFallback: "Arial",
+  preload: false,
+});
+
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
-  preload: false,
 });
 
 // Stand-in for the licensed "Nevera" display face used in Figma.
@@ -75,15 +92,10 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  // The two self-hosted display faces: preloaded so headlines settle into
-  // them quickly (they still paint at once in the fallback — font-display: swap).
-  preload("/assets/fonts/Nevera-Regular.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-  preload("/assets/fonts/neuehaasgrot.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${michroma.variable} ${modak.variable} h-full antialiased`}
+      className={`${nevera.variable} ${haasGrot.variable} ${archivo.variable} ${michroma.variable} ${modak.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-cream text-ink">
         {children}
