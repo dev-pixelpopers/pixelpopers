@@ -224,14 +224,20 @@ function bubblePop(q: Q, section: HTMLElement) {
   });
   topRow.forEach((tile, i) => addBubble(pinnedTl, tile, i * 0.18));
 
-  // The rest: as each scrolls up into view. Their triggers are measured where
-  // the tiles sit at rest (the grid un-pinned), so they are shifted by the
-  // pinned stretch — the grid ends up that much lower once it lets go.
-  // While the grid is pinned the next row already peeks in at the bottom of
-  // the screen, so its bubbles also wait for the pin to let go.
-  const release = () => section.getBoundingClientRect().top + window.scrollY + vh(STUDIO_EXIT_VH);
+  // The rest: as each scrolls up into view, after the pin lets go — while the
+  // grid is pinned the next row already peeks in at the bottom of the screen,
+  // so its bubbles wait for the release. Where a tile is once the grid has let
+  // go: the grid's resting spot (top of the section, inside its padding) plus
+  // the pinned stretch, plus the tile's own offset in the grid. Layout offsets
+  // only — a screen rect would depend on where the page is scrolled when the
+  // triggers are measured (a reload restores the scroll position first), and
+  // read below the pin it would count the pinned stretch twice.
+  const sectionTop = () => section.getBoundingClientRect().top + window.scrollY;
+  const padTop = () => parseFloat(getComputedStyle(section).paddingTop) || 0;
+  const release = () => sectionTop() + vh(STUDIO_EXIT_VH);
   rest.forEach((tile) => {
-    const restingTop = () => tile.getBoundingClientRect().top + window.scrollY + vh(STUDIO_EXIT_VH);
+    // The tile's offset parent is the sticky grid wrapper.
+    const restingTop = () => release() + padTop() + tile.offsetTop;
     const tl = gsap.timeline({
       defaults: { ease: "none" },
       scrollTrigger: {

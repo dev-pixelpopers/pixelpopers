@@ -4,8 +4,9 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useRef } from "react";
+import { Fragment, useRef, type CSSProperties } from "react";
 
+import { AGENCY_EXIT_VH, AGENCY_UNWIND_VH } from "@/components/sections/agency-motion";
 import BrandLogo from "@/components/ui/BrandLogo";
 import ClientCard from "@/components/ui/ClientCard";
 import PopButton from "@/components/ui/PopButton";
@@ -23,6 +24,10 @@ const radiatingLines = [
 /** `folder-front.svg`, inlined so it can clip the frosted-glass panel. */
 const FOLDER_FRONT_PATH =
   "M0.0302903 31.334C-0.729698 14.2588 12.9085 0 30.0006 0H279.271C296.363 0 310.001 14.2588 309.241 31.3339L303.143 168.334C302.43 184.368 289.223 197 273.173 197H36.0983C20.0484 197 6.84158 184.368 6.12794 168.334L0.0302903 31.334Z";
+
+const COPY =
+  "We don’t just take on clients; we build long-term digital partnerships. Here are a few of the visionary companies we are proud to collaborate with every single day.";
+const WORDS = COPY.split(" ");
 
 /**
  * Where each card sits while stuffed in the folder, as fractions of the
@@ -43,11 +48,137 @@ const PILE_JITTER = [
 ];
 /** Card width while in the folder, as a fraction of the folder width. */
 const PILE_CARD_WIDTH = 0.36;
-
 /** Starting size of the folder — larger, as in the opening frame. */
 const FOLDER_START_SCALE = 1.25;
-/** Fraction of the folder left on screen at the end of the hold. */
+/** Fraction of the folder left on screen once it has docked. */
 const FOLDER_END_VISIBLE = 0.97;
+
+/** Confetti thrown when the folder pops on the way out. */
+const POP_PIECES = 16;
+const POP_TONES = ["bg-blush", "bg-lagoon", "bg-sunbeam", "bg-grape"];
+
+/** Stable pseudo-random 0–1 per index. */
+const rand = (i: number, salt = 1) => {
+  const x = Math.sin(i * 12.9898 * salt + salt * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+/** 0 → 1 → 0 over the first `w` of a 0–1 progress. */
+const bump = (a: number, w = 1) => (a > 0 && a < w ? Math.sin((Math.PI * a) / w) : 0);
+const vh = (n: number) => (n / 100) * window.innerHeight;
+
+/**
+ * A card's pose in stage coordinates: its centre, its displayed size as a
+ * multiple of its natural size, and its tilt. Converted to the card's own
+ * transform (inside the grid) by `setCard`.
+ */
+type Pose = { x: number; y: number; scale: number; rotation: number; sx?: number; sy?: number };
+type Rect = { x: number; y: number; w: number; h: number };
+
+/** The Halton low-discrepancy sequence: evenly spread, never gridded. */
+function halton(index: number, base: number) {
+  let f = 1;
+  let r = 0;
+  for (let i = index; i > 0; i = Math.floor(i / base)) {
+    f /= base;
+    r += f * (i % base);
+  }
+  return r;
+}
+
+/**
+ * Free-form landing spots for `n` cards inside `area`, clear of `keepClear`:
+ * each starts somewhere random (but the same every time) at its own size
+ * and tilt, then overlapping cards push each other apart until none touch.
+ * No grid to it, so the result reads as a hand-tossed scatter.
+ */
+function strewCards(n: number, cardW: number, cardH: number, area: Rect, keepClear: Rect[]): Pose[] {
+  // A little breathing room round everything the cards must stay off.
+  const m = 0.02 * area.h + 8;
+  const avoid = keepClear.map((r) => ({ x: r.x - m, y: r.y - m, w: r.w + 2 * m, h: r.h + 2 * m }));
+  const free = area.w * area.h - avoid.reduce((sum, r) => sum + r.w * r.h, 0);
+  const base = Math.min(1, Math.sqrt((0.36 * Math.max(free, area.w * area.h * 0.3)) / (n * cardW * cardH)));
+  const gap = 10; // a little air between cards
+  const cards = Array.from({ length: n }, (_, i) => {
+    const scale = base * (0.82 + 0.32 * rand(i, 12));
+    const rotation = (rand(i, 13) - 0.5) * 30;
+    // The tilted card's footprint, so corners never poke out or overlap.
+    const rad = (Math.abs(rotation) * Math.PI) / 180;
+    const w = cardW * scale;
+    const h = cardH * scale;
+    return {
+      // Low-discrepancy start (Halton 2/3, shuffled): spread evenly over the
+      // area without any rows or columns showing.
+      x: area.x + halton(i + 1 + Math.floor(rand(7, 3) * 20), 2) * area.w,
+      y: area.y + halton(i + 1 + Math.floor(rand(7, 3) * 20), 3) * area.h,
+      hw: (w * Math.cos(rad) + h * Math.sin(rad) + gap) / 2,
+      hh: (w * Math.sin(rad) + h * Math.cos(rad) + gap) / 2,
+      scale,
+      rotation,
+    };
+  });
+
+  /**
+   * Moves a card off a rectangle by the shortest way out that still leaves
+   * it inside the area (so nothing is shoved off the bottom of the screen).
+   */
+  const pushOut = (c: (typeof cards)[number], r: Rect) => {
+    if (c.x + c.hw <= r.x || c.x - c.hw >= r.x + r.w || c.y + c.hh <= r.y || c.y - c.hh >= r.y + r.h) return;
+    const exits = [
+      { x: r.x - c.hw, y: c.y },
+      { x: r.x + r.w + c.hw, y: c.y },
+      { x: c.x, y: r.y - c.hh },
+      { x: c.x, y: r.y + r.h + c.hh },
+    ].filter(
+      (e) =>
+        e.x - c.hw >= area.x - 0.5 &&
+        e.x + c.hw <= area.x + area.w + 0.5 &&
+        e.y - c.hh >= area.y - 0.5 &&
+        e.y + c.hh <= area.y + area.h + 0.5,
+    );
+    if (!exits.length) return;
+    const best = exits.reduce((a, e) =>
+      Math.hypot(e.x - c.x, e.y - c.y) < Math.hypot(a.x - c.x, a.y - c.y) ? e : a,
+    );
+    c.x = best.x;
+    c.y = best.y;
+  };
+
+  const keepInside = (c: (typeof cards)[number]) => {
+    c.x = gsap.utils.clamp(area.x + c.hw, area.x + area.w - c.hw, c.x);
+    c.y = gsap.utils.clamp(area.y + c.hh, area.y + area.h - c.hh, c.y);
+  };
+
+  for (let step = 0; step < 300; step++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const a = cards[i];
+        const b = cards[j];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const ox = a.hw + b.hw - Math.abs(dx);
+        const oy = a.hh + b.hh - Math.abs(dy);
+        if (ox <= 0 || oy <= 0) continue;
+        // Split the overlap between the two, along the shallower side.
+        if (ox < oy) {
+          const push = (Math.sign(dx || (i % 2 ? 1 : -1)) * ox) / 2;
+          a.x -= push;
+          b.x += push;
+        } else {
+          const push = (Math.sign(dy || (j % 2 ? 1 : -1)) * oy) / 2;
+          a.y -= push;
+          b.y += push;
+        }
+      }
+    }
+    for (const c of cards) {
+      keepInside(c);
+      avoid.forEach((r) => pushOut(c, r));
+    }
+  }
+
+  return cards.map(({ x, y, scale, rotation }) => ({ x, y, scale, rotation }));
+}
 
 type Layout = ReturnType<typeof measureLayout>;
 
@@ -56,70 +187,111 @@ type Layout = ReturnType<typeof measureLayout>;
  * be re-measured at any scroll position without first undoing the animation.
  */
 function measureLayout(stage: HTMLElement) {
-  const header = stage.querySelector<HTMLElement>("[data-agency='header']")!;
-  const grid = stage.querySelector<HTMLElement>("[data-agency='grid']")!;
-  const folder = stage.querySelector<HTMLElement>("[data-agency='folder']")!;
+  const $ = (key: string) => stage.querySelector<HTMLElement>(`[data-agency='${key}']`)!;
+  const header = $("header");
+  const grid = $("grid");
+  const folder = $("folder");
+  const copy = $("copy");
+  const cta = $("cta-out");
   const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-agency='card']"));
 
+  const stageW = stage.clientWidth;
   const stageH = stage.clientHeight;
-  const topPad = parseFloat(getComputedStyle(stage).paddingTop) || 0;
   const headerBottom = header.offsetTop + header.offsetHeight;
   const W = folder.offsetWidth;
   const H = folder.offsetHeight;
 
   // Opening frame: the folder sits under the headline with room above it for
   // the top of the pile, shrunk if the viewport is too short to fit it.
-  const startScale = gsap.utils.clamp(
-    0.6,
-    FOLDER_START_SCALE,
-    (0.96 * stageH - headerBottom) / (1.45 * H),
-  );
-  const folderStartY =
-    headerBottom + 0.45 * H * startScale + (H * startScale) / 2 - (folder.offsetTop + H / 2);
+  const startScale = gsap.utils.clamp(0.6, FOLDER_START_SCALE, (0.96 * stageH - headerBottom) / (1.45 * H));
+  const folderCx = folder.offsetLeft + W / 2;
+  const folderStartCy = headerBottom + 0.45 * H * startScale + (H * startScale) / 2;
+  const folderStartY = folderStartCy - (folder.offsetTop + H / 2);
+  const folderStartTop = folderStartCy - (H * startScale) / 2;
 
-  // Closing frame: folder parked at the bottom, grid lifted into the space
-  // the headline vacated and scaled down if it would otherwise collide.
+  // Closing frame: the folder docked at the bottom; the paragraph and button
+  // sit beside it in the same row, so they move with it (`shift`).
   const folderEndTop = stageH - FOLDER_END_VISIBLE * H;
   const folderEndY = folderEndTop - folder.offsetTop;
-  const gridEndY = topPad - grid.offsetTop;
-  const gridRoom = folderEndTop + 0.1 * H - topPad - 0.03 * stageH;
-  const gridEndScale = Math.min(1, gridRoom / grid.offsetHeight);
+  const shift = folderEndY;
+  const headerScale = gsap.utils.clamp(0.45, 0.75, (0.17 * stageH) / header.offsetHeight);
+  const strewnTop = header.offsetTop + header.offsetHeight * headerScale + 0.03 * stageH;
 
-  const folderCx = folder.offsetLeft + W / 2;
-  const folderStartTop = folder.offsetTop + H / 2 + folderStartY - (H * startScale) / 2;
+  const cardW = cards[0]?.offsetWidth ?? 160;
+  const cardH = cards[0]?.offsetHeight ?? 100;
 
-  const pile = cards.map((card, i) => {
+  const geo = cards.map((card, i) => {
     const jitter = PILE_JITTER[i % PILE_JITTER.length];
     const col = PILE_COLUMNS[i % PILE_COLUMNS.length];
     const row = Math.floor(i / PILE_COLUMNS.length);
-    const slotX = folderCx + (col + jitter.x) * W * startScale;
-    const slotY = folderStartTop + (PILE_TOP + row * PILE_ROW_STEP) * H * startScale;
-    const cardCx = grid.offsetLeft + card.offsetLeft + card.offsetWidth / 2;
-    const cardCy = grid.offsetTop + card.offsetTop + card.offsetHeight / 2;
     return {
-      x: slotX - cardCx,
-      y: slotY - cardCy,
-      scale: (PILE_CARD_WIDTH * W * startScale) / card.offsetWidth,
-      rotation: jitter.r,
+      // The card's own centre in the (untransformed) grid.
+      cx: grid.offsetLeft + card.offsetLeft + card.offsetWidth / 2,
+      cy: grid.offsetTop + card.offsetTop + card.offsetHeight / 2,
+      pile: {
+        x: folderCx + (col + jitter.x) * W * startScale,
+        y: folderStartTop + (PILE_TOP + row * PILE_ROW_STEP) * H * startScale,
+        scale: (PILE_CARD_WIDTH * W * startScale) / card.offsetWidth,
+        rotation: jitter.r,
+      } satisfies Pose,
     };
   });
 
+  // Where each card lands when it pops out — strewn freely over the screen
+  // between the headline and the dock row (below that the folder and copy
+  // leave only slivers, where a card would end up wedged or hidden).
+  const box = (el: HTMLElement, dy = 0): Rect => ({
+    x: el.offsetLeft,
+    y: el.offsetTop + dy,
+    w: el.offsetWidth,
+    h: el.offsetHeight,
+  });
+  const strewnBottom = Math.min(folderEndTop, copy.offsetTop + shift, cta.offsetTop + shift) - 0.01 * stageH;
+  const strewn = strewCards(
+    cards.length,
+    cardW,
+    cardH,
+    { x: 0.03 * stageW, y: strewnTop, w: 0.94 * stageW, h: Math.max(strewnBottom - strewnTop, cardH * 2) },
+    [{ x: folderCx - W / 2, y: folderEndTop - 0.04 * H, w: W, h: H }, box(copy, shift), box(cta, shift)],
+  );
+
   return {
-    headerExitY: -(headerBottom + 40),
+    stageH,
+    W,
+    H,
     startScale,
     folderStartY,
     folderEndY,
-    gridEndY,
-    gridEndScale,
-    pile,
+    shift,
+    headerScale,
+    headerExitY: -(headerBottom + 40),
+    cards: geo,
+    strewn,
+    /** Inside the docked folder, behind its frosted front. */
+    mouth: { x: folderCx, y: folderEndTop + 0.5 * H },
+    cta: {
+      x: cta.offsetLeft + cta.offsetWidth / 2,
+      y: cta.offsetTop + cta.offsetHeight / 2,
+      w: cta.offsetWidth,
+      h: cta.offsetHeight,
+    },
   };
 }
 
+type Proxies = Record<string, number>;
+
 /**
  * Opening frame: headline over a frosted folder stuffed with client cards.
- * The stage then holds (CSS sticky) while the headline rises off screen, the
- * folder sinks to the bottom and every card flies out to its slot in the
- * logo wall. Once the wall has settled the page carries on.
+ * The stage then holds (CSS sticky) while the headline tucks up small and
+ * the cards pop out of the folder one at a time, arcing high and landing,
+ * tilted, in a loose scatter over the screen — the folder kicking with every
+ * pop. The folder docks at the bottom, the paragraph rises in beside it and
+ * the case-studies button pops out of it.
+ *
+ * Exit (still pinned): it all plays back out — the button dives back into
+ * the folder, the words drop, the folder rises and every card arcs back
+ * into it — then the folder swells and pops, leaving the screen to the
+ * Contact section tucked up underneath (see `agency-motion.ts`).
  */
 export default function AgencySection() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -129,101 +301,265 @@ export default function AgencySection() {
     () => {
       const stage = stageRef.current;
       if (!stage) return;
-
+      const q = gsap.utils.selector(stage);
       const media = gsap.matchMedia();
 
       media.add("(prefers-reduced-motion: no-preference)", () => {
         // Measured lazily and dropped on every refresh, so a resize re-derives
         // the whole choreography from the new layout.
         let layout: Layout | null = null;
-        const get = () => (layout ??= measureLayout(stage));
+        const L = () => (layout ??= measureLayout(stage));
         const forget = () => {
           layout = null;
         };
-        ScrollTrigger.addEventListener("refreshInit", forget);
 
-        const folderLayers = "[data-agency='folder-layer']";
-        const cards = "[data-agency='card']";
-
-        // Both folder layers share the folder's box, so identical transforms
-        // keep them locked together while the cards slot in between them.
+        const cardEls = q("[data-agency='card']") as HTMLElement[];
+        const folderLayers = q("[data-agency='folder-layer']");
+        const header = q("[data-agency='header']");
+        // The entrance and the exit each move their own element: the exit
+        // drives an `*-out` wrapper around what the entrance drives. Both are
+        // scrubbed with a little lag, so on a quick scroll the entrance can
+        // still be catching up after the exit has started; sharing one
+        // element, its last frames would land on top of the exit's.
+        const cta = q("[data-agency='cta']");
+        const ctaOut = q("[data-agency='cta-out']");
+        const words = q("[data-agency='word']");
+        const wordsOut = q("[data-agency='word-out']");
         gsap.set(folderLayers, { transformOrigin: "50% 50%" });
-        gsap.set("[data-agency='grid']", { transformOrigin: "50% 0%" });
+        gsap.set(header, { transformOrigin: "50% 0%" });
 
-        const tl = gsap.timeline({
-          defaults: { ease: "power2.inOut" },
-          scrollTrigger: {
-            trigger: trackRef.current,
-            start: "top top",
-            // The pin is CSS `sticky`; ScrollTrigger only reports progress.
-            end: "bottom bottom",
-            scrub: 1,
-            invalidateOnRefresh: true,
-            // Invalidating clears every tween's recorded start, but only the
-            // ones at the playhead re-render. Before the section is reached
-            // the playhead sits at 0, so the folder/cards tweens (which start
-            // later) would show their un-animated layout — the cards already
-            // in the grid — until scrolled into. Sweeping to the end and back
-            // re-renders all of them at the current progress.
-            // `self.animation`, not `tl`: the first refresh can fire while the
-            // timeline is still being constructed.
-            onRefresh: (self) => {
-              const anim = self.animation;
-              if (!anim) return;
-              const progress = anim.progress();
-              anim.progress(1, true).progress(progress, true);
+        // Cards and folder are posed every frame from plain progress values,
+        // so their arcs are always worked out from the current layout.
+        //   per card: fly / land (popping out), back (returning on the exit)
+        //   section:  move / unmove (folder docking and back), spit, swell, pop
+        const P: Proxies[] = cardEls.map(() => ({}));
+        const G: Proxies = {};
+
+        const cardPose = (i: number, l: Layout): Pose => {
+          const c = l.cards[i];
+          const p = P[i];
+          // On the way out the same throw plays backwards.
+          const a = p.back > 0 ? 1 - p.back : p.fly;
+          if (a <= 0) return c.pile;
+          const to = l.strewn[i];
+          // A real throw: steady sideways, a parabola up and back down.
+          const h = Math.max(0.2 * l.stageH, (c.pile.y - to.y) * 0.5);
+          const squash = p.back > 0 ? 0 : bump(p.land) * (1 - p.land);
+          return {
+            x: lerp(c.pile.x, to.x, a),
+            y: lerp(c.pile.y, to.y, a) - 4 * h * a * (1 - a),
+            scale: lerp(c.pile.scale, to.scale, a),
+            rotation: lerp(c.pile.rotation, to.rotation, a) + (i % 2 ? 360 : -360) * a,
+            sx: 1 + 0.3 * squash,
+            sy: 1 - 0.3 * squash,
+          };
+        };
+
+        const applyAll = () => {
+          const l = L();
+          cardEls.forEach((el, i) => {
+            const pose = cardPose(i, l);
+            const c = l.cards[i];
+            gsap.set(el, {
+              x: pose.x - c.cx,
+              y: pose.y - c.cy,
+              rotation: pose.rotation,
+              scaleX: pose.scale * (pose.sx ?? 1),
+              scaleY: pose.scale * (pose.sy ?? 1),
+            });
+          });
+
+          // The folder kicks as each card leaves it, and again as each comes
+          // back in; on the exit it swells, trembles and bursts.
+          const kick = Math.max(
+            bump(G.spit),
+            ...P.map((p) => (p.back > 0 ? bump(1 - p.back, 0.2) : bump(p.fly, 0.2))),
+          );
+          const m = G.move - G.unmove;
+          const scale = lerp(l.startScale, 1, m) * (1 + 0.18 * G.swell + 0.35 * G.pop);
+          gsap.set(folderLayers, {
+            y: lerp(l.folderStartY, l.folderEndY, m),
+            scaleX: scale * (1 + 0.07 * kick),
+            scaleY: scale * (1 - 0.1 * kick),
+            rotation: Math.sin(G.swell * Math.PI * 14) * 4 * G.swell,
+          });
+        };
+
+        let dirty = true;
+        const mark = () => {
+          dirty = true;
+        };
+        const tick = () => {
+          if (!dirty) return;
+          dirty = false;
+          applyAll();
+        };
+
+        // Invalidating clears every tween's recorded start, but only the ones
+        // at the playhead re-render; sweeping to the end and back re-renders
+        // them all at the current progress. `self.animation`, not the
+        // timeline: the first refresh can fire while it's being built.
+        const sweep = (self: ScrollTrigger) => {
+          const anim = self.animation;
+          if (!anim) return;
+          const progress = anim.progress();
+          anim.progress(1, true).progress(progress, true);
+          mark();
+        };
+
+        const timeline = (scrollTrigger: ScrollTrigger.Vars) =>
+          gsap.timeline({
+            defaults: { ease: "power2.inOut" },
+            scrollTrigger: {
+              trigger: trackRef.current,
+              scrub: 1,
+              invalidateOnRefresh: true,
+              onRefresh: sweep,
+              ...scrollTrigger,
             },
+          });
+
+        const drive = (tl: gsap.core.Timeline, target: Proxies, key: string, at: number, duration: number, ease = "none") => {
+          target[key] = 0;
+          tl.fromTo(target, { [key]: 0 }, { [key]: 1, duration, ease, onUpdate: mark }, at);
+        };
+
+        // ── Entrance ───────────────────────────────────────────────────────
+        // The pin is CSS `sticky`; ScrollTrigger only reports progress. The
+        // last stretch of the track belongs to the exit.
+        const tl = timeline({ start: "top top", end: () => `bottom-=${vh(AGENCY_EXIT_VH)} bottom` });
+
+        tl.fromTo(header, { scale: 1 }, { scale: () => L().headerScale, duration: 0.8 }, 0);
+        P.forEach((p, i) => {
+          const t = 0.5 + i * 0.2;
+          drive(tl, p, "fly", t, 0.9);
+          drive(tl, p, "land", t + 0.9, 0.3);
+        });
+        drive(tl, G, "move", 4.3, 1, "power2.inOut");
+        tl.fromTo(
+          words,
+          { yPercent: 110, rotation: 6 },
+          { yPercent: 0, rotation: 0, duration: 0.5, stagger: 0.03, ease: "back.out(2)" },
+          5.0,
+        );
+        // The button springs out of the docked folder's mouth into its place.
+        drive(tl, G, "spit", 5.4, 0.35);
+        tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none" }, 5.45).fromTo(
+          cta,
+          {
+            x: () => L().mouth.x - L().cta.x,
+            y: () => L().mouth.y - L().cta.y,
+            scale: 0.3,
+            rotation: -20,
           },
+          { x: 0, y: () => L().shift, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.8)", immediateRender: false },
+          5.45,
+        );
+        tl.fromTo(q("[data-agency='lines']"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: "none" }, 5.4)
+          // Dwell on the finished frame before the exit takes over.
+          .to({}, { duration: 0.8 });
+
+        // ── Exit ───────────────────────────────────────────────────────────
+        // Scrubbed over the first AGENCY_UNWIND_VH of the exit; every tween
+        // starts from the entrance's end state with `immediateRender: false`,
+        // so before the exit starts it renders exactly what the entrance left.
+        const off = { immediateRender: false } as const;
+        const exit = timeline({
+          start: () => `bottom-=${vh(AGENCY_EXIT_VH)} bottom`,
+          end: () => `bottom-=${vh(AGENCY_EXIT_VH - AGENCY_UNWIND_VH)} bottom`,
         });
 
-        tl.fromTo(
-          "[data-agency='header']",
-          { y: 0, autoAlpha: 1 },
-          { y: () => get().headerExitY, autoAlpha: 0, duration: 1.2, ease: "power2.in" },
-          0,
-        )
+        // Last in, first out: the hairlines, the button back into the folder…
+        // (The button's wrapper sits where the button's layout box is, while
+        // the button itself has been moved down by `shift`, so the wrapper
+        // turns and shrinks about the button's actual centre.)
+        exit
+          .fromTo(q("[data-agency='lines-out']"), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.4, ease: "none", ...off }, 0)
           .fromTo(
-            folderLayers,
-            { y: () => get().folderStartY, scale: () => get().startScale },
-            { y: () => get().folderEndY, scale: 1, duration: 2.2 },
-            0.2,
-          )
-          .fromTo(
-            "[data-agency='grid']",
-            { y: 0, scale: 1 },
-            { y: () => get().gridEndY, scale: () => get().gridEndScale, duration: 2.2 },
-            0.2,
-          )
-          .fromTo(
-            cards,
-            {
-              x: (i) => get().pile[i].x,
-              y: (i) => get().pile[i].y,
-              scale: (i) => get().pile[i].scale,
-              rotation: (i) => get().pile[i].rotation,
-            },
+            ctaOut,
             {
               x: 0,
               y: 0,
               scale: 1,
               rotation: 0,
-              duration: 1.6,
-              ease: "power3.inOut",
-              // Top of the pile leaves first, the buried cards follow.
-              stagger: { each: 0.05 },
+              transformOrigin: () => `${L().cta.w / 2}px ${L().cta.h / 2 + L().shift}px`,
             },
-            0.4,
+            {
+              x: () => L().mouth.x - L().cta.x,
+              y: () => L().mouth.y - L().cta.y - L().shift,
+              scale: 0.3,
+              rotation: -20,
+              duration: 0.6,
+              ease: "back.in(1.6)",
+              ...off,
+            },
+            0,
           )
+          .fromTo(ctaOut, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", ...off }, 0.6)
+          // …the paragraph drops away, last word first…
           .fromTo(
-            "[data-agency='lines']",
-            { autoAlpha: 0 },
-            { autoAlpha: 1, duration: 0.8, ease: "none" },
-            2,
+            wordsOut,
+            { yPercent: 0, rotation: 0 },
+            { yPercent: 110, rotation: 6, duration: 0.4, stagger: { each: 0.015, from: "end" }, ease: "power2.in", ...off },
+            0.1,
+          );
+        drive(exit, G, "unmove", 0.6, 0.8, "power2.inOut");
+        // …every card arcs back into the folder, the last one out first…
+        P.forEach((p, i) => drive(exit, p, "back", 1.2 + (P.length - 1 - i) * 0.08, 0.7));
+        // …the headline leaves…
+        exit.fromTo(
+          header,
+          { y: 0, autoAlpha: 1 },
+          { y: () => L().headerExitY, autoAlpha: 0, duration: 0.6, ease: "power2.in", ...off },
+          2.9,
+        );
+        // …and the stuffed folder swells, trembles and pops.
+        drive(exit, G, "swell", 3.3, 0.6, "power1.in");
+        drive(exit, G, "pop", 3.9, 0.15, "power2.out");
+        exit
+          .fromTo(
+            [...folderLayers, ...q("[data-agency='grid']")],
+            { autoAlpha: 1 },
+            { autoAlpha: 0, duration: 0.12, ease: "none", ...off },
+            3.9,
           )
-          // Dwell on the finished wall before the page releases.
-          .to({}, { duration: 0.8 });
+          .set(q("[data-agency='pop-ring']"), { scale: 0.3, autoAlpha: 1 }, 3.9)
+          .to(q("[data-agency='pop-ring']"), { scale: 2.4, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 3.9);
+        const pieces = q("[data-agency='pop-piece']");
+        const reach = () => L().W * L().startScale * 1.1;
+        exit.set(pieces, { x: 0, y: 0, rotation: 0, scale: 1.3, autoAlpha: 1 }, 3.9).to(
+          pieces,
+          {
+            x: (i) => Math.cos((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
+            y: (i) => Math.sin((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
+            rotation: (i) => (rand(i, 3) - 0.5) * 720,
+            scale: 0.3,
+            autoAlpha: 0,
+            duration: 0.7,
+            ease: "power3.out",
+          },
+          3.9,
+        );
+        exit.to({}, { duration: 0.1 });
 
-        return () => ScrollTrigger.removeEventListener("refreshInit", forget);
+        // The pop sits where the folder will be when it bursts (its opening
+        // spot), and the copy row rides with the docked folder.
+        const place = () => {
+          const l = L();
+          gsap.set(q("[data-agency='pop']"), { y: l.folderStartY, scale: l.startScale });
+          gsap.set(q("[data-agency='copy']"), { y: l.shift });
+          applyAll();
+        };
+        place();
+
+        ScrollTrigger.addEventListener("refreshInit", forget);
+        ScrollTrigger.addEventListener("refresh", place);
+        gsap.ticker.add(tick);
+        return () => {
+          ScrollTrigger.removeEventListener("refreshInit", forget);
+          ScrollTrigger.removeEventListener("refresh", place);
+          gsap.ticker.remove(tick);
+        };
       });
     },
     { scope: trackRef },
@@ -231,27 +567,29 @@ export default function AgencySection() {
 
   return (
     <section id="agency" aria-labelledby="agency-heading">
-      <div ref={trackRef} className="relative h-[320vh] motion-reduce:h-auto">
+      <div
+        ref={trackRef}
+        className="relative h-[calc(420vh+var(--exit))] motion-reduce:h-auto"
+        style={{ "--exit": `${AGENCY_EXIT_VH}vh` } as CSSProperties}
+      >
         <div
           ref={stageRef}
-          className="sticky top-0 isolate flex h-svh flex-col items-center overflow-hidden pt-[clamp(1.5rem,4vh,3rem)] text-center motion-reduce:relative motion-reduce:h-auto motion-reduce:gap-[clamp(2rem,4vw,4.5rem)] [&>*]:shrink-0"
+          className="sticky top-0 isolate flex h-svh flex-col items-center overflow-hidden pt-[clamp(1.5rem,4vh,3rem)] text-center motion-reduce:relative motion-reduce:h-auto motion-reduce:gap-[clamp(2rem,4vw,4.5rem)] motion-reduce:pb-[clamp(3rem,7vw,8rem)] [&>*]:shrink-0"
         >
           {/* Decorative hairlines fanning out from the folder. */}
-          <div
-            data-agency="lines"
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10 flex items-end justify-center"
-          >
-            {radiatingLines.map((line) => (
-              <Image
-                key={line.src}
-                src={line.src}
-                alt=""
-                width={line.width}
-                height={line.height}
-                className="h-auto w-[45%] max-w-none opacity-70"
-              />
-            ))}
+          <div data-agency="lines-out" aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+            <div data-agency="lines" className="absolute inset-0 flex items-end justify-center">
+              {radiatingLines.map((line) => (
+                <Image
+                  key={line.src}
+                  src={line.src}
+                  alt=""
+                  width={line.width}
+                  height={line.height}
+                  className="h-auto w-[45%] max-w-none opacity-70"
+                />
+              ))}
+            </div>
           </div>
 
           <header data-agency="header" className="shell flex flex-col items-center gap-2">
@@ -264,6 +602,8 @@ export default function AgencySection() {
             </h2>
           </header>
 
+          {/* The cards' home in the layout; with motion they are posed from
+              here into the folder and out into the scatter. */}
           <div className="shell mt-[clamp(1.5rem,4vh,3rem)]">
             <ul
               data-agency="grid"
@@ -277,54 +617,92 @@ export default function AgencySection() {
           </div>
 
           {/*
-            The folder box itself is never transformed, so it creates no
-            stacking context: its back layer (z-0) and frosted front (z-20)
-            interleave with the card grid (z-10) at stage level.
+            The dock: paragraph | folder | button on wide screens, stacked
+            above the folder on narrow ones. None of these wrappers is
+            positioned, so the folder's back (z-0) and frosted front (z-20)
+            still interleave with the cards and copy (z-10) at stage level.
           */}
-          <div
-            data-agency="folder"
-            className="relative mt-auto aspect-[334/289] w-[min(70%,21rem)] motion-reduce:mt-0"
-          >
-            <div data-agency="folder-layer" aria-hidden className="absolute inset-0 z-0">
-              <Image
-                src="/icons/folder-body-shadow.svg"
-                alt=""
-                width={334}
-                height={289}
-                className="h-full w-full"
-              />
+          <div className="shell mt-auto flex flex-col items-center gap-[clamp(1rem,2.5vw,2rem)] motion-reduce:mt-0 md:flex-row md:justify-center md:gap-[clamp(1.5rem,3vw,3.5rem)]">
+            <div
+              data-agency="copy"
+              className="relative z-10 order-1 max-w-[40rem] md:max-w-[26rem] md:flex-1 md:text-right"
+            >
+              <p className="text-body leading-[1.64] text-ink capitalize">
+                {WORDS.map((word, i) => (
+                  <Fragment key={i}>
+                    <span className="inline-block overflow-hidden align-bottom">
+                      <span data-agency="word-out" className="inline-block">
+                        <span data-agency="word" className="inline-block">
+                          {word}
+                        </span>
+                      </span>
+                    </span>{" "}
+                  </Fragment>
+                ))}
+              </p>
             </div>
 
-            <div data-agency="folder-layer" className="absolute inset-0 z-20">
-              <svg aria-hidden focusable="false" width="0" height="0" className="absolute">
-                <defs>
-                  <clipPath id="agency-folder-front" clipPathUnits="objectBoundingBox">
-                    <path d={FOLDER_FRONT_PATH} transform={`scale(${1 / 309.271} ${1 / 197})`} />
-                  </clipPath>
-                </defs>
-              </svg>
-              {/* Frosted glass: blurs whatever part of the pile sits behind it. */}
-              <div
-                aria-hidden
-                className="absolute inset-x-[3.5%] bottom-0 h-[68.2%] bg-gradient-to-b from-white/20 to-[#e8e8e8]/20 backdrop-blur-md"
-                style={{ clipPath: "url(#agency-folder-front)" }}
-              />
-              <span className="absolute inset-x-0 bottom-[8%] flex justify-center">
-                <BrandLogo className="w-[clamp(5rem,8vw,8.5rem)]" />
-              </span>
+            <div
+              data-agency="folder"
+              className="relative order-3 aspect-[334/289] w-[min(70vw,21rem)] shrink-0 md:order-2"
+            >
+              <div data-agency="folder-layer" aria-hidden className="absolute inset-0 z-0">
+                <Image
+                  src="/icons/folder-body-shadow.svg"
+                  alt=""
+                  width={334}
+                  height={289}
+                  className="h-full w-full"
+                />
+              </div>
+
+              <div data-agency="folder-layer" className="absolute inset-0 z-20">
+                <svg aria-hidden focusable="false" width="0" height="0" className="absolute">
+                  <defs>
+                    <clipPath id="agency-folder-front" clipPathUnits="objectBoundingBox">
+                      <path d={FOLDER_FRONT_PATH} transform={`scale(${1 / 309.271} ${1 / 197})`} />
+                    </clipPath>
+                  </defs>
+                </svg>
+                {/* Frosted glass: blurs whatever part of the pile sits behind it. */}
+                <div
+                  aria-hidden
+                  className="absolute inset-x-[3.5%] bottom-0 h-[68.2%] bg-gradient-to-b from-white/20 to-[#e8e8e8]/20 backdrop-blur-md"
+                  style={{ clipPath: "url(#agency-folder-front)" }}
+                />
+                <span className="absolute inset-x-0 bottom-[8%] flex justify-center">
+                  <BrandLogo className="w-[clamp(5rem,8vw,8.5rem)]" />
+                </span>
+              </div>
+
+              {/* The folder's pop on the way out: a ring and confetti, hidden
+                  until then (driven by the exit timeline). */}
+              <div data-agency="pop" aria-hidden className="pointer-events-none absolute inset-0 z-30">
+                <span
+                  data-agency="pop-ring"
+                  className="absolute top-1/2 left-1/2 -mt-[45%] -ml-[45%] aspect-square w-[90%] rounded-full border-[6px] border-solid border-blush opacity-0"
+                />
+                {Array.from({ length: POP_PIECES }, (_, i) => (
+                  <span
+                    key={i}
+                    data-agency="pop-piece"
+                    className={`absolute top-1/2 left-1/2 opacity-0 ${POP_TONES[i % POP_TONES.length]} ${
+                      i % 2 ? "-mt-1 -ml-2.5 h-2 w-5 rounded-sm" : "-mt-2 -ml-2 size-4 rounded-full"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="order-2 flex justify-center md:order-3 md:max-w-[26rem] md:flex-1 md:justify-start">
+              <div data-agency="cta-out" className="relative z-10">
+                <div data-agency="cta">
+                  <PopButton href="#contact" label="View Our Case Studies" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="shell flex flex-col items-center gap-[clamp(2rem,4vw,4.5rem)] py-[clamp(3rem,7vw,8rem)] text-center">
-        <p className="max-w-[40rem] text-body leading-[1.64] text-ink capitalize">
-          We don’t just take on clients; we build long-term digital partnerships.
-          Here are a few of the visionary companies we are proud to collaborate
-          with every single day.
-        </p>
-
-        <PopButton href="#contact" label="View Our Case Studies" />
       </div>
     </section>
   );
