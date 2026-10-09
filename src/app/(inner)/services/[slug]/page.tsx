@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Reveal from "@/components/inner/Reveal";
 import ServiceLongForm from "@/components/inner/service/ServiceLongForm";
 import ServiceClosing from "@/components/inner/service/ServiceClosing";
+import ServicePageMotion from "@/components/inner/service/ServicePageMotion";
 import { serviceConcepts } from "@/components/inner/services/registry";
 import { getServiceDetail, serviceDetails } from "@/lib/service-content";
 
@@ -40,11 +40,11 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
   };
 
   return (
-    <Reveal className={pageClassName}>
+    <ServicePageMotion className={pageClassName}>
       <Sections service={service} />
       <ServiceLongForm service={service} hideProcess={processInConcept} />
       <ServiceClosing service={service} renderPackage={(pkg, i) => <PackageCard pkg={pkg} index={i} />} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </Reveal>
+    </ServicePageMotion>
   );
 }

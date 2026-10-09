@@ -27,7 +27,6 @@ const FOLDER_FRONT_PATH =
 
 const COPY =
   "We don’t just take on clients; we build long-term digital partnerships. Here are a few of the visionary companies we are proud to collaborate with every single day.";
-const WORDS = COPY.split(" ");
 
 /**
  * Where each card sits while stuffed in the folder, as fractions of the
@@ -187,12 +186,14 @@ type Layout = ReturnType<typeof measureLayout>;
  * be re-measured at any scroll position without first undoing the animation.
  */
 function measureLayout(stage: HTMLElement) {
-  const $ = (key: string) => stage.querySelector<HTMLElement>(`[data-agency='${key}']`)!;
+  const find = (key: string) => stage.querySelector<HTMLElement>(`[data-agency='${key}']`);
+  const $ = (key: string) => find(key)!;
   const header = $("header");
   const grid = $("grid");
   const folder = $("folder");
-  const copy = $("copy");
-  const cta = $("cta-out");
+  // The paragraph and button beside the docked folder are optional.
+  const copy = find("copy");
+  const cta = find("cta-out");
   const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-agency='card']"));
 
   const stageW = stage.clientWidth;
@@ -246,13 +247,14 @@ function measureLayout(stage: HTMLElement) {
     w: el.offsetWidth,
     h: el.offsetHeight,
   });
-  const strewnBottom = Math.min(folderEndTop, copy.offsetTop + shift, cta.offsetTop + shift) - 0.01 * stageH;
+  const beside = [copy, cta].filter((el): el is HTMLElement => Boolean(el));
+  const strewnBottom = Math.min(folderEndTop, ...beside.map((el) => el.offsetTop + shift)) - 0.01 * stageH;
   const strewn = strewCards(
     cards.length,
     cardW,
     cardH,
     { x: 0.03 * stageW, y: strewnTop, w: 0.94 * stageW, h: Math.max(strewnBottom - strewnTop, cardH * 2) },
-    [{ x: folderCx - W / 2, y: folderEndTop - 0.04 * H, w: W, h: H }, box(copy, shift), box(cta, shift)],
+    [{ x: folderCx - W / 2, y: folderEndTop - 0.04 * H, w: W, h: H }, ...beside.map((el) => box(el, shift))],
   );
 
   return {
@@ -269,12 +271,14 @@ function measureLayout(stage: HTMLElement) {
     strewn,
     /** Inside the docked folder, behind its frosted front. */
     mouth: { x: folderCx, y: folderEndTop + 0.5 * H },
-    cta: {
-      x: cta.offsetLeft + cta.offsetWidth / 2,
-      y: cta.offsetTop + cta.offsetHeight / 2,
-      w: cta.offsetWidth,
-      h: cta.offsetHeight,
-    },
+    cta: cta
+      ? {
+          x: cta.offsetLeft + cta.offsetWidth / 2,
+          y: cta.offsetTop + cta.offsetHeight / 2,
+          w: cta.offsetWidth,
+          h: cta.offsetHeight,
+        }
+      : { x: 0, y: 0, w: 0, h: 0 },
   };
 }
 
@@ -293,7 +297,33 @@ type Proxies = Record<string, number>;
  * into it — then the folder swells and pops, leaving the screen to the
  * Contact section tucked up underneath (see `agency-motion.ts`).
  */
-export default function AgencySection() {
+type AgencySectionProps = {
+  /** Section id; the heading and the folder's clip path derive theirs from it. */
+  id?: string;
+  eyebrow?: string;
+  heading?: string;
+  /** Paragraph beside the docked folder — `null` for none. */
+  copy?: string | null;
+  /** Button that pops out of the docked folder — `null` for none. */
+  cta?: { href: string; label: string } | null;
+  /**
+   * Stay pinned at the end, play everything back into the folder and pop it,
+   * handing the screen to the next section (the home page's Contact, tucked
+   * up underneath — see `agency-motion.ts`). Without it the section simply
+   * scrolls on once the scatter has settled.
+   */
+  exit?: boolean;
+};
+
+export default function AgencySection({
+  id = "agency",
+  eyebrow = "The Agency",
+  heading = "Behind the Brands You Love",
+  copy = COPY,
+  cta = { href: "/work", label: "View Our Case Studies" },
+  exit = true,
+}: AgencySectionProps) {
+  const words = copy ? copy.split(" ") : [];
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
 
@@ -321,9 +351,9 @@ export default function AgencySection() {
         // scrubbed with a little lag, so on a quick scroll the entrance can
         // still be catching up after the exit has started; sharing one
         // element, its last frames would land on top of the exit's.
-        const cta = q("[data-agency='cta']");
+        const ctaEl = q("[data-agency='cta']");
         const ctaOut = q("[data-agency='cta-out']");
-        const words = q("[data-agency='word']");
+        const wordEls = q("[data-agency='word']");
         const wordsOut = q("[data-agency='word-out']");
         gsap.set(folderLayers, { transformOrigin: "50% 50%" });
         gsap.set(header, { transformOrigin: "50% 0%" });
@@ -332,8 +362,10 @@ export default function AgencySection() {
         // so their arcs are always worked out from the current layout.
         //   per card: fly / land (popping out), back (returning on the exit)
         //   section:  move / unmove (folder docking and back), spit, swell, pop
-        const P: Proxies[] = cardEls.map(() => ({}));
-        const G: Proxies = {};
+        const P: Proxies[] = cardEls.map(() => ({ fly: 0, land: 0, back: 0 }));
+        // Every section-wide value starts at 0, including the exit's, which are
+        // only driven when the section has an exit.
+        const G: Proxies = { move: 0, unmove: 0, spit: 0, swell: 0, pop: 0 };
 
         const cardPose = (i: number, l: Layout): Pose => {
           const c = l.cards[i];
@@ -427,7 +459,10 @@ export default function AgencySection() {
         // ── Entrance ───────────────────────────────────────────────────────
         // The pin is CSS `sticky`; ScrollTrigger only reports progress. The
         // last stretch of the track belongs to the exit.
-        const tl = timeline({ start: "top top", end: () => `bottom-=${vh(AGENCY_EXIT_VH)} bottom` });
+        const tl = timeline({
+          start: "top top",
+          end: () => (exit ? `bottom-=${vh(AGENCY_EXIT_VH)} bottom` : "bottom bottom"),
+        });
 
         tl.fromTo(header, { scale: 1 }, { scale: () => L().headerScale, duration: 0.8 }, 0);
         P.forEach((p, i) => {
@@ -436,118 +471,124 @@ export default function AgencySection() {
           drive(tl, p, "land", t + 0.9, 0.3);
         });
         drive(tl, G, "move", 4.3, 1, "power2.inOut");
-        tl.fromTo(
-          words,
-          { yPercent: 110, rotation: 6 },
-          { yPercent: 0, rotation: 0, duration: 0.5, stagger: 0.03, ease: "back.out(2)" },
-          5.0,
-        );
+        if (wordEls.length) {
+          tl.fromTo(
+            wordEls,
+            { yPercent: 110, rotation: 6 },
+            { yPercent: 0, rotation: 0, duration: 0.5, stagger: 0.03, ease: "back.out(2)" },
+            5.0,
+          );
+        }
         // The button springs out of the docked folder's mouth into its place.
         drive(tl, G, "spit", 5.4, 0.35);
-        tl.fromTo(cta, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none" }, 5.45).fromTo(
-          cta,
-          {
-            x: () => L().mouth.x - L().cta.x,
-            y: () => L().mouth.y - L().cta.y,
-            scale: 0.3,
-            rotation: -20,
-          },
-          { x: 0, y: () => L().shift, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.8)", immediateRender: false },
-          5.45,
-        );
+        if (ctaEl.length) {
+          tl.fromTo(ctaEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none" }, 5.45).fromTo(
+            ctaEl,
+            {
+              x: () => L().mouth.x - L().cta.x,
+              y: () => L().mouth.y - L().cta.y,
+              scale: 0.3,
+              rotation: -20,
+            },
+            { x: 0, y: () => L().shift, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.8)", immediateRender: false },
+            5.45,
+          );
+        }
         tl.fromTo(q("[data-agency='lines']"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: "none" }, 5.4)
           // Dwell on the finished frame before the exit takes over.
           .to({}, { duration: 0.8 });
 
-        // ── Exit ───────────────────────────────────────────────────────────
-        // Scrubbed over the first AGENCY_UNWIND_VH of the exit; every tween
-        // starts from the entrance's end state with `immediateRender: false`,
-        // so before the exit starts it renders exactly what the entrance left.
-        const off = { immediateRender: false } as const;
-        const exit = timeline({
-          start: () => `bottom-=${vh(AGENCY_EXIT_VH)} bottom`,
-          end: () => `bottom-=${vh(AGENCY_EXIT_VH - AGENCY_UNWIND_VH)} bottom`,
-        });
+        if (exit) {
+          // ── Exit ───────────────────────────────────────────────────────────
+          // Scrubbed over the first AGENCY_UNWIND_VH of the exit; every tween
+          // starts from the entrance's end state with `immediateRender: false`,
+          // so before the exit starts it renders exactly what the entrance left.
+          const off = { immediateRender: false } as const;
+          const exit = timeline({
+            start: () => `bottom-=${vh(AGENCY_EXIT_VH)} bottom`,
+            end: () => `bottom-=${vh(AGENCY_EXIT_VH - AGENCY_UNWIND_VH)} bottom`,
+          });
 
-        // Last in, first out: the hairlines, the button back into the folder…
-        // (The button's wrapper sits where the button's layout box is, while
-        // the button itself has been moved down by `shift`, so the wrapper
-        // turns and shrinks about the button's actual centre.)
-        exit
-          .fromTo(q("[data-agency='lines-out']"), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.4, ease: "none", ...off }, 0)
-          .fromTo(
-            ctaOut,
-            {
-              x: 0,
-              y: 0,
-              scale: 1,
-              rotation: 0,
-              transformOrigin: () => `${L().cta.w / 2}px ${L().cta.h / 2 + L().shift}px`,
-            },
-            {
-              x: () => L().mouth.x - L().cta.x,
-              y: () => L().mouth.y - L().cta.y - L().shift,
-              scale: 0.3,
-              rotation: -20,
-              duration: 0.6,
-              ease: "back.in(1.6)",
-              ...off,
-            },
-            0,
-          )
-          .fromTo(ctaOut, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", ...off }, 0.6)
-          // …the paragraph drops away, last word first…
-          .fromTo(
-            wordsOut,
-            { yPercent: 0, rotation: 0 },
-            { yPercent: 110, rotation: 6, duration: 0.4, stagger: { each: 0.015, from: "end" }, ease: "power2.in", ...off },
-            0.1,
+          // Last in, first out: the hairlines, the button back into the folder…
+          // (The button's wrapper sits where the button's layout box is, while
+          // the button itself has been moved down by `shift`, so the wrapper
+          // turns and shrinks about the button's actual centre.)
+          exit
+            .fromTo(q("[data-agency='lines-out']"), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.4, ease: "none", ...off }, 0)
+            .fromTo(
+              ctaOut,
+              {
+                x: 0,
+                y: 0,
+                scale: 1,
+                rotation: 0,
+                transformOrigin: () => `${L().cta.w / 2}px ${L().cta.h / 2 + L().shift}px`,
+              },
+              {
+                x: () => L().mouth.x - L().cta.x,
+                y: () => L().mouth.y - L().cta.y - L().shift,
+                scale: 0.3,
+                rotation: -20,
+                duration: 0.6,
+                ease: "back.in(1.6)",
+                ...off,
+              },
+              0,
+            )
+            .fromTo(ctaOut, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", ...off }, 0.6)
+            // …the paragraph drops away, last word first…
+            .fromTo(
+              wordsOut,
+              { yPercent: 0, rotation: 0 },
+              { yPercent: 110, rotation: 6, duration: 0.4, stagger: { each: 0.015, from: "end" }, ease: "power2.in", ...off },
+              0.1,
+            );
+          drive(exit, G, "unmove", 0.6, 0.8, "power2.inOut");
+          // …every card arcs back into the folder, the last one out first…
+          P.forEach((p, i) => drive(exit, p, "back", 1.2 + (P.length - 1 - i) * 0.08, 0.7));
+          // …the headline leaves…
+          exit.fromTo(
+            header,
+            { y: 0, autoAlpha: 1 },
+            { y: () => L().headerExitY, autoAlpha: 0, duration: 0.6, ease: "power2.in", ...off },
+            2.9,
           );
-        drive(exit, G, "unmove", 0.6, 0.8, "power2.inOut");
-        // …every card arcs back into the folder, the last one out first…
-        P.forEach((p, i) => drive(exit, p, "back", 1.2 + (P.length - 1 - i) * 0.08, 0.7));
-        // …the headline leaves…
-        exit.fromTo(
-          header,
-          { y: 0, autoAlpha: 1 },
-          { y: () => L().headerExitY, autoAlpha: 0, duration: 0.6, ease: "power2.in", ...off },
-          2.9,
-        );
-        // …and the stuffed folder swells, trembles and pops.
-        drive(exit, G, "swell", 3.3, 0.6, "power1.in");
-        drive(exit, G, "pop", 3.9, 0.15, "power2.out");
-        exit
-          .fromTo(
-            [...folderLayers, ...q("[data-agency='grid']")],
-            { autoAlpha: 1 },
-            { autoAlpha: 0, duration: 0.12, ease: "none", ...off },
+          // …and the stuffed folder swells, trembles and pops.
+          drive(exit, G, "swell", 3.3, 0.6, "power1.in");
+          drive(exit, G, "pop", 3.9, 0.15, "power2.out");
+          exit
+            .fromTo(
+              [...folderLayers, ...q("[data-agency='grid']")],
+              { autoAlpha: 1 },
+              { autoAlpha: 0, duration: 0.12, ease: "none", ...off },
+              3.9,
+            )
+            .set(q("[data-agency='pop-ring']"), { scale: 0.3, autoAlpha: 1 }, 3.9)
+            .to(q("[data-agency='pop-ring']"), { scale: 2.4, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 3.9);
+          const pieces = q("[data-agency='pop-piece']");
+          const reach = () => L().W * L().startScale * 1.1;
+          exit.set(pieces, { x: 0, y: 0, rotation: 0, scale: 1.3, autoAlpha: 1 }, 3.9).to(
+            pieces,
+            {
+              x: (i) => Math.cos((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
+              y: (i) => Math.sin((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
+              rotation: (i) => (rand(i, 3) - 0.5) * 720,
+              scale: 0.3,
+              autoAlpha: 0,
+              duration: 0.7,
+              ease: "power3.out",
+            },
             3.9,
-          )
-          .set(q("[data-agency='pop-ring']"), { scale: 0.3, autoAlpha: 1 }, 3.9)
-          .to(q("[data-agency='pop-ring']"), { scale: 2.4, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 3.9);
-        const pieces = q("[data-agency='pop-piece']");
-        const reach = () => L().W * L().startScale * 1.1;
-        exit.set(pieces, { x: 0, y: 0, rotation: 0, scale: 1.3, autoAlpha: 1 }, 3.9).to(
-          pieces,
-          {
-            x: (i) => Math.cos((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
-            y: (i) => Math.sin((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
-            rotation: (i) => (rand(i, 3) - 0.5) * 720,
-            scale: 0.3,
-            autoAlpha: 0,
-            duration: 0.7,
-            ease: "power3.out",
-          },
-          3.9,
-        );
-        exit.to({}, { duration: 0.1 });
+          );
+          exit.to({}, { duration: 0.1 });
+        }
 
         // The pop sits where the folder will be when it bursts (its opening
         // spot), and the copy row rides with the docked folder.
         const place = () => {
           const l = L();
           gsap.set(q("[data-agency='pop']"), { y: l.folderStartY, scale: l.startScale });
-          gsap.set(q("[data-agency='copy']"), { y: l.shift });
+          if (copy) gsap.set(q("[data-agency='copy']"), { y: l.shift });
           applyAll();
         };
         place();
@@ -566,11 +607,11 @@ export default function AgencySection() {
   );
 
   return (
-    <section id="agency" aria-labelledby="agency-heading">
+    <section id={id} aria-labelledby={`${id}-heading`}>
       <div
         ref={trackRef}
         className="relative h-[calc(420vh+var(--exit))] motion-reduce:h-auto"
-        style={{ "--exit": `${AGENCY_EXIT_VH}vh` } as CSSProperties}
+        style={{ "--exit": exit ? `${AGENCY_EXIT_VH}vh` : "0vh" } as CSSProperties}
       >
         <div
           ref={stageRef}
@@ -593,12 +634,12 @@ export default function AgencySection() {
           </div>
 
           <header data-agency="header" className="shell flex flex-col items-center gap-2">
-            <p className="text-eyebrow leading-none font-bold text-blush uppercase">The Agency</p>
+            <p className="text-eyebrow leading-none font-bold text-blush uppercase">{eyebrow}</p>
             <h2
-              id="agency-heading"
+              id={`${id}-heading`}
               className="max-w-[20ch] font-display text-section leading-[0.99] break-words text-balance text-grape uppercase"
             >
-              Behind the Brands You Love
+              {heading}
             </h2>
           </header>
 
@@ -623,24 +664,26 @@ export default function AgencySection() {
             still interleave with the cards and copy (z-10) at stage level.
           */}
           <div className="shell mt-auto flex flex-col items-center gap-[clamp(1rem,2.5vw,2rem)] motion-reduce:mt-0 md:flex-row md:justify-center md:gap-[clamp(1.5rem,3vw,3.5rem)]">
-            <div
-              data-agency="copy"
-              className="relative z-10 order-1 max-w-[40rem] md:max-w-[26rem] md:flex-1 md:text-right"
-            >
-              <p className="text-body leading-[1.64] text-ink capitalize">
-                {WORDS.map((word, i) => (
-                  <Fragment key={i}>
-                    <span className="inline-block overflow-hidden align-bottom">
-                      <span data-agency="word-out" className="inline-block">
-                        <span data-agency="word" className="inline-block">
-                          {word}
+            {copy ? (
+              <div
+                data-agency="copy"
+                className="relative z-10 order-1 max-w-[40rem] md:max-w-[26rem] md:flex-1 md:text-right"
+              >
+                <p className="text-body leading-[1.64] text-ink capitalize">
+                  {words.map((word, i) => (
+                    <Fragment key={i}>
+                      <span className="inline-block overflow-hidden align-bottom">
+                        <span data-agency="word-out" className="inline-block">
+                          <span data-agency="word" className="inline-block">
+                            {word}
+                          </span>
                         </span>
-                      </span>
-                    </span>{" "}
-                  </Fragment>
-                ))}
-              </p>
-            </div>
+                      </span>{" "}
+                    </Fragment>
+                  ))}
+                </p>
+              </div>
+            ) : null}
 
             <div
               data-agency="folder"
@@ -659,7 +702,7 @@ export default function AgencySection() {
               <div data-agency="folder-layer" className="absolute inset-0 z-20">
                 <svg aria-hidden focusable="false" width="0" height="0" className="absolute">
                   <defs>
-                    <clipPath id="agency-folder-front" clipPathUnits="objectBoundingBox">
+                    <clipPath id={`${id}-folder-front`} clipPathUnits="objectBoundingBox">
                       <path d={FOLDER_FRONT_PATH} transform={`scale(${1 / 309.271} ${1 / 197})`} />
                     </clipPath>
                   </defs>
@@ -668,7 +711,7 @@ export default function AgencySection() {
                 <div
                   aria-hidden
                   className="absolute inset-x-[3.5%] bottom-0 h-[68.2%] bg-gradient-to-b from-white/20 to-[#e8e8e8]/20 backdrop-blur-md"
-                  style={{ clipPath: "url(#agency-folder-front)" }}
+                  style={{ clipPath: `url(#${id}-folder-front)` }}
                 />
                 <span className="absolute inset-x-0 bottom-[8%] flex justify-center">
                   <BrandLogo className="w-[clamp(5rem,8vw,8.5rem)]" />
@@ -677,30 +720,34 @@ export default function AgencySection() {
 
               {/* The folder's pop on the way out: a ring and confetti, hidden
                   until then (driven by the exit timeline). */}
-              <div data-agency="pop" aria-hidden className="pointer-events-none absolute inset-0 z-30">
-                <span
-                  data-agency="pop-ring"
-                  className="absolute top-1/2 left-1/2 -mt-[45%] -ml-[45%] aspect-square w-[90%] rounded-full border-[6px] border-solid border-blush opacity-0"
-                />
-                {Array.from({ length: POP_PIECES }, (_, i) => (
+              {exit ? (
+                <div data-agency="pop" aria-hidden className="pointer-events-none absolute inset-0 z-30">
                   <span
-                    key={i}
-                    data-agency="pop-piece"
-                    className={`absolute top-1/2 left-1/2 opacity-0 ${POP_TONES[i % POP_TONES.length]} ${
-                      i % 2 ? "-mt-1 -ml-2.5 h-2 w-5 rounded-sm" : "-mt-2 -ml-2 size-4 rounded-full"
-                    }`}
+                    data-agency="pop-ring"
+                    className="absolute top-1/2 left-1/2 -mt-[45%] -ml-[45%] aspect-square w-[90%] rounded-full border-[6px] border-solid border-blush opacity-0"
                   />
-                ))}
-              </div>
+                  {Array.from({ length: POP_PIECES }, (_, i) => (
+                    <span
+                      key={i}
+                      data-agency="pop-piece"
+                      className={`absolute top-1/2 left-1/2 opacity-0 ${POP_TONES[i % POP_TONES.length]} ${
+                        i % 2 ? "-mt-1 -ml-2.5 h-2 w-5 rounded-sm" : "-mt-2 -ml-2 size-4 rounded-full"
+                      }`}
+                    />
+                  ))}
+                </div>
+              ) : null}
             </div>
 
-            <div className="order-2 flex justify-center md:order-3 md:max-w-[26rem] md:flex-1 md:justify-start">
-              <div data-agency="cta-out" className="relative z-10">
-                <div data-agency="cta">
-                  <PopButton href="#contact" label="View Our Case Studies" />
+            {cta ? (
+              <div className="order-2 flex justify-center md:order-3 md:max-w-[26rem] md:flex-1 md:justify-start">
+                <div data-agency="cta-out" className="relative z-10">
+                  <div data-agency="cta">
+                    <PopButton href={cta.href} label={cta.label} />
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Burst } from "@/components/inner/motion/bits";
 import { serviceDetails } from "@/lib/service-content";
 import { serviceRows, type Tone } from "@/lib/pages/services";
 
@@ -23,7 +24,7 @@ export default function ServiceRows() {
 
   return (
     <section aria-label="Our services" className="shell">
-      <ol data-reveal-stagger className="flex flex-col">
+      <ol data-wm="rows" className="flex flex-col">
         {serviceRows.map((row, i) => {
           const detail = serviceDetails.find((s) => s.slug === row.slug)!;
           const on = active === i;
@@ -32,32 +33,37 @@ export default function ServiceRows() {
               key={row.slug}
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
+              data-wm="row"
               className="border-b border-ink/15 py-[clamp(0.625rem,1.04vw,1.25rem)]"
             >
               <article
                 className={`-mx-[clamp(0.75rem,2.4vw,2.875rem)] grid gap-x-[clamp(1rem,2vw,2.5rem)] gap-y-6 rounded-[clamp(1.5rem,2.08vw,2.5rem)] px-[clamp(0.75rem,2.4vw,2.875rem)] py-[clamp(1.25rem,1.56vw,1.875rem)] transition-colors duration-300 md:grid-cols-[minmax(0,1fr)_minmax(0,560fr)] lg:grid-cols-[minmax(0,174fr)_minmax(0,620fr)_minmax(0,794fr)] lg:gap-x-0 ${on ? "bg-grape shadow-[0_20px_50px_rgb(34_1_40/0.14)]" : "bg-transparent"}`}
               >
-                <span
-                  aria-hidden
-                  className={`font-pop text-[clamp(3.5rem,5.73vw,6.875rem)] leading-[1.09] max-lg:hidden ${toneText[row.tone]}`}
-                >
-                  {String(i + 1).padStart(2, "0")}
+                <span aria-hidden className="relative self-start max-lg:hidden">
+                  <span
+                    data-wm="row-num"
+                    className={`inline-block font-pop text-[clamp(3.5rem,5.73vw,6.875rem)] leading-[1.09] ${toneText[row.tone]}`}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <Burst pieces={10} className="top-1/2 left-[0.6em] size-0" />
                 </span>
 
                 <div className="flex flex-col items-start pt-[clamp(0rem,1.04vw,1.25rem)]">
-                  <h2 className={`flex items-baseline gap-4 font-display lg:w-max lg:whitespace-nowrap text-[clamp(1.75rem,3.125vw,3.75rem)] leading-[1.2] uppercase transition-colors ${on ? "text-white" : "text-grape"}`}>
+                  <h2 data-wm="row-title" className={`flex items-baseline gap-4 font-display lg:w-max lg:whitespace-nowrap text-[clamp(1.75rem,3.125vw,3.75rem)] leading-[1.2] uppercase transition-colors ${on ? "text-white" : "text-grape"}`}>
                     <span aria-hidden className={`font-pop leading-none lg:hidden ${toneText[row.tone]}`}>
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     {detail.name}
                   </h2>
-                  <p className={`mt-[clamp(0.75rem,1.46vw,1.75rem)] max-w-[38.75rem] font-copy text-body leading-[1.64] font-light transition-colors ${on ? "text-white" : "text-ink"}`}>
+                  <p data-wm="row-blurb" className={`mt-[clamp(0.75rem,1.46vw,1.75rem)] max-w-[38.75rem] font-copy text-body leading-[1.64] font-light transition-colors ${on ? "text-white" : "text-ink"}`}>
                     {row.blurb}
                   </p>
                   <ul aria-label={`${detail.name} includes`} className="mt-[clamp(1rem,1.67vw,2rem)] flex flex-wrap gap-2.5">
                     {row.tags.map((t) => (
                       <li
                         key={t}
+                        data-wm="row-tag"
                         className={`rounded-full border px-[1.125rem] py-2 font-copy text-[0.9375rem] leading-none font-medium transition-colors ${on ? "border-white bg-white text-grape" : "border-ink/40 text-ink"}`}
                       >
                         {t}
@@ -66,13 +72,14 @@ export default function ServiceRows() {
                   </ul>
                   <Link
                     href={`/services/${row.slug}`}
+                    data-wm="row-link"
                     className={`mt-[clamp(1.25rem,1.82vw,2.25rem)] font-display text-[clamp(0.9375rem,0.94vw,1.125rem)] uppercase transition-colors hover:underline ${on ? "text-sunbeam" : "text-blush"}`}
                   >
                     Explore<span className="sr-only"> {detail.name}</span> →
                   </Link>
                 </div>
 
-                <div className="grid md:self-center lg:mr-[1.8%] lg:w-[70.5%] lg:justify-self-end">
+                <div data-wm="row-img" className="grid md:self-center lg:mr-[1.8%] lg:w-[70.5%] lg:justify-self-end">
                   <Image
                     src={row.image.src}
                     alt={row.image.alt}

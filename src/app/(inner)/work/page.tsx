@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/inner/Reveal";
 import Hero from "@/components/inner/work/Hero";
 import ProjectBrowser from "@/components/inner/work/ProjectBrowser";
 import Marquee from "@/components/inner/work/Marquee";
+import WorkMotion from "@/components/inner/work/WorkMotion";
 import { Clients, Cta, Impact, Intro, Teasers, Testimonials } from "@/components/inner/work/Sections";
 import { SITE } from "@/components/inner/work/tokens";
 import { projects, workMeta } from "@/lib/pages/work";
@@ -34,7 +34,7 @@ const jsonLd = {
 /** /work — Figma frame 333:21 "04 — Work". */
 export default function WorkPage() {
   return (
-    <Reveal className="flex flex-col pb-[clamp(5rem,9vw,10.875rem)]">
+    <WorkMotion className="flex flex-col pb-[clamp(5rem,9vw,10.875rem)]">
       <Hero />
       <ProjectBrowser projects={projects} />
       <div className="mt-[clamp(5rem,8.96vw,10.75rem)]">
@@ -59,6 +59,6 @@ export default function WorkPage() {
         <Cta />
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </Reveal>
+    </WorkMotion>
   );
 }

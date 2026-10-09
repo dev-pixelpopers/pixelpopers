@@ -32,7 +32,7 @@ export default function ProjectCard({ project, priority = false }: { project: Pr
           />
           {/* White hover frame above the photo. Overlays are `relative` so they paint above the image once its hover scale makes it a stacking layer. */}
           <span aria-hidden className="pointer-events-none relative col-start-1 row-start-1 rounded-[inherit] border-0 border-white transition-[border-width] duration-300 group-hover:border-[clamp(5px,0.52vw,10px)] group-focus-within:border-[clamp(5px,0.52vw,10px)]" />
-          <span className="relative col-start-1 row-start-1 m-[3.5%] self-start justify-self-start rounded-full bg-white px-[1.125rem] py-2 font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-ink">
+          <span data-wb="year" className="relative col-start-1 row-start-1 m-[3.5%] self-start justify-self-start rounded-full bg-white px-[1.125rem] py-2 font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-ink">
             {p.year}
           </span>
           <span
@@ -50,11 +50,13 @@ export default function ProjectCard({ project, priority = false }: { project: Pr
             <h3 className="font-display text-[clamp(1.75rem,2.29vw,2.75rem)] leading-[1.27] text-grape uppercase">{p.name}</h3>
             <p className="mt-1 font-copy text-small font-medium text-ink/70">{p.tagline}</p>
           </div>
-          <span
-            aria-hidden
-            className={`grid size-[clamp(3rem,3.33vw,4rem)] shrink-0 place-items-center rounded-full font-copy text-[clamp(1.25rem,1.46vw,1.75rem)] font-bold transition-transform duration-300 group-hover:rotate-45 ${accentBg[p.accent]} ${onAccent[p.accent]}`}
-          >
-            ↗
+          <span aria-hidden data-wb="arrow" className="block shrink-0">
+            <span
+              aria-hidden
+              className={`grid size-[clamp(3rem,3.33vw,4rem)] shrink-0 place-items-center rounded-full font-copy text-[clamp(1.25rem,1.46vw,1.75rem)] font-bold transition-transform duration-300 group-hover:rotate-45 ${accentBg[p.accent]} ${onAccent[p.accent]}`}
+            >
+              ↗
+            </span>
           </span>
         </div>
         <p className="mt-[clamp(0.5rem,0.6vw,0.75rem)] max-w-[85%] font-copy text-small leading-[1.6] font-light text-ink/85 max-sm:max-w-none">

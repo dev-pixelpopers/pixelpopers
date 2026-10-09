@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/inner/Reveal";
+import AboutMotion from "@/components/inner/about/AboutMotion";
 import Hero from "@/components/inner/about/Hero";
 import Story from "@/components/inner/about/Story";
 import { Audience, LongFormSplit } from "@/components/inner/about/LongForm";
@@ -43,7 +43,7 @@ const jsonLd = {
 /** /about — Figma frame 330:21 "02 — About". */
 export default function AboutPage() {
   return (
-    <Reveal className="flex flex-col pb-[clamp(5rem,11vw,13.25rem)]">
+    <AboutMotion className="flex flex-col pb-[clamp(5rem,11vw,13.25rem)]">
       <Hero />
       <Story />
       <LongFormSplit
@@ -76,6 +76,6 @@ export default function AboutPage() {
         <Closing />
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </Reveal>
+    </AboutMotion>
   );
 }

@@ -31,13 +31,14 @@ export default function SectionTitle({
   titleClassName = "",
 }: SectionTitleProps) {
   return (
-    <div data-reveal className={`${align === "center" ? "text-center" : ""} ${className}`}>
+    <div data-reveal data-wm="heading" className={`${align === "center" ? "text-center" : ""} ${className}`}>
       {eyebrow ? (
-        <p className={`font-haas text-eyebrow leading-none text-blush uppercase ${eyebrowClassName}`}>
+        <p data-wm="eyebrow" className={`font-haas text-eyebrow leading-none text-blush uppercase ${eyebrowClassName}`}>
           {eyebrow}
         </p>
       ) : null}
       <Tag
+        data-wm="title"
         className={`mt-[0.35em] font-display leading-[1.1] uppercase ${size === "lg" ? "text-h2" : "text-h3"} ${tone === "dark" ? "text-cream" : "text-grape"} ${titleClassName}`}
       >
         {title}

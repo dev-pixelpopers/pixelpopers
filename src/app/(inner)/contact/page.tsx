@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/inner/Reveal";
+import ContactMotion from "@/components/inner/contact/ContactMotion";
 import Intro from "@/components/inner/contact/Intro";
 import { AfterSend, Channels, ChatFaq, NextSteps, WhereWhen } from "@/components/inner/contact/Sections";
 import QuoteCards from "@/components/inner/services-overview/QuoteCards";
@@ -45,7 +45,7 @@ const jsonLd = {
 /** /contact — Figma frame 337:21 "08 — Contact". */
 export default function ContactPage() {
   return (
-    <Reveal className="flex flex-col overflow-x-clip pb-[clamp(4rem,6vw,7rem)]">
+    <ContactMotion className="flex flex-col overflow-x-clip pb-[clamp(4rem,6vw,7rem)]">
       <Intro />
       <div className="mt-[clamp(4rem,8.33vw,10rem)]">
         <NextSteps />
@@ -71,6 +71,6 @@ export default function ContactPage() {
         />
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </Reveal>
+    </ContactMotion>
   );
 }

@@ -1,11 +1,16 @@
 "use client";
 
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { filters, PAGE_SIZE, type Category, type Project } from "@/lib/pages/work";
 import FeaturedCard from "./FeaturedCard";
 import ProjectCard from "./ProjectCard";
 import { wide } from "./tokens";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 type Filter = "all" | Category;
 
@@ -14,6 +19,13 @@ type Filter = "all" | Category;
  * Figma 333:21. Everything is server-rendered with "All work" selected, so
  * every project link is crawlable; the chips, sort toggle and "Load more"
  * only narrow or extend what is already in the data.
+ *
+ * Motion (none under reduced motion): the chips pop in on load; the featured
+ * case rises out of a tilted, cropped window to full size with its stickers
+ * popping, and eases back a touch as it leaves; every card tips up out of the
+ * floor in 3D, its year pill and arrow popping, while the doodle turns with
+ * the scroll. All scrubbed except the chips. It is rebuilt whenever the
+ * filter, sort or "Load more" changes which cards are on screen.
  */
 export default function ProjectBrowser({ projects }: { projects: Project[] }) {
   const [filter, setFilter] = useState<Filter>("all");
@@ -31,6 +43,92 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
   }, [projects, filter, newestFirst]);
 
   const shown = list.slice(0, visible);
+  const rootRef = useRef<HTMLElement>(null);
+  const cardsKey = `${featured?.slug ?? ""}|${shown.map((p) => p.slug).join(",")}`;
+
+  // The chips only pop in once, on load.
+  useGSAP(
+    () => {
+      const media = gsap.matchMedia();
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        const q = gsap.utils.selector(rootRef);
+        gsap.fromTo(
+          q("[data-wb='chip']"),
+          { scale: 0, y: 20, rotation: (i) => (i % 2 ? 12 : -12), autoAlpha: 0 },
+          { scale: 1, y: 0, rotation: 0, autoAlpha: 1, duration: 0.6, stagger: 0.06, ease: "back.out(2.2)", delay: 1.2 },
+        );
+        gsap.fromTo(q("[data-wb='sort']"), { autoAlpha: 0, x: 20 }, { autoAlpha: 1, x: 0, duration: 0.5, delay: 1.6 });
+      });
+    },
+    { scope: rootRef },
+  );
+
+  useGSAP(
+    () => {
+      const media = gsap.matchMedia();
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        const q = gsap.utils.selector(rootRef);
+        const scrub = (trigger: Element, start: string, end: string) =>
+          gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger, start, end, scrub: 0.8 } });
+
+        const card = q("[data-wb='featured']")[0];
+        if (card) {
+          const pops = q("[data-wb='featured-pop']");
+          gsap.set(pops, { scale: 0 });
+          scrub(card, "top 95%", "top 25%")
+            .fromTo(
+              card,
+              { y: 140, scale: 0.84, rotationX: 16, transformPerspective: 1600, clipPath: "inset(6% 9% 6% 9% round 48px)" },
+              { y: 0, scale: 1, rotationX: 0, clipPath: "inset(0% 0% 0% 0% round 48px)", duration: 1, ease: "power2.out" },
+              0,
+            )
+            .fromTo(q("[data-wb='featured-copy']"), { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5 }, 0.55)
+            .to(pops, { scale: 1, duration: 0.4, stagger: 0.12, ease: "back.out(2.6)" }, 0.65);
+          // Eases back a touch as it leaves the top of the screen — on its
+          // wrapper, so a lagging entrance can never land on top of it.
+          const out = q("[data-wb='featured-out']")[0];
+          if (out) {
+            scrub(out, "bottom 60%", "bottom top").to(out, { scale: 0.92, rotationX: -8, opacity: 0.4, transformPerspective: 1600 });
+          }
+        }
+
+        q("[data-wb='card']").forEach((li, i) => {
+          const year = li.querySelector("[data-wb='year']");
+          const arrow = li.querySelector("[data-wb='arrow']");
+          scrub(li, "top 98%", "top 55%")
+            .fromTo(
+              li,
+              {
+                y: 160,
+                z: -200,
+                rotationX: -50,
+                rotation: i % 2 ? 5 : -5,
+                autoAlpha: 0,
+                transformPerspective: 1400,
+                transformOrigin: "50% 100%",
+              },
+              { y: 0, z: 0, rotationX: 0, rotation: 0, autoAlpha: 1, duration: 1, ease: "power3.out" },
+              0,
+            )
+            .fromTo(year, { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(2.6)" }, 0.6)
+            .fromTo(arrow, { scale: 0, rotation: -180 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2)" }, 0.7);
+        });
+
+        const doodle = q("[data-wb='doodle']")[0];
+        if (doodle) {
+          scrub(doodle, "top bottom", "bottom top")
+            .fromTo(doodle, { scale: 0.4, rotation: -60, autoAlpha: 0 }, { scale: 1, rotation: -15, autoAlpha: 1, duration: 0.3 })
+            .to(doodle, { rotation: 40, duration: 0.7 });
+        }
+
+        const more = q("[data-wb='more']")[0];
+        if (more) {
+          scrub(more, "top 98%", "top 75%").fromTo(more, { scale: 0, rotation: -15 }, { scale: 1, rotation: 0, ease: "back.out(2)" });
+        }
+      });
+    },
+    { scope: rootRef, dependencies: [cardsKey], revertOnUpdate: true },
+  );
   const left = shown.filter((_, i) => i % 2 === 0);
   const right = shown.filter((_, i) => i % 2 === 1);
 
@@ -40,13 +138,13 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
   };
 
   const item = (p: Project, i: number) => (
-    <li key={p.slug} style={{ order: i }}>
+    <li key={p.slug} data-wb="card" style={{ order: i }}>
       <ProjectCard project={p} priority={i < 2} />
     </li>
   );
 
   return (
-    <section aria-labelledby="projects-title">
+    <section ref={rootRef} aria-labelledby="projects-title">
       <h2 id="projects-title" className="sr-only">
         Selected projects
       </h2>
@@ -58,6 +156,7 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
             return (
               <button
                 key={f.id}
+                data-wb="chip"
                 type="button"
                 aria-pressed={active}
                 onClick={() => choose(f.id)}
@@ -72,6 +171,7 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
         </div>
         <button
           type="button"
+          data-wb="sort"
           onClick={() => setNewestFirst((v) => !v)}
           className="font-copy text-[clamp(0.9375rem,0.94vw,1.125rem)] font-medium text-ink/70 transition-colors hover:text-blush"
         >
@@ -80,7 +180,11 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
       </div>
 
       <div className={`${wide} mt-[clamp(2rem,4.6vw,5.5rem)]`}>
-        {featured ? <FeaturedCard project={featured} /> : null}
+        {featured ? (
+          <div data-wb="featured-out">
+            <FeaturedCard project={featured} />
+          </div>
+        ) : null}
 
         {shown.length ? (
           <div
@@ -95,7 +199,8 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
                 aria-hidden
                 width={283}
                 height={256}
-                className="hidden h-auto w-[30%] -rotate-[15deg] md:col-start-1 md:row-start-1 md:ml-[39%] md:block"
+                data-wb="doodle"
+                className="hidden h-auto w-[30%] motion-reduce:-rotate-[15deg] md:col-start-1 md:row-start-1 md:ml-[39%] md:block"
               />
               <ul className="contents md:col-start-1 md:row-start-1 md:flex md:flex-col md:gap-y-[clamp(3rem,4.17vw,5rem)] md:pt-[clamp(3rem,7.3vw,8.75rem)]">
                 {right.map((p) => item(p, shown.indexOf(p)))}
@@ -111,7 +216,7 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
         </p>
 
         {list.length > visible ? (
-          <div className="mt-[clamp(3rem,6.25vw,7.5rem)] flex justify-center">
+          <div data-wb="more" className="mt-[clamp(3rem,6.25vw,7.5rem)] flex justify-center">
             {/* Same block-and-overhang look as the home PopButton (which renders a link, not a button); the block is a hover fill behind the label. */}
             <button type="button" onClick={() => setVisible((v) => v + PAGE_SIZE)} className="group relative inline-flex items-center text-nav">
               <span

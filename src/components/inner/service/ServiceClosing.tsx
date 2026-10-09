@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import PopButton from "@/components/ui/PopButton";
+import { Burst, Chars } from "@/components/inner/motion/bits";
 import SectionTitle from "@/components/inner/SectionTitle";
+import PopButton from "@/components/ui/PopButton";
+import SplitWords from "@/components/ui/SplitWords";
 import { serviceDetails, type Package, type ServiceDetail } from "@/lib/service-content";
 
 const chipColors = [
@@ -45,6 +47,7 @@ type ServiceClosingProps = {
 /**
  * Shared closing run of every service page: packages, FAQ, "more ways to
  * pop" and the CTA. The site footer follows from the (inner) layout.
+ * Motion hooks (`data-wm`) are picked up by ServicePageMotion.
  */
 export default function ServiceClosing({ service, renderPackage }: ServiceClosingProps) {
   const others = serviceDetails.filter((s) => s.slug !== service.slug);
@@ -63,10 +66,16 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
       {/* ── Packages ──────────────────────────────────────────────── */}
       <section aria-labelledby="packages-title" className="shell">
         <SectionTitle align="center" eyebrow="Pick your pop" title={<span id="packages-title">Packages</span>} />
-        <ul data-reveal-stagger className="mt-14 grid items-start gap-8 md:grid-cols-3 md:gap-[clamp(1rem,1.77vw,2.125rem)]">
+        <ul data-wm="packages" className="mt-14 grid items-start gap-8 md:grid-cols-3 md:gap-[clamp(1rem,1.77vw,2.125rem)]">
           {service.packages.map((pkg, i) => (
-            <li key={pkg.name} className={`h-full ${pkg.popular ? "md:-mt-5" : ""}`}>
+            <li
+              key={pkg.name}
+              data-wm="package"
+              data-popular={pkg.popular ? "" : undefined}
+              className={`relative h-full ${pkg.popular ? "md:-mt-5" : ""}`}
+            >
               {renderPackage ? renderPackage(pkg, i) : <DefaultPackage pkg={pkg} />}
+              {pkg.popular ? <Burst pieces={16} ring="border-blush" className="top-0 left-1/2 size-0" /> : null}
             </li>
           ))}
         </ul>
@@ -77,25 +86,27 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section aria-labelledby="faq-title" className="shell grid gap-10 lg:grid-cols-[minmax(0,600fr)_minmax(0,900fr)] lg:gap-[clamp(3rem,4.9vw,5.875rem)]">
-        <div data-reveal>
-          <p className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush uppercase">Good questions</p>
+        <div data-wm="heading">
+          <p data-wm="eyebrow" className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush uppercase">Good questions</p>
           <h2 id="faq-title" className="mt-4 font-display text-[clamp(2rem,3.54vw,4.25rem)] leading-[1.18] text-grape uppercase">
-            Asked &amp;
+            <SplitWords text="Asked &" name="wm-words" />
             <br />
-            answered
+            <SplitWords text="answered" name="wm-words" />
           </h2>
         </div>
-        <div data-reveal-stagger className="flex flex-col gap-3.5">
+        <div data-wm="faqs" className="flex flex-col gap-3.5">
           {service.faqs.map((f, i) => (
             <details
               key={f.q}
               open={i === 0}
+              data-wm="faq"
               className="group rounded-3xl bg-white/60 transition-colors open:bg-white"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 px-9 py-6 font-copy text-[clamp(1.0625rem,1.2vw,1.4375rem)] font-medium text-ink [&::-webkit-details-marker]:hidden">
                 {f.q}
                 <span
                   aria-hidden
+                  data-wm="faq-dot"
                   className="grid size-11 shrink-0 place-items-center rounded-full bg-grape font-haas text-[1.5rem] leading-none text-white transition-colors group-open:bg-blush"
                 >
                   <span className="group-open:hidden">+</span>
@@ -114,9 +125,9 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
         <h2 id="more-title" data-reveal className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] text-blush uppercase">
           More ways to pop
         </h2>
-        <ul data-reveal-stagger className="mx-auto mt-10 flex max-w-[75rem] flex-wrap justify-center gap-x-5 gap-y-8">
+        <ul data-wm="more" className="mx-auto mt-10 flex max-w-[75rem] flex-wrap justify-center gap-x-5 gap-y-8">
           {others.map((s, i) => (
-            <li key={s.slug}>
+            <li key={s.slug} data-wm="chip">
               <Link
                 href={`/services/${s.slug}`}
                 className={`inline-block rounded-full px-8 py-5 font-display text-[clamp(1.125rem,1.35vw,1.625rem)] uppercase shadow-[0_10px_24px_rgb(34_1_40/0.15)] transition-transform duration-300 hover:scale-105 hover:rotate-0 ${chipColors[i % chipColors.length]}`}
@@ -129,21 +140,32 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
       </section>
 
       {/* ── CTA ───────────────────────────────────────────────────── */}
-      <section aria-labelledby="cta-title" className="shell">
-        <div data-reveal className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:px-[3.75rem]">
+      <section data-wm="cta" aria-labelledby="cta-title" className="shell">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:px-[3.75rem]">
           <div>
-            <p className="font-haas text-eyebrow leading-none text-blush uppercase">Ready to pop?</p>
-            <h2 id="cta-title" className="mt-3 font-display text-[clamp(2rem,3.75vw,4.5rem)] leading-[1.17] text-grape uppercase">
-              Let&apos;s talk
-              <br />
-              {service.ctaHeading}
+            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">Ready to pop?</p>
+            <h2
+              id="cta-title"
+              aria-label={`Let's talk ${service.ctaHeading}`}
+              className="mt-3 font-display text-[clamp(2rem,3.75vw,4.5rem)] leading-[1.17] text-grape uppercase"
+            >
+              <span aria-hidden>
+                <Chars text="Let's talk" />
+                <br />
+                <Chars text={service.ctaHeading} />
+              </span>
             </h2>
           </div>
           <div className="flex flex-col items-start gap-8">
-            <p className="font-copy text-body leading-[1.64] font-light">
+            <p data-wm="cta-copy" className="font-copy text-body leading-[1.64] font-light">
               Tell us where you are and where you want to be — we reply within a day with next steps.
             </p>
-            <PopButton href="/contact" label={service.ctaButton} />
+            <div className="relative">
+              <div data-wm="cta-btn">
+                <PopButton href="/contact" label={service.ctaButton} />
+              </div>
+              <Burst pieces={14} ring="border-blush" className="top-1/2 left-[2.5rem] size-0" />
+            </div>
           </div>
         </div>
       </section>

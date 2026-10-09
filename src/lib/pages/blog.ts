@@ -1,6 +1,6 @@
 /*
   Blog data — Figma frames 335:21 "06 — Blog" and 336:21 "07 — Blog Post".
-  Titles match `blogPosts` in @/lib/site-content where they overlap. The
+  The home page's blog section features four of these posts. The
   featured post ("How Digital Marketing…") carries the Figma article copy;
   every other post has its own original long-form article.
 */

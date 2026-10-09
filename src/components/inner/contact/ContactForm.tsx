@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useRef, useState, type FormEvent } from "react";
+
+import { Burst } from "@/components/inner/motion/bits";
+import { burst, squashPop } from "@/components/inner/motion/kit";
 import { CONTACT_EMAIL, contactForm } from "@/lib/pages/contact";
+
+gsap.registerPlugin(useGSAP);
 
 const serviceTone: Record<string, string> = {
   Branding: "peer-checked:bg-blush peer-checked:text-white",
@@ -22,10 +29,28 @@ const step = "font-display text-micro tracking-wide text-blush uppercase";
 /**
  * Figma "Project form": service + budget chips and the "about you" fields.
  * There is no backend yet, so submitting opens the visitor's mail app with
- * everything pre-filled and swaps the form for an inline thank-you.
+ * everything pre-filled and swaps the form for an inline thank-you — which
+ * squash-pops in with a burst of confetti (unless reduced motion is on).
  */
 export default function ContactForm() {
   const [sent, setSent] = useState<string | null>(null);
+  const thanksRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const panel = thanksRef.current;
+      if (!sent || !panel) return;
+      const media = gsap.matchMedia();
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        const title = panel.querySelector("[data-thanks='title']");
+        gsap.set(title, { scale: 0, autoAlpha: 0, transformOrigin: "0% 80%" });
+        const tl = gsap.timeline();
+        tl.fromTo(panel, { y: 30, scale: 0.94, autoAlpha: 0 }, { y: 0, scale: 1, autoAlpha: 1, duration: 0.5, ease: "back.out(1.8)" }, 0).to(title, squashPop(0.7), 0.2);
+        burst(tl, panel.querySelector("[data-wm='burst']"), 0.35, 160);
+      });
+    },
+    { dependencies: [sent], scope: thanksRef },
+  );
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,8 +79,9 @@ export default function ContactForm() {
       </h2>
 
       {sent ? (
-        <div role="status" className="mt-8 flex flex-col items-start gap-5 rounded-3xl bg-cream/60 p-[clamp(1.5rem,2.5vw,3rem)]">
-          <p className="font-display text-[clamp(1.5rem,2.08vw,2.5rem)] leading-tight text-blush uppercase">Thanks, {sent}!</p>
+        <div ref={thanksRef} role="status" className="relative mt-8 flex flex-col items-start gap-5 rounded-3xl bg-cream/60 p-[clamp(1.5rem,2.5vw,3rem)]">
+          <p data-thanks="title" className="font-display text-[clamp(1.5rem,2.08vw,2.5rem)] leading-tight text-blush uppercase">Thanks, {sent}!</p>
+          <Burst pieces={18} ring="border-blush" className="top-[clamp(2.5rem,3.5vw,4rem)] left-[clamp(4rem,8vw,9rem)] size-0" />
           <p className="max-w-[40rem] font-copy text-body leading-[1.64] font-light text-ink">
             Your mail app should have opened with your brief ready to go — just hit send there. If nothing popped up, email us
             directly at{" "}

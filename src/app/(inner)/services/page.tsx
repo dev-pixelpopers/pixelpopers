@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/inner/Reveal";
 import Hero from "@/components/inner/services-overview/Hero";
 import { LongFormSplit, Paragraphs, StatRow } from "@/components/inner/services-overview/LongForm";
 import ServiceRows from "@/components/inner/services-overview/ServiceRows";
+import Marquee from "@/components/inner/services-overview/Marquee";
 import QuoteCards from "@/components/inner/services-overview/QuoteCards";
+import ServicesMotion from "@/components/inner/services-overview/ServicesMotion";
 import {
   Closing,
   Comparison,
   Explained,
   Faq,
   Industries,
-  Marquee,
   Models,
   StatsBand,
 } from "@/components/inner/services-overview/Sections";
@@ -54,7 +54,7 @@ const jsonLd = {
 /** /services — Figma frame 332:21 "03 — Services". */
 export default function ServicesPage() {
   return (
-    <Reveal className="flex flex-col overflow-x-clip pb-[clamp(5rem,11.2vw,13.4rem)]">
+    <ServicesMotion className="flex flex-col overflow-x-clip pb-[clamp(5rem,11.2vw,13.4rem)]">
       <Hero />
       <LongFormSplit
         id="intro-title"
@@ -103,6 +103,6 @@ export default function ServicesPage() {
         <Closing />
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </Reveal>
+    </ServicesMotion>
   );
 }

@@ -9,7 +9,7 @@ const cell = "col-start-1 row-start-1";
 export default function FeaturedCard({ project }: { project: Project }) {
   const p = project;
   return (
-    <article className="group">
+    <article data-wb="featured" className="group">
       <Link
         href={`/work/${p.slug}`}
         className={`grid min-h-[30rem] grid-cols-1 grid-rows-1 overflow-hidden rounded-[clamp(1.5rem,2.5vw,3rem)] md:min-h-[34rem] lg:aspect-[1680/800] lg:min-h-0 ${cardShadow}`}
@@ -28,11 +28,12 @@ export default function FeaturedCard({ project }: { project: Project }) {
 
         <div className={`relative ${cell} flex flex-col justify-between gap-8 p-[clamp(1.25rem,3.125vw,3.75rem)] pt-[clamp(1.25rem,2.9vw,3.5rem)]`}>
           <div className="flex items-start justify-between gap-4">
-            <span className="rounded-full bg-blush px-[clamp(1rem,1.9vw,2.25rem)] py-[clamp(0.5rem,0.7vw,0.75rem)] font-display text-micro leading-tight text-white uppercase">
+            <span data-wb="featured-pop" className="rounded-full bg-blush px-[clamp(1rem,1.9vw,2.25rem)] py-[clamp(0.5rem,0.7vw,0.75rem)] font-display text-micro leading-tight text-white uppercase">
               Featured ✦
             </span>
             <span
               aria-hidden
+              data-wb="featured-pop"
               className="-mt-1.5 grid size-[clamp(5rem,6.77vw,8.125rem)] place-content-center rounded-full bg-white text-center font-display text-micro leading-[1.4] text-ink uppercase transition-transform duration-300 group-hover:rotate-12"
             >
               View
@@ -41,7 +42,7 @@ export default function FeaturedCard({ project }: { project: Project }) {
             </span>
           </div>
 
-          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+          <div data-wb="featured-copy" className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
             <div className="max-w-[47.5rem]">
               <h2 className="font-display text-[clamp(2.5rem,5vw,6rem)] leading-[1.27] text-white uppercase">{p.name}</h2>
               <p className="font-copy text-copy leading-[1.5] font-light text-white/90">{p.description}</p>

@@ -3,28 +3,30 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 
+import PostCover from "@/components/inner/blog/PostCover";
+import { toneFill } from "@/components/inner/blog/tones";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
-import { blogPosts, type BlogPost } from "@/lib/site-content";
+import { categoryTone, formatDate, getPost, type Post } from "@/lib/pages/blog";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const toneClasses: Record<BlogPost["tone"], string> = {
-  blush: "bg-blush text-white",
-  lagoon: "bg-lagoon text-white",
-  sunbeam: "bg-sunbeam text-ink",
-  grape: "bg-grape text-white",
-};
-
-const dateFormat = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-  timeZone: "UTC",
-});
+/**
+ * The posts featured on the home page. They are the blog's own posts (the
+ * same data as /blog and each /blog/<slug> article), so the cards always
+ * match the article they open.
+ */
+const HOME_POSTS = [
+  "bold-brands-win-the-scroll",
+  "interfaces-people-enjoy",
+  "snack-bar-campaign-playbook",
+  "motion-that-means-something",
+]
+  .map(getPost)
+  .filter((post): post is Post => Boolean(post));
 
 /**
  * Featured posts. Same staging as the leadership section: a sticky 100vh
@@ -125,7 +127,7 @@ export default function BlogSection() {
               </p>
             </div>
             <div data-blog="cta" className="origin-left">
-              <PopButton href="#blog" label="View All Posts" />
+              <PopButton href="/blog" label="View All Posts" />
             </div>
           </header>
 
@@ -135,7 +137,7 @@ export default function BlogSection() {
             every card tips in around the same vanishing point.
           */}
           <ul className="-mx-[clamp(1.25rem,8.65vw,10.375rem)] flex snap-x snap-mandatory scroll-px-[clamp(1.25rem,8.65vw,10.375rem)] gap-[clamp(1rem,1.8vw,2rem)] overflow-x-auto px-[clamp(1.25rem,8.65vw,10.375rem)] pb-6 [perspective:1400px] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
-            {blogPosts.map((post) => (
+            {HOME_POSTS.map((post) => (
               <li
                 key={post.slug}
                 data-blog="card"
@@ -146,21 +148,18 @@ export default function BlogSection() {
                     <div data-blog="thumb" className="aspect-[4/3] overflow-hidden rounded-t-card">
                       {/* GSAP scales this wrapper; the hover zoom transitions the image inside it. */}
                       <div data-blog="thumb-img" className="h-full w-full">
-                        <Image
-                          src={post.thumbnail}
-                          alt=""
-                          width={800}
-                          height={600}
+                        <PostCover
+                          cover={post.cover}
                           sizes="(max-width: 640px) 78vw, (max-width: 1024px) 45vw, 22vw"
-                          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                          className="h-full w-full transition-transform duration-700 ease-out group-hover:scale-110"
                         />
                       </div>
                     </div>
                     <span
                       data-blog="tag"
-                      className={`absolute top-3 left-3 rounded-full px-3 py-1 text-[clamp(0.6875rem,0.75vw,0.875rem)] font-bold tracking-wide uppercase shadow-card ${toneClasses[post.tone]}`}
+                      className={`absolute top-3 left-3 rounded-full px-3 py-1 text-[clamp(0.6875rem,0.75vw,0.875rem)] font-bold tracking-wide uppercase shadow-card ${toneFill[categoryTone[post.category]]}`}
                     >
-                      {post.tag}
+                      {post.category}
                     </span>
                   </div>
 
@@ -170,7 +169,7 @@ export default function BlogSection() {
                       dateTime={post.date}
                       className="text-[clamp(0.75rem,0.8vw,0.9375rem)] font-bold tracking-wide text-ink/60 uppercase"
                     >
-                      {dateFormat.format(new Date(post.date))}
+                      {formatDate(post.date)}
                     </time>
                     <h3
                       data-blog="meta"
@@ -183,9 +182,9 @@ export default function BlogSection() {
                       className="line-clamp-2 text-[clamp(0.8125rem,0.85vw,1rem)] text-ink/60">
                       {post.excerpt}
                     </p>
-                    <a
+                    <Link
                       data-blog="meta"
-                      href={post.href}
+                      href={`/blog/${post.slug}`}
                       className="mt-auto inline-flex items-center gap-2 pt-2 font-display text-[clamp(0.8125rem,0.85vw,1rem)] text-blush uppercase after:absolute after:inset-0 after:content-['']"
                       aria-label={`Read more: ${post.title}`}
                     >
@@ -193,7 +192,7 @@ export default function BlogSection() {
                       <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">
                         →
                       </span>
-                    </a>
+                    </Link>
                   </div>
                 </article>
               </li>
