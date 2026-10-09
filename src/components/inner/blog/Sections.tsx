@@ -140,7 +140,7 @@ export function StartHere() {
                 </p>
                 <span
                   aria-hidden
-                  className="mt-auto pt-2 font-display text-micro text-blush-ink uppercase"
+                  className="mt-auto pt-2 font-display text-micro text-blush-deep uppercase"
                 >
                   Read the guide →
                 </span>
@@ -283,7 +283,7 @@ export function Resources() {
                 <span className="mt-4 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] leading-[1.58] text-ink/80">
                   {r.desc}
                 </span>
-                <span className="mt-auto pt-10 font-display text-micro text-blush-ink uppercase">
+                <span className="mt-auto pt-10 font-display text-micro text-blush-deep uppercase">
                   Download free ↓
                 </span>
               </span>

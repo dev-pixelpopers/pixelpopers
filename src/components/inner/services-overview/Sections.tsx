@@ -238,7 +238,7 @@ export function Models() {
                 <span data-wm="model-chip" className={`rounded-full px-[clamp(1.25rem,2vw,2.5rem)] py-[0.9rem] font-display text-micro leading-none text-ink uppercase ${toneSoft[m.tone]}`}>
                   {m.chip}
                 </span>
-                <Link href="/contact" className="font-display text-micro text-blush-ink uppercase hover:underline">
+                <Link href="/contact" className="font-display text-micro text-blush-deep uppercase hover:underline">
                   Learn more<span className="sr-only"> about the {m.name.toLowerCase()} model</span> →
                 </Link>
               </div>

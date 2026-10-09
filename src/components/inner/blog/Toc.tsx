@@ -43,7 +43,7 @@ export default function Toc({ items }: { items: Item[] }) {
     >
       <p
         id="toc-title"
-        className="font-display text-micro text-blush-ink uppercase"
+        className="font-display text-micro text-blush-deep uppercase"
       >
         In this article
       </p>

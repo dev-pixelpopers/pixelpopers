@@ -50,7 +50,7 @@ export function CaseHero({ project }: { project: Project }) {
         <dl data-reveal-stagger className="mt-[clamp(2rem,3.125vw,3.75rem)] grid grid-cols-2 gap-x-[clamp(1rem,2.08vw,2.5rem)] gap-y-8 lg:grid-cols-4">
           {meta.map((m) => (
             <div key={m.k} className="flex flex-col gap-[clamp(0.5rem,0.6vw,0.75rem)] border-t border-ink/20 pt-[clamp(1rem,1.25vw,1.5rem)]">
-              <dt className="font-display text-micro text-blush-ink uppercase">{m.k}</dt>
+              <dt className="font-display text-micro text-blush-deep uppercase">{m.k}</dt>
               <dd className="font-copy text-copy font-medium text-ink">{m.v}</dd>
             </div>
           ))}

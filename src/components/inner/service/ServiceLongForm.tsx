@@ -144,7 +144,7 @@ export default function ServiceLongForm({
         <div data-wm="guides" className="mt-14 grid gap-12 md:grid-cols-3">
           {service.insights.map((item, i) => (
             <article key={item.title} data-wm="guide" className="flex flex-col gap-4 border-t-2 border-ink pt-7">
-              <p className="font-haas text-micro text-blush-ink uppercase">Guide {pad(i + 1)}</p>
+              <p className="font-haas text-micro text-blush-deep uppercase">Guide {pad(i + 1)}</p>
               <h3 className="font-display text-h4 leading-tight text-ink">{item.title}</h3>
               <p className="font-copy text-small leading-[1.6] font-light text-ink/85">{item.body}</p>
             </article>

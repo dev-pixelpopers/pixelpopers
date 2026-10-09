@@ -35,7 +35,7 @@ export default function ShareLinks({
 
   return (
     <div className="flex items-center gap-4 lg:flex-col lg:items-start">
-      <p className="font-display text-micro text-blush-ink uppercase">Share</p>
+      <p className="font-display text-micro text-blush-deep uppercase">Share</p>
       <ul className="flex gap-3 lg:flex-col">
         {links.map((l) => (
           <li key={l.label}>

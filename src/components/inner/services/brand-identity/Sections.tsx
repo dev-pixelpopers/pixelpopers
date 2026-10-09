@@ -78,7 +78,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             </h1>
             <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">{service.heroIntro}</p>
             <PopButton href="/contact" label={service.heroCta} className="mt-[clamp(2rem,3vw,3.625rem)] [&>span:last-child]:text-ink" />
-            <a href="#brand-book" className="mt-[clamp(1.5rem,1.67vw,2rem)] block w-fit font-display text-micro text-blush-ink uppercase transition-colors hover:text-grape">
+            <a href="#brand-book" className="mt-[clamp(1.5rem,1.67vw,2rem)] block w-fit font-display text-micro text-blush-deep uppercase transition-colors hover:text-grape">
               See the brand book ↓
             </a>
           </div>
@@ -93,7 +93,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 <span className={`${layer} mt-[8cqw] ml-[24cqw] font-pop text-[88cqw] leading-[88cqw] text-blush-ink`}>P</span>
                 <span className={`${layer} mt-[100cqw] ml-[12cqw] font-display text-[5.2cqw] leading-[1.27] whitespace-nowrap text-white`}>
                   BRAND GUIDELINES
-                  <span className="mt-[1.2cqw] block font-copy text-[3.2cqw] font-medium text-white/70">VOL. 01 · 2026</span>
+                  <span className="mt-[1.2cqw] block font-copy text-[3.2cqw] font-medium text-white/80">VOL. 01 · 2026</span>
                 </span>
                 <Image src="/assets/logo-pixelpopers.png" alt="" width={1906} height={933} sizes="120px" className={`${layer} mt-[116cqw] ml-[66cqw] h-auto w-[26.8cqw]`} />
               </div>
@@ -124,7 +124,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       {/* ── Brand book contents strip ──────────────────────────────── */}
       <nav id="brand-book" aria-label="Brand book contents" className="shell mt-[clamp(3.5rem,6.8vw,8.125rem)] scroll-mt-8">
         <div data-reveal className={`rounded-[clamp(1.5rem,1.67vw,2rem)] bg-white px-[clamp(1.25rem,2.08vw,2.5rem)] pt-[clamp(1.25rem,1.46vw,1.75rem)] pb-[clamp(1.5rem,1.77vw,2.125rem)] ${cardShadow}`}>
-          <p className="font-display text-micro text-blush-ink uppercase">Contents</p>
+          <p className="font-display text-micro text-blush-deep uppercase">Contents</p>
           <ol className="mt-[clamp(0.75rem,0.94vw,1.125rem)] grid grid-cols-2 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
             {contents.map((c, i) => (
               <li key={c.n} className={i % 6 ? "lg:border-l lg:border-ink/10 lg:pl-[1.3vw]" : ""}>

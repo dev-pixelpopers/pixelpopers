@@ -116,7 +116,7 @@ export default async function BlogPostPage({
         <article className="mx-auto w-full max-w-[55rem] lg:col-start-3 lg:row-start-1">
           {/* Below lg the sticky TOC column is gone, so offer a collapsible one instead. */}
           <details className="group mb-10 rounded-3xl border border-white bg-white/60 p-6 lg:hidden">
-            <summary className="flex cursor-pointer list-none items-center justify-between font-display text-micro text-blush-ink uppercase">
+            <summary className="flex cursor-pointer list-none items-center justify-between font-display text-micro text-blush-deep uppercase">
               In this article
               <span
                 aria-hidden
