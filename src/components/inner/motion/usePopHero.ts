@@ -5,6 +5,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { RefObject } from "react";
 
+import { POP_WAVE } from "@/components/inner/motion/kit";
+
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 type Q = (selector: string) => Element[];
@@ -15,18 +17,17 @@ type Extra = (tl: gsap.core.Timeline, q: Q) => void | (() => void);
   Markup hooks (`data-whero`):
     glow-out > glow       the background glows
     crumb-out > crumb     the breadcrumb
-    reveal                wraps the three lines; ships `invisible` (anything
-                          else that must not flash before the entrance can
-                          carry `data-whero-reveal` instead)
+    reveal / data-whero-reveal   small extras that ship `invisible` so they
+                          don't flash before their entrance — never the
+                          headline or anything large (LCP)
     [data-whero-line=1…3] the lines, each holding `char` letters
   The `*-out` wrappers and the line spans belong to the exit, what's inside
   them to the entrance, so the two never fight over a property.
 
-  Entrance, on load:
+  Entrance, on load (the headline is visible from the first paint — it is
+  the page's Largest Contentful Paint, so it is never hidden):
     0.15  the glows bloom, the breadcrumb drops in
-    0.30  line 1 letters slide up through a mask
-    0.55  line 2 letters drop from above, blur clearing as they land
-    1.00  line 3 letters pop out of nothing with squash and stretch
+    0.25  a squash-and-stretch wave rolls through the letters, line by line
   then `entrance` adds the page's own pieces (from ~1.4), and once landed
   every letter bounces when hovered.
 
@@ -46,42 +47,16 @@ export function usePopHero(rootRef: RefObject<HTMLElement | null>, { entrance, e
       });
 
       media.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.set(q("[data-whero-line='1']"), { overflow: "hidden" });
-        // Keyframes belong to `.to()`, so their start state is set up front.
-        gsap.set(line(3), { transformOrigin: "50% 100%", autoAlpha: 0, scaleX: 0, scaleY: 0 });
         gsap.set(q("[data-whero='reveal'], [data-whero-reveal]"), { autoAlpha: 1 });
+        gsap.set(q("[data-whero='char']"), { transformOrigin: "50% 100%" });
 
         const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
         tl.fromTo(q("[data-whero='glow']"), { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 1.4, ease: "power2.out" }, 0.15)
-          .fromTo(q("[data-whero='crumb']"), { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.2)
-          .fromTo(line(1), { yPercent: 110 }, { yPercent: 0, duration: 0.7, stagger: 0.04, ease: "power4.out" }, 0.3)
-          .fromTo(
-            line(2),
-            { autoAlpha: 0, yPercent: -130, rotation: (i) => (i % 2 ? 9 : -9), filter: "blur(12px)" },
-            {
-              autoAlpha: 1,
-              yPercent: 0,
-              rotation: 0,
-              filter: "blur(0px)",
-              duration: 0.75,
-              stagger: 0.045,
-              ease: "back.out(1.7)",
-              clearProps: "filter",
-            },
-            0.55,
-          )
-          .to(
-            line(3),
-            {
-              keyframes: [
-                { autoAlpha: 1, scaleX: 1.3, scaleY: 0.55, duration: 0.18, ease: "power2.out" },
-                { scaleX: 0.85, scaleY: 1.22, duration: 0.14, ease: "power1.inOut" },
-                { scaleX: 1, scaleY: 1, duration: 0.5, ease: "elastic.out(1, 0.45)" },
-              ],
-              stagger: 0.07,
-            },
-            1.0,
-          );
+          .fromTo(q("[data-whero='crumb']"), { y: -12 }, { y: 0, duration: 0.6 }, 0.2);
+        // The headline is on screen from the first paint (it's the page's
+        // LCP); the entrance is a squash-and-stretch wave rolling through
+        // the three lines, transform-only.
+        [1, 2, 3].forEach((n, k) => tl.to(line(n), { keyframes: POP_WAVE, stagger: 0.035 }, 0.25 + k * 0.3));
         const cleanEntrance = entrance?.(tl, q);
 
         // Every letter bounces with a squash and stretch when hovered (only

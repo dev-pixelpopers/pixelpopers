@@ -18,6 +18,7 @@ import {
   squashPop,
   tipInCards,
 } from "@/components/inner/motion/kit";
+import { idleSetup } from "@/lib/defer-setup";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -160,14 +161,16 @@ export default function AboutMotion({ children, className = "" }: { children: Re
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const scope = root.current;
       if (!scope) return;
       const media = gsap.matchMedia();
       media.add("(prefers-reduced-motion: no-preference)", () => {
         const cleanups: (void | (() => void))[] = [];
+        // One idle task per section instead of one long task at hydration
+        // (see idleSetup).
         const each = (sel: string, fn: (el: HTMLElement) => void | (() => void)) =>
-          all(scope, sel).forEach((el) => cleanups.push(fn(el)));
+          cleanups.push(idleSetup(contextSafe!(() => all(scope, sel).forEach((el) => cleanups.push(fn(el))))));
 
         each("[data-wm='heading']", headingIn);
         each("[data-wm='story']", story);

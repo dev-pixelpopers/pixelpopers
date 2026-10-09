@@ -64,7 +64,7 @@ type HeroHeadlineProps = {
 /**
  * The hero headline markup, with hooks the hero's motion animates:
  *
- *   data-hero="line"        each line (ships hidden — the entrance reveals it)
+ *   data-hero="line"        each line (visible from the first paint — it's the LCP)
  *   data-line="1|2|3"       which line
  *   data-hero="mask"        inline-block around the text, for masked reveals
  *   data-hero="char"        each letter, when `chars` is on
@@ -99,7 +99,7 @@ export default function HeroHeadline({ chars = false }: HeroHeadlineProps) {
             key={line.id}
             data-hero="line"
             data-line={line.id}
-            className={`gsap-reveal ${line.className}`}
+            className={line.className}
           >
             {line.doodle ? <HeroDoodle doodle={line.doodle} sparks={line.sparks} /> : null}
             <span

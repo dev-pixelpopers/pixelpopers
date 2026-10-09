@@ -373,8 +373,11 @@ export default function ProjectSlider({ foldIntoCube = true }: ProjectSliderProp
         ref={stageRef}
         // Folding: the cube travels across the stage, so it can't clip, and
         // the stage lies over the Studio section during the travel, so it
-        // mustn't catch the pointer.
-        className={`sticky top-0 grid h-screen place-items-center ${foldIntoCube ? "pointer-events-none" : "overflow-hidden"}`}
+        // mustn't catch the pointer. With motion it ships hidden: the hero's
+        // scroll hand-off (see `hero-animations.ts`) starts it tucked away
+        // and reveals it on scroll, so painting it before that runs only made
+        // it a late LCP candidate (the hand-off's inline visibility wins).
+        className={`sticky top-0 grid h-screen place-items-center motion-safe:invisible ${foldIntoCube ? "pointer-events-none" : "overflow-hidden"}`}
         style={{ perspective: "var(--ring-p, 1900px)" }}
       >
         <div ref={foldRef} className="relative [transform-style:preserve-3d] will-change-transform">

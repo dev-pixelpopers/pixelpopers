@@ -6,12 +6,13 @@ import WorkMotion from "@/components/inner/work/WorkMotion";
 import { Clients, Cta, Impact, Intro, Teasers, Testimonials } from "@/components/inner/work/Sections";
 import { SITE } from "@/components/inner/work/tokens";
 import { projects, workMeta } from "@/lib/pages/work";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: workMeta.title,
   description: workMeta.description,
   alternates: { canonical: "/work" },
-  openGraph: { title: workMeta.title, description: workMeta.description, type: "website", url: "/work" },
+  openGraph: { title: workMeta.title, description: workMeta.description, type: "website", url: "/work", images: [DEFAULT_OG_IMAGE] },
 };
 
 const jsonLd = {

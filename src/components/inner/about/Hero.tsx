@@ -48,24 +48,19 @@ export default function Hero() {
 
   usePopHero(rootRef, {
     entrance: (tl, q) => {
-      tl.fromTo(q("[data-whero='word']"), { yPercent: 110 }, { yPercent: 0, duration: 0.5, stagger: 0.02, ease: "back.out(1.8)" }, 1.3)
-        .fromTo(
+      tl.fromTo(
           q("[data-whero='cta']"),
           { scale: 0, rotation: -25, autoAlpha: 0 },
           { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.55, ease: "back.out(2.4)" },
           1.7,
         )
+        // The photos are on screen from the first paint (one of them can be
+        // the LCP); they just settle into place, transform-only.
         .fromTo(
           q("[data-whero='photo']"),
-          {
-            x: (i) => [-1, 0, 1][i] * innerWidth * 0.25,
-            y: (i) => (i === 1 ? 160 : 60),
-            rotation: (i) => [-14, 0, 14][i],
-            scale: 0.85,
-            autoAlpha: 0,
-          },
-          { x: 0, y: 0, rotation: 0, scale: 1, autoAlpha: 1, duration: 1, stagger: 0.12, ease: "back.out(1.3)" },
-          1.1,
+          { y: (i) => (i === 1 ? 40 : 20), rotation: (i) => [-4, 0, 4][i], scale: 0.95 },
+          { y: 0, rotation: 0, scale: 1, duration: 0.9, stagger: 0.1, ease: "back.out(1.4)" },
+          0.6,
         )
         .fromTo(
           q("[data-whero='sticker']"),
@@ -117,7 +112,7 @@ export default function Hero() {
 
       <div className="mx-auto mt-[clamp(2rem,3.1vw,3.75rem)] w-fit max-w-full px-5">
         <h1 id="about-title" aria-label={`${l1} ${l2} ${l3}`} className="uppercase">
-          <span aria-hidden data-whero="reveal" className="invisible block">
+          <span aria-hidden className="block">
             <span data-whero-line="1" className="ml-[13.6%] block font-display text-hero-sm leading-[1.12] text-blush">
               <Chars text={l1} />
             </span>
@@ -130,10 +125,8 @@ export default function Hero() {
           </span>
         </h1>
 
-        {/* Ships hidden like the lines (`reveal`), so it doesn't flash before the entrance. */}
         <div
-          data-whero="reveal"
-          className="invisible mt-[clamp(2rem,5.6vw,6.75rem)] flex flex-wrap items-start gap-x-[clamp(2rem,4.7vw,5.625rem)] gap-y-8 sm:ml-[13.6%]"
+          className="mt-[clamp(2rem,5.6vw,6.75rem)] flex flex-wrap items-start gap-x-[clamp(2rem,4.7vw,5.625rem)] gap-y-8 sm:ml-[13.6%]"
         >
           <p data-whero="intro-out" className="max-w-[clamp(18rem,32.3vw,38.75rem)] font-copy text-body leading-[1.64] font-light text-ink">
             {aboutHero.intro.split(" ").map((word, i) => (
@@ -146,7 +139,8 @@ export default function Hero() {
               </Fragment>
             ))}
           </p>
-          <div data-whero="cta-burst" className="relative mt-2.5">
+          {/* The button ships hidden (small — never the LCP) so it doesn't flash before it pops. */}
+          <div data-whero="cta-burst" data-whero-reveal className="invisible relative mt-2.5">
             <div data-whero="cta-out">
               <div data-whero="cta">
                 <PopButton href={aboutHero.cta.href} label={aboutHero.cta.label} className="[&>span:last-child]:text-ink" />
@@ -158,8 +152,7 @@ export default function Hero() {
       </div>
 
       <div
-        data-whero-reveal
-        className="invisible mx-auto mt-[clamp(2.5rem,4.8vw,5.75rem)] grid max-w-[1920px] px-[clamp(1.25rem,6.25vw,7.5rem)]"
+        className="mx-auto mt-[clamp(2.5rem,4.8vw,5.75rem)] grid max-w-[1920px] px-[clamp(1.25rem,6.25vw,7.5rem)]"
       >
         <div className={`${layer} grid grid-cols-[600fr_440fr_600fr] items-center gap-[clamp(0.5rem,1.04vw,1.25rem)]`}>
           {[left, middle, right].map((img, i) => (
@@ -179,7 +172,7 @@ export default function Hero() {
           ))}
         </div>
 
-        <div className={`${layer} relative mt-[1.2%] ml-[1.8%] self-start justify-self-start`}>
+        <div data-whero-reveal className={`${layer} invisible relative mt-[1.2%] ml-[1.8%] self-start justify-self-start`}>
           <div data-whero="sticker-out">
             <p
               data-whero="sticker"
@@ -190,7 +183,7 @@ export default function Hero() {
           </div>
           <Burst pieces={12} className="top-1/2 left-1/2 size-0" />
         </div>
-        <div className={`${layer} relative mr-[1.2%] -mb-[0.4%] self-end justify-self-end`}>
+        <div data-whero-reveal className={`${layer} invisible relative mr-[1.2%] -mb-[0.4%] self-end justify-self-end`}>
           <div data-whero="sticker-out">
             <p
               data-whero="sticker"

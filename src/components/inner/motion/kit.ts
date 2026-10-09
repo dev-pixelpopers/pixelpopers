@@ -126,6 +126,18 @@ export function burst(tl: gsap.core.Timeline, el: Element | null, at: number, re
     );
 }
 
+/**
+ * A hop with squash and stretch for something already on screen — the
+ * heroes' headline entrance. Transform-only on purpose: the headline is the
+ * page's Largest Contentful Paint, and anything hidden until JavaScript runs
+ * would hold LCP back until the animation (seconds on a slow phone).
+ */
+export const POP_WAVE: gsap.TweenVars[] = [
+  { yPercent: -30, scaleX: 0.9, scaleY: 1.14, duration: 0.18, ease: "power2.out" },
+  { yPercent: 0, scaleX: 1.12, scaleY: 0.86, duration: 0.14, ease: "power2.in" },
+  { scaleX: 1, scaleY: 1, duration: 0.45, ease: "elastic.out(1, 0.45)" },
+];
+
 /** Squash-and-stretch pop for something that starts at scale 0 (set up front). */
 export const squashPop = (duration = 0.6) => ({
   keyframes: [

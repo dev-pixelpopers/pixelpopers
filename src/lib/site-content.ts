@@ -57,7 +57,7 @@ export const services: Service[] = [
     fill: "photo",
     label: { x: 0.157, y: 0.534 },
     dot: { x: 0.071, y: 0.198 },
-    media: { type: "image", src: "/assets/featured-snackbar.png" },
+    media: { type: "image", src: "/assets/featured-snackbar.webp" },
   },
   {
     id: "web-development",
@@ -249,7 +249,7 @@ export const projects: Project[] = [
     id: "snackbar",
     title: "Snackbar — bold flavor meets cutting edge tech",
     video: "/assets/videos/snackbar-video.mp4",
-    poster: { src: "/assets/featured-snackbar.png", width: 1934, height: 1214 },
+    poster: { src: "/assets/featured-snackbar.webp", width: 1600, height: 1004 },
   },
   {
     id: "habitat-pools",

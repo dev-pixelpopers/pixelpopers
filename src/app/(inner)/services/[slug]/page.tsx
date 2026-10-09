@@ -5,6 +5,7 @@ import ServiceClosing from "@/components/inner/service/ServiceClosing";
 import ServicePageMotion from "@/components/inner/service/ServicePageMotion";
 import { serviceConcepts } from "@/components/inner/services/registry";
 import { getServiceDetail, serviceDetails } from "@/lib/service-content";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const dynamicParams = false;
 
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/services/[slug]">
     title: `${service.metaTitle} | Pixel Popers`,
     description: service.metaDescription,
     alternates: { canonical: `/services/${service.slug}` },
-    openGraph: { title: service.metaTitle, description: service.metaDescription, type: "website" },
+    openGraph: { title: service.metaTitle, description: service.metaDescription, type: "website", url: `/services/${service.slug}`, images: [DEFAULT_OG_IMAGE] },
   };
 }
 

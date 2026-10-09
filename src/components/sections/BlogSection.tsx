@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { useRef } from "react";
 
+import { deferSetup } from "@/lib/defer-setup";
 import PostCover from "@/components/inner/blog/PostCover";
 import { toneFill } from "@/components/inner/blog/tones";
 import PopButton from "@/components/ui/PopButton";
@@ -37,75 +38,81 @@ export default function BlogSection() {
   const rootRef = useRef<HTMLElement>(null);
 
   useGSAP(
-    () => {
-      const media = gsap.matchMedia();
+    (_context, contextSafe) => {
+      // Far below the fold: set up in its own short task after load rather
+      // than in the initial commit (see deferSetup).
+      return deferSetup(
+        contextSafe!(() => {
+        const media = gsap.matchMedia();
 
-      media.add("(prefers-reduced-motion: no-preference)", () => {
-        const tl = gsap.timeline({
-          defaults: { ease: "power3.out" },
-          scrollTrigger: {
-            trigger: rootRef.current,
-            start: "top 40%",
-            end: "bottom bottom",
-            scrub: 1
-          },
+        media.add("(prefers-reduced-motion: no-preference)", () => {
+          const tl = gsap.timeline({
+            defaults: { ease: "power3.out" },
+            scrollTrigger: {
+              trigger: rootRef.current,
+              start: "top 40%",
+              end: "bottom bottom",
+              scrub: 1
+            },
+          });
+
+          tl.from("[data-split='blog-kicker']", { yPercent: 110, duration: 0.6, stagger: 0.05 })
+            .from(
+              "[data-split='blog-heading']",
+              { yPercent: 115, rotation: 6, duration: 0.9, stagger: 0.08, ease: "power4.out" },
+              0.1,
+            )
+            .from("[data-blog='subtitle']", { autoAlpha: 0, x: -40, duration: 0.8 }, 0.45)
+            .from(
+              "[data-blog='cta']",
+              { autoAlpha: 0, scale: 0.5, rotation: -10, duration: 0.7, ease: "back.out(2)" },
+              0.6,
+            )
+
+            // Cards tip up out of the floor in 3D, then settle with a lift.
+            .from(
+              "[data-blog='card']",
+              {
+                autoAlpha: 0,
+                y: 140,
+                z: -220,
+                rotationX: -55,
+                transformOrigin: "50% 100%",
+                // Same shape as the computed shadow, so GSAP can interpolate it.
+                boxShadow: "rgba(34, 1, 40, 0) 0px 0px 0px -20px",
+                duration: 1.1,
+                stagger: 0.14,
+              },
+              0.5,
+            )
+            .from(
+              "[data-blog='thumb']",
+              {
+                clipPath: "inset(100% 0% 0% 0%)",
+                duration: 0.9,
+                stagger: 0.14,
+                ease: "power3.inOut",
+              },
+              0.8,
+            )
+            .from(
+              "[data-blog='thumb-img']",
+              { scale: 1.35, duration: 1.2, stagger: 0.14 },
+              0.8,
+            )
+            .from(
+              "[data-blog='tag']",
+              { scale: 0, rotation: -20, duration: 0.6, stagger: 0.14, ease: "back.out(2.6)" },
+              1.25,
+            )
+            .from(
+              "[data-blog='meta']",
+              { autoAlpha: 0, y: 18, duration: 0.6, stagger: 0.07 },
+              1.15,
+            );
         });
-
-        tl.from("[data-split='blog-kicker']", { yPercent: 110, duration: 0.6, stagger: 0.05 })
-          .from(
-            "[data-split='blog-heading']",
-            { yPercent: 115, rotation: 6, duration: 0.9, stagger: 0.08, ease: "power4.out" },
-            0.1,
-          )
-          .from("[data-blog='subtitle']", { autoAlpha: 0, x: -40, duration: 0.8 }, 0.45)
-          .from(
-            "[data-blog='cta']",
-            { autoAlpha: 0, scale: 0.5, rotation: -10, duration: 0.7, ease: "back.out(2)" },
-            0.6,
-          )
-
-          // Cards tip up out of the floor in 3D, then settle with a lift.
-          .from(
-            "[data-blog='card']",
-            {
-              autoAlpha: 0,
-              y: 140,
-              z: -220,
-              rotationX: -55,
-              transformOrigin: "50% 100%",
-              // Same shape as the computed shadow, so GSAP can interpolate it.
-              boxShadow: "rgba(34, 1, 40, 0) 0px 0px 0px -20px",
-              duration: 1.1,
-              stagger: 0.14,
-            },
-            0.5,
-          )
-          .from(
-            "[data-blog='thumb']",
-            {
-              clipPath: "inset(100% 0% 0% 0%)",
-              duration: 0.9,
-              stagger: 0.14,
-              ease: "power3.inOut",
-            },
-            0.8,
-          )
-          .from(
-            "[data-blog='thumb-img']",
-            { scale: 1.35, duration: 1.2, stagger: 0.14 },
-            0.8,
-          )
-          .from(
-            "[data-blog='tag']",
-            { scale: 0, rotation: -20, duration: 0.6, stagger: 0.14, ease: "back.out(2.6)" },
-            1.25,
-          )
-          .from(
-            "[data-blog='meta']",
-            { autoAlpha: 0, y: 18, duration: 0.6, stagger: 0.07 },
-            1.15,
-          );
-      });
+        }),
+      );
     },
     { scope: rootRef },
   );

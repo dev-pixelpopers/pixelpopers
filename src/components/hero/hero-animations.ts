@@ -2,6 +2,7 @@ import type { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 import { settleRotation, type Q } from "@/components/hero/hero-shared";
+import { POP_WAVE } from "@/components/inner/motion/kit";
 
 /** `@gsap/react` doesn't export this type; derive it from the hook. */
 type ContextSafeFunc = ReturnType<typeof useGSAP>["contextSafe"];
@@ -17,10 +18,12 @@ type ContextSafeFunc = ReturnType<typeof useGSAP>["contextSafe"];
 /**
  * "Pop" entrance, letter by letter:
  *
- *   0.30  "We Make"       letters slide up through a mask
+ * The headline itself is visible from the first paint (it's the LCP); its
+ * letters hop in a squash-and-stretch wave, line by line:
+ *   0.25  "We Make"
  *   0.55  sparkle doodle  springs in
- *   0.60  "Your Website"  letters drop from above, blur clearing as they land
- *   1.05  "Poppin'"       letters pop out of nothing with squash and stretch
+ *   0.55  "Your Website"
+ *   0.95  "Poppin'"
  *   1.60  flower doodle   bursts in and throws a ring of sparks
  *   2.60  doodles         settle into a gentle endless wobble
  *
@@ -35,11 +38,12 @@ export function popEntrance(q: Q) {
   const [sparkle, flower] = q("[data-hero='doodle']");
   const sparks = q("[data-hero='spark']");
 
-  // Line 1 rises through its own mask; the others need to overflow it.
-  gsap.set(q("[data-line='1'] [data-hero='mask']"), { overflow: "hidden" });
-  // Start states for the two keyframed tweens below (keyframes belong
-  // to `.to()`, so their "from" is set up front).
-  gsap.set(line3, { transformOrigin: "50% 100%", autoAlpha: 0, scaleX: 0, scaleY: 0 });
+  // The headline is on screen from the first paint — it is the page's
+  // Largest Contentful Paint, so it is never hidden waiting for JavaScript;
+  // the letters' entrance is a transform-only squash-and-stretch wave.
+  gsap.set([...line1, ...line2, ...line3], { transformOrigin: "50% 100%" });
+  // Start state for the flower's keyframed tween below (keyframes belong to
+  // `.to()`, so its "from" is set up front).
   gsap.set(flower, {
     autoAlpha: 0,
     scale: 0,
@@ -48,52 +52,15 @@ export function popEntrance(q: Q) {
 
   const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-  tl.fromTo(
-    line1,
-    { yPercent: 110 },
-    { yPercent: 0, duration: 0.7, stagger: 0.035, ease: "power4.out" },
-    0.3,
-  )
+  tl.to(line1, { keyframes: POP_WAVE, stagger: 0.035 }, 0.25)
     .fromTo(
       sparkle,
       { autoAlpha: 0, scale: 0.4, rotation: (i, el) => settleRotation(i, el) - 45 },
       { autoAlpha: 1, scale: 1, rotation: settleRotation, duration: 0.8, ease: "back.out(2.2)" },
       0.55,
     )
-    .fromTo(
-      line2,
-      {
-        autoAlpha: 0,
-        yPercent: -130,
-        rotation: (i) => (i % 2 ? 9 : -9),
-        filter: "blur(12px)",
-      },
-      {
-        autoAlpha: 1,
-        yPercent: 0,
-        rotation: 0,
-        filter: "blur(0px)",
-        duration: 0.75,
-        stagger: 0.04,
-        ease: "back.out(1.7)",
-        // Leaves no filter behind once landed — a lingering one would
-        // keep each letter on its own compositing layer.
-        clearProps: "filter",
-      },
-      0.6,
-    )
-    .to(
-      line3,
-      {
-        keyframes: [
-          { autoAlpha: 1, scaleX: 1.3, scaleY: 0.55, duration: 0.18, ease: "power2.out" },
-          { scaleX: 0.85, scaleY: 1.22, duration: 0.14, ease: "power1.inOut" },
-          { scaleX: 1, scaleY: 1, duration: 0.5, ease: "elastic.out(1, 0.45)" },
-        ],
-        stagger: 0.075,
-      },
-      1.05,
-    )
+    .to(line2, { keyframes: POP_WAVE, stagger: 0.035 }, 0.55)
+    .to(line3, { keyframes: POP_WAVE, stagger: 0.06 }, 0.95)
     .to(
       flower,
       {

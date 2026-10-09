@@ -16,12 +16,13 @@ import {
 } from "@/components/inner/services-overview/Sections";
 import { serviceDetails } from "@/lib/service-content";
 import { serviceRows, servicesIntro, servicesMeta, servicesTestimonials } from "@/lib/pages/services";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: servicesMeta.title,
   description: servicesMeta.description,
   alternates: { canonical: "/services" },
-  openGraph: { title: servicesMeta.title, description: servicesMeta.description, type: "website", url: "/services" },
+  openGraph: { title: servicesMeta.title, description: servicesMeta.description, type: "website", url: "/services", images: [DEFAULT_OG_IMAGE] },
 };
 
 const SITE = "https://pixelpopers.vercel.app";

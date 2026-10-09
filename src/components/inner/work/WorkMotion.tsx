@@ -16,6 +16,7 @@ import {
   statsBand,
   tipInCards,
 } from "@/components/inner/motion/kit";
+import { idleSetup } from "@/lib/defer-setup";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -45,28 +46,40 @@ export default function WorkMotion({ children, className = "" }: { children: Rea
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const scope = root.current;
       if (!scope) return;
       const media = gsap.matchMedia();
       media.add("(prefers-reduced-motion: no-preference)", () => {
-        all(scope, "[data-wm='heading']").forEach(headingIn);
         const cleanups: (void | (() => void))[] = [];
+        // One idle task per section instead of one long task at hydration
+        // (see idleSetup).
+        const later = (job: () => void) => cleanups.push(idleSetup(contextSafe!(job)));
 
-        const intro = one(scope, "[data-wm='intro']");
-        if (intro) {
+        later(() => all(scope, "[data-wm='heading']").forEach(headingIn));
+        later(() => {
+          const intro = one(scope, "[data-wm='intro']");
+          if (!intro) return;
           paragraphs(intro);
           const list = one(intro, "[data-wm='success']");
           if (list) tipInCards(list, "[data-wm='success-card']");
-        }
-        const band = one(scope, "[data-wm='band']");
-        if (band) cleanups.push(statsBand(band));
-        const quotes = one(scope, "[data-wm='quotes']");
-        if (quotes) quoteCards(quotes);
-        const oven = one(scope, "[data-wm='teasers']");
-        if (oven) teasers(oven);
-        const cta = one(scope, "[data-wm='cta']");
-        if (cta) closingCta(cta);
+        });
+        later(() => {
+          const band = one(scope, "[data-wm='band']");
+          if (band) cleanups.push(statsBand(band));
+        });
+        later(() => {
+          const quotes = one(scope, "[data-wm='quotes']");
+          if (quotes) quoteCards(quotes);
+        });
+        later(() => {
+          const oven = one(scope, "[data-wm='teasers']");
+          if (oven) teasers(oven);
+        });
+        later(() => {
+          const cta = one(scope, "[data-wm='cta']");
+          if (cta) closingCta(cta);
+        });
 
         return () => cleanups.forEach((c) => c?.());
       });

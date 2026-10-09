@@ -46,8 +46,10 @@ export default function Intro() {
 
   usePopHero(rootRef, {
     entrance: (tl, q) => {
-      tl.fromTo(q("[data-whero='hello']"), { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.08 }, 1.2)
-        .fromTo(q("[data-whero='card']"), { scale: 0.6, rotation: -6, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.6, ease: "back.out(2)" }, 1.45)
+      // The column and the form are on screen from the first paint (the form
+      // is large enough to be the LCP); they only settle, transform-only.
+      tl.fromTo(q("[data-whero='hello']"), { y: 16 }, { y: 0, duration: 0.5, stagger: 0.06 }, 0.5)
+        .fromTo(q("[data-whero='card']"), { scale: 0.94, rotation: -3 }, { scale: 1, rotation: 0, duration: 0.6, ease: "back.out(2)" }, 0.7)
         .fromTo(
           q("[data-whero='avatar']"),
           { scale: 0, rotation: -180, x: -30 },
@@ -61,18 +63,7 @@ export default function Intro() {
           2.0,
         )
         .fromTo(q("[data-whero='doodle']"), { scale: 0, rotation: -200, autoAlpha: 0 }, { scale: 1, rotation: -15, autoAlpha: 1, duration: 0.8, ease: "back.out(1.6)" }, 2.2)
-        .fromTo(
-          q("[data-whero='form']"),
-          { y: 160, rotation: 4, autoAlpha: 0 },
-          { y: 0, rotation: 0, autoAlpha: 1, duration: 0.9, ease: "back.out(1.3)" },
-          1.3,
-        )
-        .fromTo(
-          q("[data-whero='form'] label"),
-          { scale: 0.6, autoAlpha: 0 },
-          { scale: 1, autoAlpha: 1, duration: 0.35, stagger: 0.03, ease: "back.out(2.2)" },
-          1.8,
-        );
+        .fromTo(q("[data-whero='form']"), { y: 30, rotation: 1.5 }, { y: 0, rotation: 0, duration: 0.8, ease: "back.out(1.4)" }, 0.5);
       // The "online" dot never stops pulsing.
       const dot = q("[data-whero='online']");
       gsap.fromTo(dot, { boxShadow: "0 0 0 0 rgb(46 194 126 / 0.6)" }, { boxShadow: "0 0 0 10px rgb(46 194 126 / 0)", duration: 1.4, repeat: -1, ease: "power1.out" });
@@ -97,7 +88,7 @@ export default function Intro() {
         </div>
 
         <h1 id="contact-title" aria-label={`${l1} ${l2} ${l3}`} className="mt-[clamp(2rem,3.1vw,3.75rem)] uppercase">
-          <span aria-hidden data-whero="reveal" className="invisible block">
+          <span aria-hidden className="block">
             <span data-whero-line="1" className="ml-[4%] block font-display text-hero-sm leading-[1.07] text-blush sm:ml-[20.7%]">
               <Chars text={l1} />
             </span>
@@ -111,8 +102,7 @@ export default function Intro() {
         </h1>
 
         <div className="mt-[clamp(2.5rem,4.9vw,5.875rem)] grid gap-12 lg:-mr-[clamp(0rem,2.4vw,2.875rem)] lg:grid-cols-[minmax(0,560fr)_minmax(0,960fr)] lg:gap-[clamp(2rem,5.9vw,7.125rem)]">
-          {/* Ships hidden like the lines (`reveal`), so it doesn't flash before the entrance. */}
-          <div data-whero="reveal" className="invisible flex flex-col items-start lg:pt-10">
+          <div className="flex flex-col items-start lg:pt-10">
             <p data-whero="hello" className={kicker}>{contactInfo.sayHello}</p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
@@ -179,7 +169,7 @@ export default function Intro() {
             />
           </div>
 
-          <div data-whero-reveal className="invisible">
+          <div>
             <div data-whero="form">
               <ContactForm />
             </div>

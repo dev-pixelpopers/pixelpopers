@@ -11,14 +11,25 @@
   "pixles-popers / ui deisgn" (node 25:14).
 */
 
+/*
+  WOFF2 first (a third of the OTF's size), and `swap` so text paints straight
+  away in the fallback face instead of staying invisible while it loads.
+  Both are preloaded from the root layout.
+*/
 @font-face {
   font-family: "Nevera";
-  src: url("/assets/fonts/Nevera-Regular.otf") format("opentype");
+  src:
+    url("/assets/fonts/Nevera-Regular.woff2") format("woff2"),
+    url("/assets/fonts/Nevera-Regular.otf") format("opentype");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Haas-Grot";
-  src: url("/assets/fonts/neuehaasgrot.otf") format("opentype");
+  src:
+    url("/assets/fonts/neuehaasgrot.woff2") format("woff2"),
+    url("/assets/fonts/neuehaasgrot.otf") format("opentype");
+  font-display: swap;
 }
 
 :root {
@@ -148,13 +159,4 @@ body {
   --text-card: clamp(1.25rem, 1.46vw, 1.75rem); /* 28 */
   --text-small: clamp(0.9375rem, 1.04vw, 1.25rem); /* 20 */
   --text-micro: clamp(0.8125rem, 0.83vw, 1rem); /* 16 */
-}
-
-/*
-  Service detail pages: their bespoke heroes are animated in by
-  ServicePageMotion, which reveals the section as the entrance starts. Hidden
-  only once the inline script in the root layout has confirmed JS + motion.
-*/
-.motion-ok [data-service-page] section[aria-labelledby="hero-title"] {
-  visibility: hidden;
 }

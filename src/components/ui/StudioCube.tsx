@@ -46,6 +46,14 @@ export default function StudioCube() {
     let playing = -1;
 
     const pick = () => {
+      // In view isn't enough: the cube starts out transparent (tucked under
+      // the hero, waiting for the slider's hand-off), and a playing clip
+      // there would be downloaded for nothing while the page loads.
+      if (Number(gsap.getProperty(root, "opacity")) < 0.05) {
+        clips[playing]?.pause();
+        playing = -1;
+        return;
+      }
       const front = frontFace(
         { y: Number(gsap.getProperty(spin, "rotationY")), x: Number(gsap.getProperty(spin, "rotationX")) },
         { y: Number(gsap.getProperty(turn, "rotationY")), x: Number(gsap.getProperty(turn, "rotationX")) },
@@ -141,7 +149,8 @@ function VideoFace({ index }: { index: number }) {
         poster={project.poster?.src}
         muted
         playsInline
-        preload="metadata"
+        // Nothing loads until a face is actually played (see the effect above).
+        preload="none"
         // Full cube height (74cqw), centred and trimmed by the face — the
         // same framing the slider's clip has as it folds, so nothing jumps
         // at the hand-off.

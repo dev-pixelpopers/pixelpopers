@@ -41,11 +41,6 @@ export default function Hero() {
   usePopHero(rootRef, {
     entrance: (tl, q) => {
       tl.fromTo(
-        q("[data-whero='word']"),
-        { yPercent: 110 },
-        { yPercent: 0, duration: 0.5, stagger: 0.025, ease: "back.out(1.8)" },
-        1.35,
-      ).fromTo(
         q("[data-whero='cta']"),
         { scale: 0, rotation: -25, autoAlpha: 0 },
         { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.55, ease: "back.out(2.4)" },
@@ -78,7 +73,7 @@ export default function Hero() {
         </div>
 
         <h1 id="services-title" aria-label={`${l1} ${l2} ${l3}`} className="mt-[clamp(2rem,3.1vw,3.75rem)] uppercase">
-          <span aria-hidden data-whero="reveal" className="invisible block">
+          <span aria-hidden className="block">
             <span data-whero-line="1" className="ml-[6%] block font-display text-hero-sm leading-[1.07] text-blush sm:ml-[20.7%]">
               <Chars text={l1} />
             </span>
@@ -97,10 +92,8 @@ export default function Hero() {
           </span>
         </h1>
 
-        {/* Ships hidden like the lines (`reveal`), so it doesn't flash before the entrance. */}
         <div
-          data-whero="reveal"
-          className="invisible mt-[clamp(1.75rem,4.6vw,5.5rem)] flex flex-wrap items-center gap-x-[clamp(2rem,4.7vw,5.625rem)] gap-y-6 sm:ml-[20.7%]"
+          className="mt-[clamp(1.75rem,4.6vw,5.5rem)] flex flex-wrap items-center gap-x-[clamp(2rem,4.7vw,5.625rem)] gap-y-6 sm:ml-[20.7%]"
         >
           <p data-whero="intro-out" className="max-w-[clamp(18rem,32.3vw,38.75rem)] font-copy text-body leading-[1.64] font-light text-ink">
             {servicesHero.intro.split(" ").map((word, i) => (
@@ -113,7 +106,8 @@ export default function Hero() {
               </Fragment>
             ))}
           </p>
-          <div data-whero="cta-burst" className="relative">
+          {/* The button ships hidden (small — never the LCP) so it doesn't flash before it pops. */}
+          <div data-whero="cta-burst" data-whero-reveal className="invisible relative">
             <div data-whero="cta-out">
               <div data-whero="cta">
                 <PopButton href={servicesHero.cta.href} label={servicesHero.cta.label} className="[&>span:last-child]:text-ink" />

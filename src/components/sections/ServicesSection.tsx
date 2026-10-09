@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef, type CSSProperties } from "react";
 
+import { deferSetup } from "@/lib/defer-setup";
 import ServiceTile from "@/components/ui/ServiceTile";
 import { CUBE_TRAVEL_VH, STUDIO_EXIT_VH, STUDIO_UNWIND_VH } from "@/components/ui/studio-cube-motion";
 import { services } from "@/lib/site-content";
@@ -33,24 +34,30 @@ export default function ServicesSection() {
   const rootRef = useRef<HTMLElement>(null);
 
   useGSAP(
-    () => {
-      const section = rootRef.current;
-      if (!section) return;
-      const q = gsap.utils.selector(section);
-      const media = gsap.matchMedia();
+    (_context, contextSafe) => {
+      // Far below the fold: set up in its own short task after load rather
+      // than in the initial commit (see deferSetup).
+      return deferSetup(
+        contextSafe!(() => {
+        const section = rootRef.current;
+        if (!section) return;
+        const q = gsap.utils.selector(section);
+        const media = gsap.matchMedia();
 
-      media.add("(prefers-reduced-motion: no-preference)", () => {
-        // Bursts sit on the letters themselves; re-placed whenever the grid
-        // resizes (which includes the display font swapping in).
-        placeBursts(q);
-        const grid = q("[data-service='grid']")[0];
-        const observer = new ResizeObserver(() => placeBursts(q));
-        if (grid) observer.observe(grid);
+        media.add("(prefers-reduced-motion: no-preference)", () => {
+          // Bursts sit on the letters themselves; re-placed whenever the grid
+          // resizes (which includes the display font swapping in).
+          placeBursts(q);
+          const grid = q("[data-service='grid']")[0];
+          const observer = new ResizeObserver(() => placeBursts(q));
+          if (grid) observer.observe(grid);
 
-        bubblePop(q, section);
+          bubblePop(q, section);
 
-        return () => observer.disconnect();
-      });
+          return () => observer.disconnect();
+        });
+        }),
+      );
     },
     { scope: rootRef },
   );
@@ -71,7 +78,7 @@ export default function ServicesSection() {
       <div className="top-[clamp(3rem,7vw,8rem)] motion-safe:sticky">
         <div
           data-service="grid"
-          className="grid grid-cols-1 gap-x-[clamp(1rem,4vw,5rem)] gap-y-[clamp(1rem,3vw,3.5rem)] sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-2 gap-x-[clamp(1rem,4vw,5rem)] gap-y-[clamp(1rem,3vw,3.5rem)] lg:grid-cols-3"
         >
           {services.map((service, i) => (
             <ServiceTile

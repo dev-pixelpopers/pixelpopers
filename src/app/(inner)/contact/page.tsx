@@ -4,12 +4,13 @@ import Intro from "@/components/inner/contact/Intro";
 import { AfterSend, Channels, ChatFaq, NextSteps, WhereWhen } from "@/components/inner/contact/Sections";
 import QuoteCards from "@/components/inner/services-overview/QuoteCards";
 import { CONTACT_EMAIL, contactMeta, contactTestimonials } from "@/lib/pages/contact";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: contactMeta.title,
   description: contactMeta.description,
   alternates: { canonical: "/contact" },
-  openGraph: { title: contactMeta.title, description: contactMeta.description, type: "website", url: "/contact" },
+  openGraph: { title: contactMeta.title, description: contactMeta.description, type: "website", url: "/contact", images: [DEFAULT_OG_IMAGE] },
 };
 
 const SITE = "https://pixelpopers.vercel.app";

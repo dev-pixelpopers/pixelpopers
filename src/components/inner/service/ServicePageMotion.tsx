@@ -10,6 +10,7 @@ import {
   burst,
   closingCta,
   ENTER,
+  POP_WAVE,
   headingIn,
   one,
   paragraphs,
@@ -20,6 +21,7 @@ import {
   squashPop,
   tipInCards,
 } from "@/components/inner/motion/kit";
+import { idleSetup } from "@/lib/defer-setup";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -28,10 +30,10 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
   pages keep their own effects — typing, floats, strikes, gauges… — on top).
 
   - The hero, found by its `#hero-title`, works on whatever markup the concept
-    uses: on load the headline lines pop in (rise through a mask, drop in
-    blurred, squash-and-stretch), the rest of the text column follows and the
-    artwork springs in; on scroll the lines split apart and the hero eases
-    away. It ships hidden (see globals.css) so it never flashes first.
+    uses: on load the headline lines hop in a squash-and-stretch wave and the
+    rest settles into place — transform-only, since the hero holds the page's
+    Largest Contentful Paint and must be visible from the first paint; on
+    scroll the lines split apart and the hero eases away.
   - Every `data-reveal` block rises and untilts, every `data-reveal-stagger`
     group's children tip up in 3D — scrubbed, so they play backwards on the
     way up. Headings (`data-wm="heading"`) rise word by word instead.
@@ -52,44 +54,18 @@ function hero(scope: HTMLElement) {
   const grid = textCol.parentElement!;
   const art = (Array.from(grid.children) as HTMLElement[]).filter((el) => el !== textCol && !el.matches("[aria-hidden]:empty"));
 
-  const [l1, l2, l3, ...rest] = lines;
-  if (l3) gsap.set(l3, { transformOrigin: "0% 100%", autoAlpha: 0, scaleX: 0, scaleY: 0 });
-  gsap.set(section, { autoAlpha: 1 });
+  const [l1, l2, l3] = lines;
 
+  // Everything in the hero is on screen from the first paint — the headline
+  // (or the artwork) is the page's Largest Contentful Paint, so nothing here
+  // is hidden until JavaScript runs. The entrance is transform-only: the
+  // lines hop in a squash-and-stretch wave, the rest settles into place.
   const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-  tl.fromTo(before, { y: -14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6 }, 0.15);
-  if (l1) tl.fromTo(l1, { clipPath: "inset(100% -20% -10% -20%)", yPercent: 40 }, { clipPath: "inset(-20% -20% -10% -20%)", yPercent: 0, duration: 0.8, ease: "power4.out" }, 0.3);
-  if (l2) {
-    tl.fromTo(
-      l2,
-      { yPercent: -60, rotation: -4, filter: "blur(12px)", autoAlpha: 0 },
-      { yPercent: 0, rotation: 0, filter: "blur(0px)", autoAlpha: 1, duration: 0.8, ease: "back.out(1.7)", clearProps: "filter" },
-      0.6,
-    );
-  }
-  if (l3) {
-    tl.to(
-      l3,
-      {
-        keyframes: [
-          { autoAlpha: 1, scaleX: 1.25, scaleY: 0.6, duration: 0.18, ease: "power2.out" },
-          { scaleX: 0.9, scaleY: 1.18, duration: 0.14, ease: "power1.inOut" },
-          { scaleX: 1, scaleY: 1, duration: 0.5, ease: "elastic.out(1, 0.45)" },
-        ],
-      },
-      1.0,
-    );
-  }
-  if (rest.length) tl.fromTo(rest, { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.1 }, 1.2);
-  tl.fromTo(after, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.12, ease: "back.out(1.6)" }, 1.25);
-  if (art.length) {
-    tl.fromTo(
-      art,
-      { y: 120, scale: 0.86, rotation: 4, autoAlpha: 0 },
-      { y: 0, scale: 1, rotation: 0, autoAlpha: 1, duration: 1.1, stagger: 0.12, ease: "back.out(1.3)" },
-      0.55,
-    );
-  }
+  gsap.set(lines, { transformOrigin: "0% 100%" });
+  tl.fromTo(before, { y: -10 }, { y: 0, duration: 0.5 }, 0.1);
+  lines.forEach((line, i) => tl.to(line, { keyframes: POP_WAVE }, 0.2 + i * 0.22));
+  tl.fromTo(after, { y: 16 }, { y: 0, duration: 0.6, stagger: 0.08, ease: "back.out(1.6)" }, 0.6);
+  if (art.length) tl.fromTo(art, { y: 30, scale: 0.96, rotation: 1.5 }, { y: 0, scale: 1, rotation: 0, duration: 0.9, stagger: 0.1, ease: "back.out(1.4)" }, 0.4);
 
   // Exit: the lines split apart (x / rotation / y — never what the entrance
   // animates on them), the headline and text column fade, the hero eases back.
@@ -205,14 +181,16 @@ export default function ServicePageMotion({ children, className = "" }: { childr
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const scope = root.current;
       if (!scope) return;
       const media = gsap.matchMedia();
       media.add("(prefers-reduced-motion: no-preference)", () => {
         const cleanups: (void | (() => void))[] = [];
+        // One idle task per section instead of one long task at hydration
+        // (see idleSetup).
         const each = (sel: string, fn: (el: HTMLElement) => void | (() => void)) =>
-          all(scope, sel).forEach((el) => cleanups.push(fn(el)));
+          cleanups.push(idleSetup(contextSafe!(() => all(scope, sel).forEach((el) => cleanups.push(fn(el))))));
 
         hero(scope);
         each("[data-wm='heading']", headingIn);

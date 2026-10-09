@@ -11,12 +11,13 @@ import Studio from "@/components/inner/about/Studio";
 import Closing from "@/components/inner/about/Closing";
 import { aboutMeta, fullStory } from "@/lib/pages/about";
 import { owners } from "@/lib/site-content";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: aboutMeta.title,
   description: aboutMeta.description,
   alternates: { canonical: "/about" },
-  openGraph: { title: aboutMeta.title, description: aboutMeta.description, type: "website", url: "/about" },
+  openGraph: { title: aboutMeta.title, description: aboutMeta.description, type: "website", url: "/about", images: [DEFAULT_OG_IMAGE] },
 };
 
 const SITE = "https://pixelpopers.vercel.app";

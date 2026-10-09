@@ -12,6 +12,7 @@ import {
   TrendingTags,
 } from "@/components/inner/blog/Sections";
 import { blogMeta, posts } from "@/lib/pages/blog";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: blogMeta.title,
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
     description: blogMeta.description,
     type: "website",
     url: "/blog",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

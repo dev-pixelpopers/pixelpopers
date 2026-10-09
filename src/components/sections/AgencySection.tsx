@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { Fragment, useRef, type CSSProperties } from "react";
 
+import { deferSetup } from "@/lib/defer-setup";
 import { AGENCY_EXIT_VH, AGENCY_UNWIND_VH } from "@/components/sections/agency-motion";
 import BrandLogo from "@/components/ui/BrandLogo";
 import ClientCard from "@/components/ui/ClientCard";
@@ -328,280 +329,286 @@ export default function AgencySection({
   const stageRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
-    () => {
-      const stage = stageRef.current;
-      if (!stage) return;
-      const q = gsap.utils.selector(stage);
-      const media = gsap.matchMedia();
+    (_context, contextSafe) => {
+      // Far below the fold: set up in its own short task after load rather
+      // than in the initial commit (see deferSetup).
+      return deferSetup(
+        contextSafe!(() => {
+        const stage = stageRef.current;
+        if (!stage) return;
+        const q = gsap.utils.selector(stage);
+        const media = gsap.matchMedia();
 
-      media.add("(prefers-reduced-motion: no-preference)", () => {
-        // Measured lazily and dropped on every refresh, so a resize re-derives
-        // the whole choreography from the new layout.
-        let layout: Layout | null = null;
-        const L = () => (layout ??= measureLayout(stage));
-        const forget = () => {
-          layout = null;
-        };
-
-        const cardEls = q("[data-agency='card']") as HTMLElement[];
-        const folderLayers = q("[data-agency='folder-layer']");
-        const header = q("[data-agency='header']");
-        // The entrance and the exit each move their own element: the exit
-        // drives an `*-out` wrapper around what the entrance drives. Both are
-        // scrubbed with a little lag, so on a quick scroll the entrance can
-        // still be catching up after the exit has started; sharing one
-        // element, its last frames would land on top of the exit's.
-        const ctaEl = q("[data-agency='cta']");
-        const ctaOut = q("[data-agency='cta-out']");
-        const wordEls = q("[data-agency='word']");
-        const wordsOut = q("[data-agency='word-out']");
-        gsap.set(folderLayers, { transformOrigin: "50% 50%" });
-        gsap.set(header, { transformOrigin: "50% 0%" });
-
-        // Cards and folder are posed every frame from plain progress values,
-        // so their arcs are always worked out from the current layout.
-        //   per card: fly / land (popping out), back (returning on the exit)
-        //   section:  move / unmove (folder docking and back), spit, swell, pop
-        const P: Proxies[] = cardEls.map(() => ({ fly: 0, land: 0, back: 0 }));
-        // Every section-wide value starts at 0, including the exit's, which are
-        // only driven when the section has an exit.
-        const G: Proxies = { move: 0, unmove: 0, spit: 0, swell: 0, pop: 0 };
-
-        const cardPose = (i: number, l: Layout): Pose => {
-          const c = l.cards[i];
-          const p = P[i];
-          // On the way out the same throw plays backwards.
-          const a = p.back > 0 ? 1 - p.back : p.fly;
-          if (a <= 0) return c.pile;
-          const to = l.strewn[i];
-          // A real throw: steady sideways, a parabola up and back down.
-          const h = Math.max(0.2 * l.stageH, (c.pile.y - to.y) * 0.5);
-          const squash = p.back > 0 ? 0 : bump(p.land) * (1 - p.land);
-          return {
-            x: lerp(c.pile.x, to.x, a),
-            y: lerp(c.pile.y, to.y, a) - 4 * h * a * (1 - a),
-            scale: lerp(c.pile.scale, to.scale, a),
-            rotation: lerp(c.pile.rotation, to.rotation, a) + (i % 2 ? 360 : -360) * a,
-            sx: 1 + 0.3 * squash,
-            sy: 1 - 0.3 * squash,
+        media.add("(prefers-reduced-motion: no-preference)", () => {
+          // Measured lazily and dropped on every refresh, so a resize re-derives
+          // the whole choreography from the new layout.
+          let layout: Layout | null = null;
+          const L = () => (layout ??= measureLayout(stage));
+          const forget = () => {
+            layout = null;
           };
-        };
 
-        const applyAll = () => {
-          const l = L();
-          cardEls.forEach((el, i) => {
-            const pose = cardPose(i, l);
+          const cardEls = q("[data-agency='card']") as HTMLElement[];
+          const folderLayers = q("[data-agency='folder-layer']");
+          const header = q("[data-agency='header']");
+          // The entrance and the exit each move their own element: the exit
+          // drives an `*-out` wrapper around what the entrance drives. Both are
+          // scrubbed with a little lag, so on a quick scroll the entrance can
+          // still be catching up after the exit has started; sharing one
+          // element, its last frames would land on top of the exit's.
+          const ctaEl = q("[data-agency='cta']");
+          const ctaOut = q("[data-agency='cta-out']");
+          const wordEls = q("[data-agency='word']");
+          const wordsOut = q("[data-agency='word-out']");
+          gsap.set(folderLayers, { transformOrigin: "50% 50%" });
+          gsap.set(header, { transformOrigin: "50% 0%" });
+
+          // Cards and folder are posed every frame from plain progress values,
+          // so their arcs are always worked out from the current layout.
+          //   per card: fly / land (popping out), back (returning on the exit)
+          //   section:  move / unmove (folder docking and back), spit, swell, pop
+          const P: Proxies[] = cardEls.map(() => ({ fly: 0, land: 0, back: 0 }));
+          // Every section-wide value starts at 0, including the exit's, which are
+          // only driven when the section has an exit.
+          const G: Proxies = { move: 0, unmove: 0, spit: 0, swell: 0, pop: 0 };
+
+          const cardPose = (i: number, l: Layout): Pose => {
             const c = l.cards[i];
-            gsap.set(el, {
-              x: pose.x - c.cx,
-              y: pose.y - c.cy,
-              rotation: pose.rotation,
-              scaleX: pose.scale * (pose.sx ?? 1),
-              scaleY: pose.scale * (pose.sy ?? 1),
+            const p = P[i];
+            // On the way out the same throw plays backwards.
+            const a = p.back > 0 ? 1 - p.back : p.fly;
+            if (a <= 0) return c.pile;
+            const to = l.strewn[i];
+            // A real throw: steady sideways, a parabola up and back down.
+            const h = Math.max(0.2 * l.stageH, (c.pile.y - to.y) * 0.5);
+            const squash = p.back > 0 ? 0 : bump(p.land) * (1 - p.land);
+            return {
+              x: lerp(c.pile.x, to.x, a),
+              y: lerp(c.pile.y, to.y, a) - 4 * h * a * (1 - a),
+              scale: lerp(c.pile.scale, to.scale, a),
+              rotation: lerp(c.pile.rotation, to.rotation, a) + (i % 2 ? 360 : -360) * a,
+              sx: 1 + 0.3 * squash,
+              sy: 1 - 0.3 * squash,
+            };
+          };
+
+          const applyAll = () => {
+            const l = L();
+            cardEls.forEach((el, i) => {
+              const pose = cardPose(i, l);
+              const c = l.cards[i];
+              gsap.set(el, {
+                x: pose.x - c.cx,
+                y: pose.y - c.cy,
+                rotation: pose.rotation,
+                scaleX: pose.scale * (pose.sx ?? 1),
+                scaleY: pose.scale * (pose.sy ?? 1),
+              });
             });
-          });
 
-          // The folder kicks as each card leaves it, and again as each comes
-          // back in; on the exit it swells, trembles and bursts.
-          const kick = Math.max(
-            bump(G.spit),
-            ...P.map((p) => (p.back > 0 ? bump(1 - p.back, 0.2) : bump(p.fly, 0.2))),
-          );
-          const m = G.move - G.unmove;
-          const scale = lerp(l.startScale, 1, m) * (1 + 0.18 * G.swell + 0.35 * G.pop);
-          gsap.set(folderLayers, {
-            y: lerp(l.folderStartY, l.folderEndY, m),
-            scaleX: scale * (1 + 0.07 * kick),
-            scaleY: scale * (1 - 0.1 * kick),
-            rotation: Math.sin(G.swell * Math.PI * 14) * 4 * G.swell,
-          });
-        };
+            // The folder kicks as each card leaves it, and again as each comes
+            // back in; on the exit it swells, trembles and bursts.
+            const kick = Math.max(
+              bump(G.spit),
+              ...P.map((p) => (p.back > 0 ? bump(1 - p.back, 0.2) : bump(p.fly, 0.2))),
+            );
+            const m = G.move - G.unmove;
+            const scale = lerp(l.startScale, 1, m) * (1 + 0.18 * G.swell + 0.35 * G.pop);
+            gsap.set(folderLayers, {
+              y: lerp(l.folderStartY, l.folderEndY, m),
+              scaleX: scale * (1 + 0.07 * kick),
+              scaleY: scale * (1 - 0.1 * kick),
+              rotation: Math.sin(G.swell * Math.PI * 14) * 4 * G.swell,
+            });
+          };
 
-        let dirty = true;
-        const mark = () => {
-          dirty = true;
-        };
-        const tick = () => {
-          if (!dirty) return;
-          dirty = false;
-          applyAll();
-        };
+          let dirty = true;
+          const mark = () => {
+            dirty = true;
+          };
+          const tick = () => {
+            if (!dirty) return;
+            dirty = false;
+            applyAll();
+          };
 
-        // Invalidating clears every tween's recorded start, but only the ones
-        // at the playhead re-render; sweeping to the end and back re-renders
-        // them all at the current progress. `self.animation`, not the
-        // timeline: the first refresh can fire while it's being built.
-        const sweep = (self: ScrollTrigger) => {
-          const anim = self.animation;
-          if (!anim) return;
-          const progress = anim.progress();
-          anim.progress(1, true).progress(progress, true);
-          mark();
-        };
+          // Invalidating clears every tween's recorded start, but only the ones
+          // at the playhead re-render; sweeping to the end and back re-renders
+          // them all at the current progress. `self.animation`, not the
+          // timeline: the first refresh can fire while it's being built.
+          const sweep = (self: ScrollTrigger) => {
+            const anim = self.animation;
+            if (!anim) return;
+            const progress = anim.progress();
+            anim.progress(1, true).progress(progress, true);
+            mark();
+          };
 
-        const timeline = (scrollTrigger: ScrollTrigger.Vars) =>
-          gsap.timeline({
-            defaults: { ease: "power2.inOut" },
-            scrollTrigger: {
-              trigger: trackRef.current,
-              scrub: 1,
-              invalidateOnRefresh: true,
-              onRefresh: sweep,
-              ...scrollTrigger,
-            },
-          });
-
-        const drive = (tl: gsap.core.Timeline, target: Proxies, key: string, at: number, duration: number, ease = "none") => {
-          target[key] = 0;
-          tl.fromTo(target, { [key]: 0 }, { [key]: 1, duration, ease, onUpdate: mark }, at);
-        };
-
-        // ── Entrance ───────────────────────────────────────────────────────
-        // The pin is CSS `sticky`; ScrollTrigger only reports progress. The
-        // last stretch of the track belongs to the exit.
-        const tl = timeline({
-          start: "top top",
-          end: () => (exit ? `bottom-=${vh(AGENCY_EXIT_VH)} bottom` : "bottom bottom"),
-        });
-
-        tl.fromTo(header, { scale: 1 }, { scale: () => L().headerScale, duration: 0.8 }, 0);
-        P.forEach((p, i) => {
-          const t = 0.5 + i * 0.2;
-          drive(tl, p, "fly", t, 0.9);
-          drive(tl, p, "land", t + 0.9, 0.3);
-        });
-        drive(tl, G, "move", 4.3, 1, "power2.inOut");
-        if (wordEls.length) {
-          tl.fromTo(
-            wordEls,
-            { yPercent: 110, rotation: 6 },
-            { yPercent: 0, rotation: 0, duration: 0.5, stagger: 0.03, ease: "back.out(2)" },
-            5.0,
-          );
-        }
-        // The button springs out of the docked folder's mouth into its place.
-        drive(tl, G, "spit", 5.4, 0.35);
-        if (ctaEl.length) {
-          tl.fromTo(ctaEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none" }, 5.45).fromTo(
-            ctaEl,
-            {
-              x: () => L().mouth.x - L().cta.x,
-              y: () => L().mouth.y - L().cta.y,
-              scale: 0.3,
-              rotation: -20,
-            },
-            { x: 0, y: () => L().shift, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.8)", immediateRender: false },
-            5.45,
-          );
-        }
-        tl.fromTo(q("[data-agency='lines']"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: "none" }, 5.4)
-          // Dwell on the finished frame before the exit takes over.
-          .to({}, { duration: 0.8 });
-
-        if (exit) {
-          // ── Exit ───────────────────────────────────────────────────────────
-          // Scrubbed over the first AGENCY_UNWIND_VH of the exit; every tween
-          // starts from the entrance's end state with `immediateRender: false`,
-          // so before the exit starts it renders exactly what the entrance left.
-          const off = { immediateRender: false } as const;
-          const exit = timeline({
-            start: () => `bottom-=${vh(AGENCY_EXIT_VH)} bottom`,
-            end: () => `bottom-=${vh(AGENCY_EXIT_VH - AGENCY_UNWIND_VH)} bottom`,
-          });
-
-          // Last in, first out: the hairlines, the button back into the folder…
-          // (The button's wrapper sits where the button's layout box is, while
-          // the button itself has been moved down by `shift`, so the wrapper
-          // turns and shrinks about the button's actual centre.)
-          exit
-            .fromTo(q("[data-agency='lines-out']"), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.4, ease: "none", ...off }, 0)
-            .fromTo(
-              ctaOut,
-              {
-                x: 0,
-                y: 0,
-                scale: 1,
-                rotation: 0,
-                transformOrigin: () => `${L().cta.w / 2}px ${L().cta.h / 2 + L().shift}px`,
+          const timeline = (scrollTrigger: ScrollTrigger.Vars) =>
+            gsap.timeline({
+              defaults: { ease: "power2.inOut" },
+              scrollTrigger: {
+                trigger: trackRef.current,
+                scrub: 1,
+                invalidateOnRefresh: true,
+                onRefresh: sweep,
+                ...scrollTrigger,
               },
+            });
+
+          const drive = (tl: gsap.core.Timeline, target: Proxies, key: string, at: number, duration: number, ease = "none") => {
+            target[key] = 0;
+            tl.fromTo(target, { [key]: 0 }, { [key]: 1, duration, ease, onUpdate: mark }, at);
+          };
+
+          // ── Entrance ───────────────────────────────────────────────────────
+          // The pin is CSS `sticky`; ScrollTrigger only reports progress. The
+          // last stretch of the track belongs to the exit.
+          const tl = timeline({
+            start: "top top",
+            end: () => (exit ? `bottom-=${vh(AGENCY_EXIT_VH)} bottom` : "bottom bottom"),
+          });
+
+          tl.fromTo(header, { scale: 1 }, { scale: () => L().headerScale, duration: 0.8 }, 0);
+          P.forEach((p, i) => {
+            const t = 0.5 + i * 0.2;
+            drive(tl, p, "fly", t, 0.9);
+            drive(tl, p, "land", t + 0.9, 0.3);
+          });
+          drive(tl, G, "move", 4.3, 1, "power2.inOut");
+          if (wordEls.length) {
+            tl.fromTo(
+              wordEls,
+              { yPercent: 110, rotation: 6 },
+              { yPercent: 0, rotation: 0, duration: 0.5, stagger: 0.03, ease: "back.out(2)" },
+              5.0,
+            );
+          }
+          // The button springs out of the docked folder's mouth into its place.
+          drive(tl, G, "spit", 5.4, 0.35);
+          if (ctaEl.length) {
+            tl.fromTo(ctaEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: "none" }, 5.45).fromTo(
+              ctaEl,
               {
                 x: () => L().mouth.x - L().cta.x,
-                y: () => L().mouth.y - L().cta.y - L().shift,
+                y: () => L().mouth.y - L().cta.y,
                 scale: 0.3,
                 rotation: -20,
-                duration: 0.6,
-                ease: "back.in(1.6)",
-                ...off,
               },
-              0,
-            )
-            .fromTo(ctaOut, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", ...off }, 0.6)
-            // …the paragraph drops away, last word first…
-            .fromTo(
-              wordsOut,
-              { yPercent: 0, rotation: 0 },
-              { yPercent: 110, rotation: 6, duration: 0.4, stagger: { each: 0.015, from: "end" }, ease: "power2.in", ...off },
-              0.1,
+              { x: 0, y: () => L().shift, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.8)", immediateRender: false },
+              5.45,
             );
-          drive(exit, G, "unmove", 0.6, 0.8, "power2.inOut");
-          // …every card arcs back into the folder, the last one out first…
-          P.forEach((p, i) => drive(exit, p, "back", 1.2 + (P.length - 1 - i) * 0.08, 0.7));
-          // …the headline leaves…
-          exit.fromTo(
-            header,
-            { y: 0, autoAlpha: 1 },
-            { y: () => L().headerExitY, autoAlpha: 0, duration: 0.6, ease: "power2.in", ...off },
-            2.9,
-          );
-          // …and the stuffed folder swells, trembles and pops.
-          drive(exit, G, "swell", 3.3, 0.6, "power1.in");
-          drive(exit, G, "pop", 3.9, 0.15, "power2.out");
-          exit
-            .fromTo(
-              [...folderLayers, ...q("[data-agency='grid']")],
-              { autoAlpha: 1 },
-              { autoAlpha: 0, duration: 0.12, ease: "none", ...off },
+          }
+          tl.fromTo(q("[data-agency='lines']"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: "none" }, 5.4)
+            // Dwell on the finished frame before the exit takes over.
+            .to({}, { duration: 0.8 });
+
+          if (exit) {
+            // ── Exit ───────────────────────────────────────────────────────────
+            // Scrubbed over the first AGENCY_UNWIND_VH of the exit; every tween
+            // starts from the entrance's end state with `immediateRender: false`,
+            // so before the exit starts it renders exactly what the entrance left.
+            const off = { immediateRender: false } as const;
+            const exit = timeline({
+              start: () => `bottom-=${vh(AGENCY_EXIT_VH)} bottom`,
+              end: () => `bottom-=${vh(AGENCY_EXIT_VH - AGENCY_UNWIND_VH)} bottom`,
+            });
+
+            // Last in, first out: the hairlines, the button back into the folder…
+            // (The button's wrapper sits where the button's layout box is, while
+            // the button itself has been moved down by `shift`, so the wrapper
+            // turns and shrinks about the button's actual centre.)
+            exit
+              .fromTo(q("[data-agency='lines-out']"), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.4, ease: "none", ...off }, 0)
+              .fromTo(
+                ctaOut,
+                {
+                  x: 0,
+                  y: 0,
+                  scale: 1,
+                  rotation: 0,
+                  transformOrigin: () => `${L().cta.w / 2}px ${L().cta.h / 2 + L().shift}px`,
+                },
+                {
+                  x: () => L().mouth.x - L().cta.x,
+                  y: () => L().mouth.y - L().cta.y - L().shift,
+                  scale: 0.3,
+                  rotation: -20,
+                  duration: 0.6,
+                  ease: "back.in(1.6)",
+                  ...off,
+                },
+                0,
+              )
+              .fromTo(ctaOut, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01, ease: "none", ...off }, 0.6)
+              // …the paragraph drops away, last word first…
+              .fromTo(
+                wordsOut,
+                { yPercent: 0, rotation: 0 },
+                { yPercent: 110, rotation: 6, duration: 0.4, stagger: { each: 0.015, from: "end" }, ease: "power2.in", ...off },
+                0.1,
+              );
+            drive(exit, G, "unmove", 0.6, 0.8, "power2.inOut");
+            // …every card arcs back into the folder, the last one out first…
+            P.forEach((p, i) => drive(exit, p, "back", 1.2 + (P.length - 1 - i) * 0.08, 0.7));
+            // …the headline leaves…
+            exit.fromTo(
+              header,
+              { y: 0, autoAlpha: 1 },
+              { y: () => L().headerExitY, autoAlpha: 0, duration: 0.6, ease: "power2.in", ...off },
+              2.9,
+            );
+            // …and the stuffed folder swells, trembles and pops.
+            drive(exit, G, "swell", 3.3, 0.6, "power1.in");
+            drive(exit, G, "pop", 3.9, 0.15, "power2.out");
+            exit
+              .fromTo(
+                [...folderLayers, ...q("[data-agency='grid']")],
+                { autoAlpha: 1 },
+                { autoAlpha: 0, duration: 0.12, ease: "none", ...off },
+                3.9,
+              )
+              .set(q("[data-agency='pop-ring']"), { scale: 0.3, autoAlpha: 1 }, 3.9)
+              .to(q("[data-agency='pop-ring']"), { scale: 2.4, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 3.9);
+            const pieces = q("[data-agency='pop-piece']");
+            const reach = () => L().W * L().startScale * 1.1;
+            exit.set(pieces, { x: 0, y: 0, rotation: 0, scale: 1.3, autoAlpha: 1 }, 3.9).to(
+              pieces,
+              {
+                x: (i) => Math.cos((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
+                y: (i) => Math.sin((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
+                rotation: (i) => (rand(i, 3) - 0.5) * 720,
+                scale: 0.3,
+                autoAlpha: 0,
+                duration: 0.7,
+                ease: "power3.out",
+              },
               3.9,
-            )
-            .set(q("[data-agency='pop-ring']"), { scale: 0.3, autoAlpha: 1 }, 3.9)
-            .to(q("[data-agency='pop-ring']"), { scale: 2.4, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 3.9);
-          const pieces = q("[data-agency='pop-piece']");
-          const reach = () => L().W * L().startScale * 1.1;
-          exit.set(pieces, { x: 0, y: 0, rotation: 0, scale: 1.3, autoAlpha: 1 }, 3.9).to(
-            pieces,
-            {
-              x: (i) => Math.cos((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
-              y: (i) => Math.sin((i / pieces.length) * Math.PI * 2 + rand(i) * 0.5) * reach() * (0.6 + rand(i, 2) * 0.6),
-              rotation: (i) => (rand(i, 3) - 0.5) * 720,
-              scale: 0.3,
-              autoAlpha: 0,
-              duration: 0.7,
-              ease: "power3.out",
-            },
-            3.9,
-          );
-          exit.to({}, { duration: 0.1 });
-        }
+            );
+            exit.to({}, { duration: 0.1 });
+          }
 
-        // The pop sits where the folder will be when it bursts (its opening
-        // spot), and the copy row rides with the docked folder.
-        const place = () => {
-          const l = L();
-          gsap.set(q("[data-agency='pop']"), { y: l.folderStartY, scale: l.startScale });
-          if (copy) gsap.set(q("[data-agency='copy']"), { y: l.shift });
-          applyAll();
-        };
-        place();
+          // The pop sits where the folder will be when it bursts (its opening
+          // spot), and the copy row rides with the docked folder.
+          const place = () => {
+            const l = L();
+            gsap.set(q("[data-agency='pop']"), { y: l.folderStartY, scale: l.startScale });
+            if (copy) gsap.set(q("[data-agency='copy']"), { y: l.shift });
+            applyAll();
+          };
+          place();
 
-        ScrollTrigger.addEventListener("refreshInit", forget);
-        ScrollTrigger.addEventListener("refresh", place);
-        gsap.ticker.add(tick);
-        return () => {
-          ScrollTrigger.removeEventListener("refreshInit", forget);
-          ScrollTrigger.removeEventListener("refresh", place);
-          gsap.ticker.remove(tick);
-        };
-      });
+          ScrollTrigger.addEventListener("refreshInit", forget);
+          ScrollTrigger.addEventListener("refresh", place);
+          gsap.ticker.add(tick);
+          return () => {
+            ScrollTrigger.removeEventListener("refreshInit", forget);
+            ScrollTrigger.removeEventListener("refresh", place);
+            gsap.ticker.remove(tick);
+          };
+        });
+        }),
+      );
     },
     { scope: trackRef },
   );
@@ -658,16 +665,17 @@ export default function AgencySection({
           </div>
 
           {/*
-            The dock: paragraph | folder | button on wide screens, stacked
+            The dock: paragraph | folder | button from lg (at md the folder left the paragraph a
+            one-word column), stacked
             above the folder on narrow ones. None of these wrappers is
             positioned, so the folder's back (z-0) and frosted front (z-20)
             still interleave with the cards and copy (z-10) at stage level.
           */}
-          <div className="shell mt-auto flex flex-col items-center gap-[clamp(1rem,2.5vw,2rem)] motion-reduce:mt-0 md:flex-row md:justify-center md:gap-[clamp(1.5rem,3vw,3.5rem)]">
+          <div className="shell mt-auto flex flex-col items-center gap-[clamp(1rem,2.5vw,2rem)] motion-reduce:mt-0 lg:flex-row lg:justify-center lg:gap-[clamp(1.5rem,3vw,3.5rem)]">
             {copy ? (
               <div
                 data-agency="copy"
-                className="relative z-10 order-1 max-w-[40rem] md:max-w-[26rem] md:flex-1 md:text-right"
+                className="relative z-10 order-1 max-w-[40rem] text-center lg:max-w-[26rem] lg:flex-1 lg:text-right"
               >
                 <p className="text-body leading-[1.64] text-ink capitalize">
                   {words.map((word, i) => (
@@ -687,7 +695,7 @@ export default function AgencySection({
 
             <div
               data-agency="folder"
-              className="relative order-3 aspect-[334/289] w-[min(70vw,21rem)] shrink-0 md:order-2"
+              className="relative order-3 aspect-[334/289] w-[min(70vw,21rem)] shrink-0 lg:order-2"
             >
               <div data-agency="folder-layer" aria-hidden className="absolute inset-0 z-0">
                 <Image
@@ -740,7 +748,7 @@ export default function AgencySection({
             </div>
 
             {cta ? (
-              <div className="order-2 flex justify-center md:order-3 md:max-w-[26rem] md:flex-1 md:justify-start">
+              <div className="order-2 flex justify-center lg:order-3 lg:max-w-[26rem] lg:flex-1 lg:justify-start">
                 <div data-agency="cta-out" className="relative z-10">
                   <div data-agency="cta">
                     <PopButton href={cta.href} label={cta.label} />

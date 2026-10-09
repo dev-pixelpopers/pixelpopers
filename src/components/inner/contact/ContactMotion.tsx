@@ -16,6 +16,7 @@ import {
   squashPop,
   tipInCards,
 } from "@/components/inner/motion/kit";
+import { idleSetup } from "@/lib/defer-setup";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -96,12 +97,16 @@ export default function ContactMotion({ children, className = "" }: { children: 
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const scope = root.current;
       if (!scope) return;
       const media = gsap.matchMedia();
       media.add("(prefers-reduced-motion: no-preference)", () => {
-        const each = (sel: string, fn: (el: HTMLElement) => void) => all(scope, sel).forEach(fn);
+        // One idle task per section instead of one long task at hydration
+        // (see idleSetup).
+        const cancels: (() => void)[] = [];
+        const each = (sel: string, fn: (el: HTMLElement) => void) =>
+          cancels.push(idleSetup(contextSafe!(() => all(scope, sel).forEach(fn))));
         each("[data-wm='heading']", headingIn);
         each("[data-wm='next']", nextSteps);
         each("[data-wm='channels']", channels);
@@ -110,6 +115,7 @@ export default function ContactMotion({ children, className = "" }: { children: 
         each("[data-wm='where-section']", paragraphs);
         each("[data-wm='where']", (list) => void tipInCards(list, "[data-wm='where-card']"));
         each("[data-wm='quotes']", quoteCards);
+        return () => cancels.forEach((cancel) => cancel());
       });
     },
     { scope: root },

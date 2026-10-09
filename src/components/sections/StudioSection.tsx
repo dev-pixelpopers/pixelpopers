@@ -90,6 +90,8 @@ export default function StudioSection() {
           const { motion } = context.conditions as { motion: boolean };
           if (!motion) return;
 
+          // Filled once the exit is built below; read on later refreshes.
+          const exitRef: { current?: gsap.core.Timeline } = {};
           const tl = gsap.timeline({
             defaults: { ease: "power3.out" },
             scrollTrigger: {
@@ -114,6 +116,13 @@ export default function StudioSection() {
                 if (!anim) return;
                 const progress = anim.progress();
                 anim.progress(1, true).progress(progress, true);
+                // The exit animates the same elements, so the sweep just put
+                // them back at the entrance's end state (the button and copy
+                // reappeared after a refresh past the exit). Where the exit
+                // has begun, lay its state back on top.
+                const exit = exitRef.current;
+                const exitProgress = exit?.scrollTrigger?.progress ?? 0;
+                if (exit && exitProgress > 0) exit.progress(1, true).progress(exitProgress, true);
               },
             },
           });
@@ -192,7 +201,7 @@ export default function StudioSection() {
               4.5,
             )
 
-          addExit(q, rootRef.current!, badgeRotation);
+          exitRef.current = addExit(q, rootRef.current!, badgeRotation);
 
           // ── Exit (old draft, unused) ─────────────────────────────
           // .to(
@@ -330,7 +339,7 @@ export default function StudioSection() {
               aria-hidden
               width={2128}
               height={2128}
-              className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70 [mask-image:radial-gradient(circle,black_30%,transparent_65%)]"
+              className="pointer-events-none absolute top-1/2 left-1/2 -z-10 aspect-square h-auto w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70 [mask-image:radial-gradient(circle,black_30%,transparent_65%)]"
             />
             <StudioCube />
 
@@ -533,4 +542,5 @@ function addExit(
     },
     1.8,
   );
+  return tl;
 }

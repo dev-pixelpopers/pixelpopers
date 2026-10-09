@@ -137,7 +137,7 @@ export default function Hero() {
 
       <div className="shell mt-[clamp(1.5rem,3.1vw,3.75rem)] grid">
         <h1 id="work-title" aria-label={`${l1} ${l2} ${l3}`} className="col-start-1 row-start-1 uppercase">
-          <span aria-hidden data-whero="reveal" className="invisible block">
+          <span aria-hidden className="block">
             <span
               data-whero-line="1"
               className="block font-display text-hero-sm leading-[1.07] text-blush sm:ml-[min(17.1vw,20.5625rem)]"
