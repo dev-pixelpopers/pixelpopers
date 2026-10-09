@@ -6,7 +6,7 @@ import BlogSection from "@/components/sections/BlogSection";
 import ContactSection from "@/components/sections/ContactSection";
 import LeadershipSection from "@/components/sections/LeadershipSection";
 import ServicesSection from "@/components/sections/ServicesSection";
-import ShowcaseSection from "@/components/sections/ShowcaseSection";
+// import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import StudioSection from "@/components/sections/StudioSection";
 import ProjectSlider from "@/components/slider/ProjectSlider";
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
         </HeroFinal>
         <StudioSection />
         <ServicesSection />
-        <ShowcaseSection />
+        {/* <ShowcaseSection /> */}
         <AgencySection />
         <ContactSection />
         <LeadershipSection />
