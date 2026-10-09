@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { Advance } from "@/components/slider/slider-engine";
+import { afterFirstInteraction } from "@/lib/defer-setup";
 
 /**
  * Video playback shared by every slider version: exactly one clip — the
@@ -18,6 +19,12 @@ export function useSliderPlayback() {
   const advanceRef = useRef<Advance>(() => false);
   const [active, setActive] = useState(0);
   const [inView, setInView] = useState(false);
+  // Nothing plays until the visitor first interacts: at load the carousel is
+  // tucked away behind the headline (the hero's hand-off reveals it on
+  // scroll), so a clip playing then was a multi-megabyte download and a video
+  // decode nobody could see.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => afterFirstInteraction(() => setArmed(true)), []);
 
   const registerVideo = useCallback((index: number, element: HTMLVideoElement | null) => {
     if (element) videos.current.set(index, element);
@@ -45,7 +52,7 @@ export function useSliderPlayback() {
     if (bar) bar.style.transform = "scaleX(0)";
 
     const video = videos.current.get(active);
-    if (!inView || !video) return;
+    if (!inView || !armed || !video) return;
 
     // A slide that has just arrived mounts with readyState 0, so the first
     // play() can fail outright; retrying on `canplay` is what starts it.
@@ -86,7 +93,7 @@ export function useSliderPlayback() {
       video.removeEventListener("ended", ended);
       document.removeEventListener("visibilitychange", restart);
     };
-  }, [active, inView]);
+  }, [active, inView, armed]);
 
   return { active, inView, setActive, setInView, setAdvance, registerVideo, pauseAll, barRef };
 }

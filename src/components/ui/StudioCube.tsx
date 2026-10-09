@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 
 import { VIDEO_CUBE_FACES } from "@/components/ui/cube-faces";
 import { projects } from "@/lib/site-content";
+import { afterFirstInteraction } from "@/lib/defer-setup";
 
 gsap.registerPlugin(useGSAP);
 
@@ -87,8 +88,11 @@ export default function StudioCube() {
       if (entry.isIntersecting) gsap.ticker.add(pick);
       else stop();
     });
-    observer.observe(root);
+    // Its section sits tucked under the hero, so it "intersects" from load —
+    // the per-frame face check only starts once the visitor interacts.
+    const cancelStart = afterFirstInteraction(() => observer.observe(root));
     return () => {
+      cancelStart();
       observer.disconnect();
       stop();
       clips.forEach((clip) => clip.removeEventListener("ended", advance));

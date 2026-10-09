@@ -9,7 +9,7 @@ export default function Journey() {
   return (
     <section aria-labelledby="journey-title" className="shell">
       <div data-wm="heading">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{journey.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{journey.eyebrow}</p>
         <h2 id="journey-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={journey.heading[0]} name="wm-words" />
           <br className="hidden sm:block" /> <SplitWords text={journey.heading[1]} name="wm-words" />

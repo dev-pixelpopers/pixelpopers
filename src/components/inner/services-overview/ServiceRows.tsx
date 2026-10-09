@@ -8,7 +8,7 @@ import { serviceDetails } from "@/lib/service-content";
 import { serviceRows, type Tone } from "@/lib/pages/services";
 
 const toneText: Record<Tone, string> = {
-  blush: "text-blush",
+  blush: "text-blush-ink",
   grape: "text-grape",
   lagoon: "text-lagoon",
   sunbeam: "text-sunbeam",
@@ -73,7 +73,7 @@ export default function ServiceRows() {
                   <Link
                     href={`/services/${row.slug}`}
                     data-wm="row-link"
-                    className={`mt-[clamp(1.25rem,1.82vw,2.25rem)] font-display text-[clamp(0.9375rem,0.94vw,1.125rem)] uppercase transition-colors hover:underline ${on ? "text-sunbeam" : "text-blush"}`}
+                    className={`mt-[clamp(1.25rem,1.82vw,2.25rem)] font-display text-[clamp(0.9375rem,0.94vw,1.125rem)] uppercase transition-colors hover:underline ${on ? "text-sunbeam" : "text-blush-deep"}`}
                   >
                     Explore<span className="sr-only"> {detail.name}</span> →
                   </Link>

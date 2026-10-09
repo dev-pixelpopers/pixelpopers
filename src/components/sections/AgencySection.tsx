@@ -641,7 +641,7 @@ export default function AgencySection({
           </div>
 
           <header data-agency="header" className="shell flex flex-col items-center gap-2">
-            <p className="text-eyebrow leading-none font-bold text-blush uppercase">{eyebrow}</p>
+            <p className="text-eyebrow leading-none font-bold text-blush-ink uppercase">{eyebrow}</p>
             <h2
               id={`${id}-heading`}
               className="max-w-[20ch] font-display text-section leading-[0.99] break-words text-balance text-grape uppercase"

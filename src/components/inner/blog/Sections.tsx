@@ -37,7 +37,7 @@ export function BlogHero() {
       </div>
       <div className="mx-auto mt-[clamp(1.75rem,3.1vw,3.75rem)] w-fit max-w-full px-5">
         <h1 id="blog-title" data-reveal className="uppercase">
-          <span className="block font-display text-hero-sm leading-[1.12] text-blush sm:ml-[12.6%]">
+          <span className="block font-display text-hero-sm leading-[1.12] text-blush-ink sm:ml-[12.6%]">
             {l1}
           </span>
           <span className="block font-haas text-hero-md leading-[1.05] tracking-[-0.033em] text-grape sm:ml-[12.6%]">
@@ -66,7 +66,7 @@ export function JournalIntro() {
         data-reveal
         className="flex flex-col gap-[clamp(0.75rem,1.04vw,1.25rem)] lg:sticky lg:top-10 lg:self-start"
       >
-        <p className="font-haas text-eyebrow leading-none text-blush uppercase">
+        <p className="font-haas text-eyebrow leading-none text-blush-ink uppercase">
           {journalIntro.eyebrow}
         </p>
         <h2
@@ -103,7 +103,7 @@ export function StartHere() {
       className="shell flex flex-col gap-[clamp(2rem,2.5vw,3rem)]"
     >
       <div data-reveal>
-        <p className="font-haas text-eyebrow leading-none text-blush uppercase">
+        <p className="font-haas text-eyebrow leading-none text-blush-ink uppercase">
           {startHere.eyebrow}
         </p>
         <h2
@@ -140,7 +140,7 @@ export function StartHere() {
                 </p>
                 <span
                   aria-hidden
-                  className="mt-auto pt-2 font-display text-micro text-blush uppercase"
+                  className="mt-auto pt-2 font-display text-micro text-blush-ink uppercase"
                 >
                   Read the guide →
                 </span>
@@ -167,7 +167,7 @@ export function PopularAndTopics() {
         <h2
           id="popular-title"
           data-reveal
-          className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush uppercase"
+          className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush-ink uppercase"
         >
           Popular this month
         </h2>
@@ -188,7 +188,7 @@ export function PopularAndTopics() {
                   <span className="font-haas text-card leading-[1.29] text-ink transition-colors group-hover:text-grape">
                     {p.title}
                   </span>
-                  <span className="font-display text-[clamp(0.6875rem,0.68vw,0.8125rem)] text-blush uppercase">
+                  <span className="font-display text-[clamp(0.6875rem,0.68vw,0.8125rem)] text-blush-deep uppercase">
                     {p.readTime} min read · Read →
                   </span>
                 </span>
@@ -202,7 +202,7 @@ export function PopularAndTopics() {
         <h2
           id="topics-title"
           data-reveal
-          className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush uppercase"
+          className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush-ink uppercase"
         >
           Browse by topic
         </h2>
@@ -283,7 +283,7 @@ export function Resources() {
                 <span className="mt-4 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] leading-[1.58] text-ink/80">
                   {r.desc}
                 </span>
-                <span className="mt-auto pt-10 font-display text-micro text-blush uppercase">
+                <span className="mt-auto pt-10 font-display text-micro text-blush-ink uppercase">
                   Download free ↓
                 </span>
               </span>
@@ -300,7 +300,7 @@ export function TrendingTags() {
     <section aria-labelledby="tags-title" className="shell">
       <h2
         id="tags-title"
-        className="font-display text-[clamp(1rem,1.04vw,1.25rem)] text-blush uppercase"
+        className="font-display text-[clamp(1rem,1.04vw,1.25rem)] text-blush-deep uppercase"
       >
         Trending tags
       </h2>

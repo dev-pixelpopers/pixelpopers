@@ -30,7 +30,7 @@ export const aboutStory = {
   body: "Pixel Popers started at a kitchen table with a simple belief: brands deserve to be felt, not just seen. Today we are a full-service crew of strategists, designers and developers who obsess over the details that make people stop scrolling — and keep coming back.",
   philosophy: "Strategy first. Craft always. Never boring.",
   stats: [
-    { value: "7+", label: "Years popping", tone: "text-blush" },
+    { value: "7+", label: "Years popping", tone: "text-blush-ink" },
     { value: "94+", label: "Brands launched", tone: "text-lagoon" },
     { value: "12", label: "Long-term partners", tone: "text-sunbeam" },
   ],
@@ -99,11 +99,11 @@ export const journey = {
   eyebrow: "Our journey",
   heading: ["From kitchen table", "to full-blown studio"],
   milestones: [
-    { year: "2019", title: "The kitchen table", body: "Three friends, one laptop and a first client who took a chance.", color: "text-blush", dot: "bg-blush" },
+    { year: "2019", title: "The kitchen table", body: "Three friends, one laptop and a first client who took a chance.", color: "text-blush-ink", dot: "bg-blush" },
     { year: "2020", title: "First 10 brands", body: "Word of mouth did the rest — the pop started spreading.", color: "text-lagoon", dot: "bg-lagoon" },
     { year: "2022", title: "Remote-first", body: "We went fully remote and started hiring talent worldwide.", color: "text-sunbeam", dot: "bg-sunbeam" },
     { year: "2024", title: "Motion & 3D", body: "A dedicated motion team joins the crew.", color: "text-grape", dot: "bg-grape" },
-    { year: "2026", title: "94+ brands", body: "And we’re just getting warmed up.", color: "text-blush", dot: "bg-blush" },
+    { year: "2026", title: "94+ brands", body: "And we’re just getting warmed up.", color: "text-blush-ink", dot: "bg-blush" },
   ],
 };
 
@@ -111,7 +111,7 @@ export const testimonials = {
   eyebrow: "Kind words",
   heading: "What clients say",
   items: [
-    { quote: "They didn’t just design a logo — they gave our café a personality people want to photograph.", role: "Founder", company: "Fifth Sip Café", initial: "F", card: "bg-white text-ink", mark: "text-blush", avatar: "bg-blush text-white", tilt: "-rotate-1", offset: "" },
+    { quote: "They didn’t just design a logo — they gave our café a personality people want to photograph.", role: "Founder", company: "Fifth Sip Café", initial: "F", card: "bg-white text-ink", mark: "text-blush-ink", avatar: "bg-blush text-white", tilt: "-rotate-1", offset: "" },
     { quote: "Fast, funny and frighteningly good. Our new site doubled demo requests in the first month.", role: "Head of Marketing", company: "Liquidity", initial: "H", card: "bg-grape text-white", mark: "text-sunbeam", avatar: "bg-sunbeam text-ink", tilt: "rotate-1", offset: "lg:mt-10" },
     { quote: "The reels they made for our launch outperformed everything we’d posted before.", role: "Brand Manager", company: "Radiance Beauty", initial: "B", card: "bg-white text-ink", mark: "text-lagoon", avatar: "bg-lagoon text-white", tilt: "-rotate-1", offset: "" },
   ],

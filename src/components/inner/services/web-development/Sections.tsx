@@ -18,7 +18,7 @@ import ShipMotion from "./ShipMotion";
 const lgAt = "lg:col-start-1 lg:row-start-1 lg:self-start lg:justify-self-start";
 
 const gauges = [
-  { score: 98, label: "Performance", color: "#F27793", numberTone: "text-blush" },
+  { score: 98, label: "Performance", color: "#F27793", numberTone: "text-blush-ink" },
   { score: 100, label: "Accessibility", color: "#3FB7C7", numberTone: "text-lagoon" },
   { score: 100, label: "Best practices", color: "#6A4B97", numberTone: "text-grape" },
   { score: 100, label: "SEO", color: "#F5C255", numberTone: "text-ink" },
@@ -60,7 +60,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               className="[&_a]:text-white/60 [&_li>span]:text-white/60"
             />
             <h1 id="hero-title" className="mt-[clamp(1.5rem,3.3vw,3.9rem)] uppercase">
-              <span className="block font-display text-[clamp(3.5rem,6.77vw,8.125rem)] leading-[1.077] text-blush">{l1}</span>
+              <span className="block font-display text-[clamp(3.5rem,6.77vw,8.125rem)] leading-[1.077] text-blush-ink">{l1}</span>
               <span className="block font-haas text-[clamp(2.375rem,5.52vw,6.625rem)] leading-[1.32] tracking-[-0.04em] text-white">{l2}</span>
               <span className="block font-display text-[clamp(1.75rem,3.75vw,4.5rem)] leading-[1.28] text-lagoon">{l3}</span>
             </h1>
@@ -216,7 +216,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <p data-reveal className="mt-[clamp(1rem,1.35vw,1.625rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">
             Every launch runs through the same 40-point checklist — security, SEO, speed, accessibility and tracking — so day one is a celebration, not a fire drill.
           </p>
-          <p data-reveal className="mt-[clamp(1.5rem,2.19vw,2.625rem)] font-display text-[clamp(0.875rem,0.94vw,1.125rem)] text-blush">+ 3 months of free care after launch</p>
+          <p data-reveal className="mt-[clamp(1.5rem,2.19vw,2.625rem)] font-display text-[clamp(0.875rem,0.94vw,1.125rem)] text-blush-deep">+ 3 months of free care after launch</p>
         </div>
       </section>
     </ShipMotion>

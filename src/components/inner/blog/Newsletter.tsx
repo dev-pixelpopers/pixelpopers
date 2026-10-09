@@ -20,7 +20,7 @@ export default function Newsletter() {
         {/* The giant letter shares the card's single grid cell and is clipped by it. */}
         <span
           aria-hidden
-          className="col-start-1 row-start-1 -mt-[clamp(4rem,9.4vw,11.25rem)] mr-[clamp(-3rem,-1vw,0rem)] hidden self-start sm:block justify-self-end font-pop text-[clamp(16rem,36.5vw,43.75rem)] leading-none text-blush/90 select-none"
+          className="col-start-1 row-start-1 -mt-[clamp(4rem,9.4vw,11.25rem)] mr-[clamp(-3rem,-1vw,0rem)] hidden self-start sm:block justify-self-end font-pop text-[clamp(16rem,36.5vw,43.75rem)] leading-none text-blush-ink/90 select-none"
         >
           P
         </span>

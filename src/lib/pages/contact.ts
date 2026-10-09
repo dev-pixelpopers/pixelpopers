@@ -131,7 +131,7 @@ export const contactTestimonials = {
       company: "Fifth Sip Café",
       initial: "F",
       card: "bg-white text-ink",
-      mark: "text-blush",
+      mark: "text-blush-ink",
       avatar: "bg-blush text-white",
       tilt: "rotate-1",
       offset: "",

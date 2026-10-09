@@ -26,7 +26,7 @@ function Dots({ size, gap }: { size: string; gap: string }) {
 
 /* ── Code editor (780 × 600) ──────────────────────────────────────────── */
 
-const K = "text-blush";
+const K = "text-blush-ink";
 const W = "text-white";
 const S = "text-sunbeam";
 const T = "text-lagoon";

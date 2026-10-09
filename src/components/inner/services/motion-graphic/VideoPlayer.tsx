@@ -62,7 +62,7 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
       ) : null}
 
       <div className={`${layer} flex items-start justify-between self-start px-[3.66cqw] pt-[2.93cqw] pr-[4.76cqw] font-display`}>
-        <span className="text-[max(0.5625rem,1.83cqw)] text-blush">REC ●</span>
+        <span className="text-[max(0.5625rem,1.83cqw)] text-blush-ink">REC ●</span>
         <span className="text-[max(0.5625rem,1.71cqw)] text-white/80">4K · 60FPS</span>
       </div>
 

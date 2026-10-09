@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { ambientLoops } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -30,7 +31,7 @@ export default function ShipMotion({ children, className = "" }: { children: Rea
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", (ctx) => {
         const restore: (() => void)[] = [];
 
         const typeLines = (lines: HTMLElement[], tl: gsap.core.Timeline, speed: number) => {
@@ -123,7 +124,12 @@ export default function ShipMotion({ children, className = "" }: { children: Rea
           });
         });
 
-        return () => restore.forEach((fn) => fn());
+        // Endless idle loops only run on screen, after the first interaction.
+        const stopLoops = ambientLoops(ctx);
+        return () => {
+          stopLoops();
+          restore.forEach((fn) => fn());
+        };
       });
       return () => mm.revert();
     },

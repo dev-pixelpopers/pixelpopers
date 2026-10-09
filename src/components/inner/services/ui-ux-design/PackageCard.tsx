@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Package } from "@/lib/service-content";
 
-const stars = ["text-lagoon", "text-grape", "text-blush"] as const;
+const stars = ["text-lagoon", "text-grape", "text-blush-ink"] as const;
 
 /** Figma "Package — STARTER / GROWTH / FULL POP" on 03.2 UI/UX Design: each package is a Figma file window. */
 export default function PackageCard({ pkg, index }: { pkg: Package; index: number }) {
@@ -19,7 +19,7 @@ export default function PackageCard({ pkg, index }: { pkg: Package; index: numbe
         </div>
 
         <div className="flex grow flex-col px-[clamp(1.75rem,2.5vw,3rem)] pt-[clamp(1.75rem,2.08vw,2.5rem)] pb-[clamp(1.75rem,2.08vw,2.5rem)]">
-          <h3 className={`font-display text-[clamp(1.75rem,1.98vw,2.375rem)] leading-[1.26] uppercase ${pkg.popular ? "text-blush" : "text-grape"}`}>
+          <h3 className={`font-display text-[clamp(1.75rem,1.98vw,2.375rem)] leading-[1.26] uppercase ${pkg.popular ? "text-blush-ink" : "text-grape"}`}>
             {pkg.name}
           </h3>
           <p className="mt-1.5 font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] text-ink/80">{pkg.summary}</p>

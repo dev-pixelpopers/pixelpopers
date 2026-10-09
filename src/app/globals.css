@@ -51,6 +51,14 @@
   --color-ink: var(--ink);
   --color-grape: var(--grape);
   --color-blush: var(--blush);
+  /* Blush for text (WCAG): -ink passes 3:1 on cream for large text
+     (24px+, or 18.7px+ bold), -deep passes 4.5:1 for small text. The brand
+     #F27793 stays for fills, where it carries no text. */
+  --color-blush-ink: #ee486e;
+  --color-blush-deep: #d0143f;
+  /* Large-text (3:1) shades of the other light brand tones. */
+  --color-lagoon-ink: #319ba9;
+  --color-sunbeam-ink: #bd840b;
   --color-lagoon: var(--lagoon);
   --color-sunbeam: var(--sunbeam);
   --color-mist: var(--mist);

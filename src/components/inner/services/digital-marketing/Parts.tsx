@@ -19,7 +19,7 @@ const kpis = [
     label: "Reach",
     value: "1.2M",
     delta: "+212%",
-    tone: "bg-blush/12 text-blush",
+    tone: "bg-blush/12 text-blush-ink",
   },
   {
     label: "Clicks",

@@ -123,7 +123,7 @@ export default function BlogSection() {
         <div className="shell flex w-full flex-col gap-[clamp(2rem,5vh,4rem)]">
           <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex flex-col gap-2">
-              <p className="text-eyebrow leading-none font-bold text-blush uppercase">
+              <p className="text-eyebrow leading-none font-bold text-blush-ink uppercase">
                 <SplitWords text="Fresh From The Studio" name="blog-kicker" />
               </p>
               <h2 id="blog-heading" className="font-display text-section leading-[0.99] text-grape uppercase">
@@ -192,7 +192,7 @@ export default function BlogSection() {
                     <Link
                       data-blog="meta"
                       href={`/blog/${post.slug}`}
-                      className="mt-auto inline-flex items-center gap-2 pt-2 font-display text-[clamp(0.8125rem,0.85vw,1rem)] text-blush uppercase after:absolute after:inset-0 after:content-['']"
+                      className="mt-auto inline-flex items-center gap-2 pt-2 font-display text-[clamp(0.8125rem,0.85vw,1rem)] text-blush-deep uppercase after:absolute after:inset-0 after:content-['']"
                       aria-label={`Read more: ${post.title}`}
                     >
                       Read More

@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { ambientLoops } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -24,7 +25,7 @@ export default function ContentFx({ children, className = "" }: { children: Reac
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", (ctx) => {
         gsap.utils.toArray<HTMLElement>("[data-caret]").forEach((el) => {
           gsap.to(el, { autoAlpha: 0, duration: 0.55, ease: "steps(1)", repeat: -1, yoyo: true });
         });
@@ -58,6 +59,8 @@ export default function ContentFx({ children, className = "" }: { children: Reac
             delay: i * 0.2,
           });
         });
+        // Endless idle loops only run on screen, after the first interaction.
+        return ambientLoops(ctx);
       });
       return () => mm.revert();
     },

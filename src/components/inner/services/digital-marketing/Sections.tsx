@@ -115,7 +115,7 @@ const funnel = [
     how: "Reels, collabs & paid reach",
     result: "1.2M reached",
     bar: "bg-blush text-white",
-    value: "text-blush",
+    value: "text-blush-ink",
     cols: "lg:grid-cols-[1fr_67.71%_1fr]",
     w: "w-full",
   },
@@ -254,7 +254,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               id="hero-title"
               className="mt-[clamp(1.5rem,3.1vw,3.6rem)] uppercase"
             >
-              <span className="block font-display text-[clamp(3rem,6.25vw,7.5rem)] leading-[1.08] text-blush">
+              <span className="block font-display text-[clamp(3rem,6.25vw,7.5rem)] leading-[1.08] text-blush-ink">
                 {l1}
               </span>
               <span className="block font-haas text-[clamp(3rem,6.25vw,7.5rem)] leading-[1.25] tracking-[-0.05em] text-grape">
@@ -502,7 +502,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       {/* ── Process as story ads — hover / tap skips to the next frame ── */}
       <section aria-labelledby="ads-title" className={`shell ${sectionGap}`}>
         <SectionTitle eyebrow="How we do it" title={<span id="ads-title">Four stories to growth</span>} />
-        <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush uppercase">
+        <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">
           <span className="hidden [@media(hover:hover)]:inline">Hover</span>
           <span className="[@media(hover:hover)]:hidden">Tap</span> a story to skip to the next frame&nbsp;&nbsp;↘
         </p>

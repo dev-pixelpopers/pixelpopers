@@ -43,7 +43,7 @@ export default function Toc({ items }: { items: Item[] }) {
     >
       <p
         id="toc-title"
-        className="font-display text-micro text-blush uppercase"
+        className="font-display text-micro text-blush-ink uppercase"
       >
         In this article
       </p>
@@ -59,7 +59,7 @@ export default function Toc({ items }: { items: Item[] }) {
               <a
                 href={`#${it.id}`}
                 aria-current={on ? "location" : undefined}
-                className={`py-2.5 font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] leading-tight transition-colors hover:text-blush ${
+                className={`py-2.5 font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] leading-tight transition-colors hover:text-blush-deep ${
                   on ? "font-bold text-ink" : "text-ink/60"
                 }`}
               >

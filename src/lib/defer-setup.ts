@@ -39,10 +39,14 @@ let started = false;
 
 const START_EVENTS = ["scroll", "wheel", "touchstart", "pointerdown", "keydown"] as const;
 
+const waiting = new Set<() => void>();
+
 function start() {
   if (started) return;
   started = true;
   START_EVENTS.forEach((type) => window.removeEventListener(type, start));
+  waiting.forEach((fn) => fn());
+  waiting.clear();
   if (queue.length) schedule();
 }
 
@@ -100,5 +104,24 @@ export function idleSetup(run: () => void) {
   schedule();
   return () => {
     job.cancelled = true;
+  };
+}
+
+/**
+ * Runs `fn` on the visitor's first interaction (or now, if that has happened
+ * or the page opened already scrolled). For work nobody needs at load —
+ * video playback, idle loops — which otherwise kept the main thread busy
+ * for as long as a page-speed test watched. Returns a cancel function.
+ */
+export function afterFirstInteraction(fn: () => void) {
+  if (!started && window.scrollY > 0) start();
+  if (started) {
+    fn();
+    return () => {};
+  }
+  waiting.add(fn);
+  START_EVENTS.forEach((type) => window.addEventListener(type, start, { passive: true }));
+  return () => {
+    waiting.delete(fn);
   };
 }

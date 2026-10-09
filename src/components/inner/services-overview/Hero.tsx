@@ -16,7 +16,7 @@ function Chars({ text }: { text: string }) {
       {w > 0 ? " " : null}
       <span className="inline-block whitespace-nowrap">
         {Array.from(word).map((ch, c) => (
-          <span key={c} data-whero="char" className="inline-block will-change-transform">
+          <span key={c} data-whero="char" className="inline-block">
             {ch}
           </span>
         ))}
@@ -50,7 +50,7 @@ export default function Hero() {
     },
     exit: (out, q) => {
       out
-        .to(q("[data-whero='intro-out']"), { y: 60, opacity: 0, filter: "blur(6px)", duration: 0.5 }, 0.05)
+        .to(q("[data-whero='intro-out']"), { y: 60, opacity: 0, duration: 0.5 }, 0.05)
         .to(q("[data-whero='cta-out']"), { scale: 0, rotation: 30, opacity: 0, duration: 0.35, ease: "back.in(2)" }, 0.1);
     },
   });
@@ -74,7 +74,7 @@ export default function Hero() {
 
         <h1 id="services-title" aria-label={`${l1} ${l2} ${l3}`} className="mt-[clamp(2rem,3.1vw,3.75rem)] uppercase">
           <span aria-hidden className="block">
-            <span data-whero-line="1" className="ml-[6%] block font-display text-hero-sm leading-[1.07] text-blush sm:ml-[20.7%]">
+            <span data-whero-line="1" className="ml-[6%] block font-display text-hero-sm leading-[1.07] text-blush-ink sm:ml-[20.7%]">
               <Chars text={l1} />
             </span>
             <span

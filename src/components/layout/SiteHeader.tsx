@@ -22,7 +22,7 @@ export default function SiteHeader({ ctaHref = "#contact" }: SiteHeaderProps) {
         aria-haspopup="dialog"
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen(true)}
-        className="cursor-pointer font-display text-nav text-blush uppercase transition-colors hover:text-grape"
+        className="cursor-pointer font-display text-nav text-blush-deep uppercase transition-colors hover:text-grape"
       >
         Menu
       </button>

@@ -5,7 +5,7 @@ import type { ServiceDetail } from "@/lib/service-content";
 
 /** Accent → utility classes. Spelled out in full so Tailwind can see them. */
 export const accentClasses = {
-  blush: { bg: "bg-blush", text: "text-blush", border: "border-blush", on: "text-white" },
+  blush: { bg: "bg-blush", text: "text-blush-ink", border: "border-blush", on: "text-white" },
   grape: { bg: "bg-grape", text: "text-grape", border: "border-grape", on: "text-white" },
   lagoon: { bg: "bg-lagoon", text: "text-lagoon", border: "border-lagoon", on: "text-white" },
   sunbeam: { bg: "bg-sunbeam", text: "text-sunbeam", border: "border-sunbeam", on: "text-ink" },
@@ -42,7 +42,7 @@ export default function ServiceLongForm({
       <section aria-labelledby="overview-title" data-wm="longform" className="grid gap-12 lg:grid-cols-[minmax(0,620fr)_minmax(0,968fr)] lg:gap-[clamp(3rem,6.25vw,7.5rem)]">
         <div className="flex flex-col gap-7 lg:sticky lg:top-10 lg:self-start">
           <div data-wm="heading" className="flex flex-col gap-7">
-            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{service.overview.eyebrow}</p>
+            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{service.overview.eyebrow}</p>
             <h2 id="overview-title" className="font-display text-h3 leading-[1.15] text-grape uppercase">
               <SplitWords text={service.overview.heading} name="wm-words" />
             </h2>
@@ -61,7 +61,7 @@ export default function ServiceLongForm({
             ))}
           </dl>
           <div>
-            <p className="font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush uppercase">Tools we love</p>
+            <p className="font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">Tools we love</p>
             <ul data-wm="tools" className="mt-3 flex flex-wrap gap-2.5">
               {service.tools.map((t) => (
                 <li key={t} data-wm="tool" className="rounded-full bg-white px-5 py-2.5 font-copy text-[clamp(0.9375rem,0.94vw,1.125rem)] font-medium">
@@ -144,7 +144,7 @@ export default function ServiceLongForm({
         <div data-wm="guides" className="mt-14 grid gap-12 md:grid-cols-3">
           {service.insights.map((item, i) => (
             <article key={item.title} data-wm="guide" className="flex flex-col gap-4 border-t-2 border-ink pt-7">
-              <p className="font-haas text-micro text-blush uppercase">Guide {pad(i + 1)}</p>
+              <p className="font-haas text-micro text-blush-ink uppercase">Guide {pad(i + 1)}</p>
               <h3 className="font-display text-h4 leading-tight text-ink">{item.title}</h3>
               <p className="font-copy text-small leading-[1.6] font-light text-ink/85">{item.body}</p>
             </article>

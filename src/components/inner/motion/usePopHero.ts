@@ -92,9 +92,9 @@ export function usePopHero(rootRef: RefObject<HTMLElement | null>, { entrance, e
         });
         const lineEl = (n: number) => q(`[data-whero-line='${n}']`);
         out
-          .to(lineEl(1), { x: () => -innerWidth * 0.18, y: () => -innerHeight * 0.12, scale: 0.85, opacity: 0, filter: "blur(8px)" }, 0)
-          .to(lineEl(2), { scale: 0.7, opacity: 0, filter: "blur(10px)" }, 0)
-          .to(lineEl(3), { x: () => innerWidth * 0.22, scale: 0.9, opacity: 0, filter: "blur(8px)" }, 0)
+          .to(lineEl(1), { x: () => -innerWidth * 0.18, y: () => -innerHeight * 0.12, scale: 0.85, opacity: 0 }, 0)
+          .to(lineEl(2), { scale: 0.7, opacity: 0 }, 0)
+          .to(lineEl(3), { x: () => innerWidth * 0.22, scale: 0.9, opacity: 0 }, 0)
           .to(q("[data-whero='crumb-out']"), { y: -24, opacity: 0, duration: 0.5 }, 0)
           .to(q("[data-whero='glow-out']"), { scale: 1.3, opacity: 0 }, 0);
         const cleanExit = exit?.(out, q);

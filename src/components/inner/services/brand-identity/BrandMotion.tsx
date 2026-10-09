@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { ambientLoops } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -22,7 +23,7 @@ export default function BrandMotion({ children, className = "" }: { children: Re
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", (ctx) => {
         gsap.utils.toArray<HTMLElement>("[data-float]").forEach((el, i) => {
           const travel = Number(el.dataset.float) || 10;
           gsap.to(el, {
@@ -52,6 +53,8 @@ export default function BrandMotion({ children, className = "" }: { children: Re
             scrollTrigger: { trigger: group, start: "top 82%", once: true },
           });
         });
+        // Endless idle loops only run on screen, after the first interaction.
+        return ambientLoops(ctx);
       });
       return () => mm.revert();
     },

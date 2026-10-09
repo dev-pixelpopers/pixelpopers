@@ -20,11 +20,11 @@ import RevealCard from "@/components/inner/RevealCard";
 const layer = "col-start-1 row-start-1 self-start justify-self-start";
 
 const contents = [
-  { n: "01", label: "Strategy", href: "#chapters", color: "text-blush" },
+  { n: "01", label: "Strategy", href: "#chapters", color: "text-blush-ink" },
   { n: "02", label: "Logo", href: "#logo", color: "text-grape" },
   { n: "03", label: "Colour", href: "#colour", color: "text-lagoon" },
   { n: "04", label: "Type", href: "#type", color: "text-sunbeam" },
-  { n: "05", label: "Applications", href: "#applications", color: "text-blush" },
+  { n: "05", label: "Applications", href: "#applications", color: "text-blush-ink" },
   { n: "06", label: "Guidelines", href: "#glow-up", color: "text-grape" },
 ];
 
@@ -43,7 +43,7 @@ const swatches = [
 ];
 
 const chapters = [
-  { blurb: "Brand workshop, competitor scan & audience deep-dive.", bg: "bg-blush", text: "text-blush", tone: "text-white", stripe: "bg-white/30", tilt: "rotate-[-1.5deg]" },
+  { blurb: "Brand workshop, competitor scan & audience deep-dive.", bg: "bg-blush", text: "text-blush-ink", tone: "text-white", stripe: "bg-white/30", tilt: "rotate-[-1.5deg]" },
   { blurb: "Story, voice & the one idea your brand owns.", bg: "bg-grape", text: "text-grape", tone: "text-white", stripe: "bg-white/30", tilt: "rotate-[1deg]" },
   { blurb: "Three routes, refined into one bold identity.", bg: "bg-lagoon", text: "text-lagoon", tone: "text-white", stripe: "bg-white/30", tilt: "rotate-[-1deg]" },
   { blurb: "Guidelines, assets & launch support.", bg: "bg-sunbeam", text: "text-sunbeam", tone: "text-ink", stripe: "bg-ink/30", tilt: "rotate-[1.5deg]" },
@@ -72,13 +72,13 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <div className="pt-[clamp(1rem,2.6vw,3.125rem)]">
             <Breadcrumb items={[{ label: "Services", href: "/services" }, { label: service.name }]} />
             <h1 id="hero-title" className="mt-[clamp(1.5rem,3.3vw,3.9rem)] uppercase">
-              <span className="block font-display text-[clamp(3rem,6.77vw,8.125rem)] leading-[1.08] text-blush">{l1}</span>
+              <span className="block font-display text-[clamp(3rem,6.77vw,8.125rem)] leading-[1.08] text-blush-ink">{l1}</span>
               <span className="block font-haas text-[clamp(3.25rem,7.81vw,9.375rem)] leading-[1.2] tracking-[-0.05em] text-grape">{l2}</span>
               <span className="block font-display text-[clamp(1.75rem,4.17vw,5rem)] leading-[1.28] text-lagoon">{l3}</span>
             </h1>
             <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">{service.heroIntro}</p>
             <PopButton href="/contact" label={service.heroCta} className="mt-[clamp(2rem,3vw,3.625rem)] [&>span:last-child]:text-ink" />
-            <a href="#brand-book" className="mt-[clamp(1.5rem,1.67vw,2rem)] block w-fit font-display text-micro text-blush uppercase transition-colors hover:text-grape">
+            <a href="#brand-book" className="mt-[clamp(1.5rem,1.67vw,2rem)] block w-fit font-display text-micro text-blush-ink uppercase transition-colors hover:text-grape">
               See the brand book ↓
             </a>
           </div>
@@ -90,7 +90,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             <div className={`${layer} @container mt-[14.62%] ml-[1.29%] aspect-[500/660] w-[55.56%] rotate-[8deg] overflow-hidden rounded-[2.67cqw] bg-grape ${cardShadow}`}>
               <div className="grid h-full">
                 <span className="col-start-1 row-start-1 h-full w-[5.6cqw] bg-ink/25" />
-                <span className={`${layer} mt-[8cqw] ml-[24cqw] font-pop text-[88cqw] leading-[88cqw] text-blush`}>P</span>
+                <span className={`${layer} mt-[8cqw] ml-[24cqw] font-pop text-[88cqw] leading-[88cqw] text-blush-ink`}>P</span>
                 <span className={`${layer} mt-[100cqw] ml-[12cqw] font-display text-[5.2cqw] leading-[1.27] whitespace-nowrap text-white`}>
                   BRAND GUIDELINES
                   <span className="mt-[1.2cqw] block font-copy text-[3.2cqw] font-medium text-white/70">VOL. 01 · 2026</span>
@@ -124,13 +124,13 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       {/* ── Brand book contents strip ──────────────────────────────── */}
       <nav id="brand-book" aria-label="Brand book contents" className="shell mt-[clamp(3.5rem,6.8vw,8.125rem)] scroll-mt-8">
         <div data-reveal className={`rounded-[clamp(1.5rem,1.67vw,2rem)] bg-white px-[clamp(1.25rem,2.08vw,2.5rem)] pt-[clamp(1.25rem,1.46vw,1.75rem)] pb-[clamp(1.5rem,1.77vw,2.125rem)] ${cardShadow}`}>
-          <p className="font-display text-micro text-blush uppercase">Contents</p>
+          <p className="font-display text-micro text-blush-ink uppercase">Contents</p>
           <ol className="mt-[clamp(0.75rem,0.94vw,1.125rem)] grid grid-cols-2 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
             {contents.map((c, i) => (
               <li key={c.n} className={i % 6 ? "lg:border-l lg:border-ink/10 lg:pl-[1.3vw]" : ""}>
                 <a href={c.href} className="group block w-fit">
                   <span className={`block font-pop text-[clamp(2.75rem,3.33vw,4rem)] leading-[1.125] ${c.color}`}>{c.n}</span>
-                  <span className="mt-[0.4em] block font-display text-[clamp(0.875rem,1.04vw,1.25rem)] text-grape uppercase transition-colors group-hover:text-blush">
+                  <span className="mt-[0.4em] block font-display text-[clamp(0.875rem,1.04vw,1.25rem)] text-grape uppercase transition-colors group-hover:text-blush-deep">
                     {c.label}
                   </span>
                 </a>
@@ -236,16 +236,16 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           </p>
           <span aria-hidden className="mx-[clamp(1.25rem,2.08vw,2.5rem)] h-px bg-ink/10 lg:mx-0 lg:my-[3.125vw] lg:h-auto lg:w-px" />
           <div className="px-[clamp(1.25rem,3.125vw,3.75rem)] pt-[clamp(1.75rem,2.9vw,3.5rem)] pb-[clamp(2rem,3.125vw,3.75rem)]">
-            <h2 id="type-title" className="font-haas text-[clamp(1.75rem,2.5vw,3rem)] leading-[1.08] text-blush uppercase">
+            <h2 id="type-title" className="font-haas text-[clamp(1.75rem,2.5vw,3rem)] leading-[1.08] text-blush-ink uppercase">
               Typography
             </h2>
-            <p className="mt-[clamp(1.25rem,1.67vw,2rem)] font-display text-[clamp(0.6875rem,0.78vw,0.9375rem)] text-blush uppercase">Display — Nevera</p>
+            <p className="mt-[clamp(1.25rem,1.67vw,2rem)] font-display text-[clamp(0.6875rem,0.78vw,0.9375rem)] text-blush-deep uppercase">Display — Nevera</p>
             <p className="mt-1 font-display text-[clamp(2.25rem,5vw,6rem)] leading-[1.27] text-grape uppercase">Pop! Wow. Yes.</p>
-            <p className="mt-[clamp(0.75rem,1.15vw,1.375rem)] font-display text-[clamp(0.6875rem,0.78vw,0.9375rem)] text-blush uppercase">Body — Haas Grot Disp</p>
+            <p className="mt-[clamp(0.75rem,1.15vw,1.375rem)] font-display text-[clamp(0.6875rem,0.78vw,0.9375rem)] text-blush-deep uppercase">Body — Haas Grot Disp</p>
             <p className="mt-3 max-w-[52.5rem] font-haas text-[clamp(1.0625rem,1.25vw,1.5rem)] leading-[1.58] text-ink">
               A typeface pairing with attitude: loud, rounded headlines meet a crisp, friendly grotesk that stays readable at every size.
             </p>
-            <p className="mt-[clamp(1.75rem,2.4vw,2.875rem)] font-display text-[clamp(0.6875rem,0.78vw,0.9375rem)] text-blush uppercase">Running copy — Archivo</p>
+            <p className="mt-[clamp(1.75rem,2.4vw,2.875rem)] font-display text-[clamp(0.6875rem,0.78vw,0.9375rem)] text-blush-deep uppercase">Running copy — Archivo</p>
             <ul aria-label="Copy weights" className="mt-2 flex flex-wrap gap-x-[clamp(1.25rem,1.875vw,2.25rem)] gap-y-2 font-copy text-[clamp(1.25rem,1.77vw,2.125rem)] text-ink">
               <li className="font-light">Light</li>
               <li className="font-normal">Regular</li>
@@ -288,7 +288,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       {/* ── Four chapters (process) — hover / tap flips a chapter to its page ── */}
       <section id="chapters" aria-labelledby="chapters-title" className="shell mt-[clamp(4.5rem,9.4vw,11.25rem)] scroll-mt-8">
         <SectionTitle eyebrow="How we do it" title={<span id="chapters-title">Four chapters to a brand</span>} />
-        <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush uppercase">
+        <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">
           <span className="hidden [@media(hover:hover)]:inline">Hover</span>
           <span className="[@media(hover:hover)]:hidden">Tap</span> a chapter to flip it open&nbsp;&nbsp;↘
         </p>
@@ -390,7 +390,7 @@ function StationeryFlatLay() {
       <Piece>
         <div className={`@container flex aspect-[320/440] w-[80%] rotate-[6deg] flex-col overflow-hidden rounded-[1.9%/1.4%] bg-[#fffbf4] ${pieceShadow} ${at} lg:mt-[6.9%] lg:ml-[5.68%] lg:w-[20.15%]`}>
           <div className="flex items-start justify-between px-[8.75cqw] pt-[5cqw]">
-            <span className="font-pop text-[21.9cqw] leading-[23.75cqw] text-blush">P</span>
+            <span className="font-pop text-[21.9cqw] leading-[23.75cqw] text-blush-ink">P</span>
             <span className="mt-[7.5cqw] font-display text-[3.75cqw] text-grape">PIXEL POPERS</span>
           </div>
           <span className="mx-[8.75cqw] mt-[5.6cqw] h-[0.625cqw] bg-blush" />
@@ -417,7 +417,7 @@ function StationeryFlatLay() {
 
       <Piece className="sm:row-span-1">
         <div className={`@container grid aspect-[360/210] w-[88%] rotate-[8deg] rounded-[3.9%/6.7%] border border-white/10 bg-ink ${pieceShadow} ${at} lg:mt-[7.56%] lg:ml-[43.43%] lg:w-[22.67%]`}>
-          <span className="col-start-1 row-start-1 mt-[6.1cqw] ml-[7.8cqw] self-start justify-self-start font-pop text-[41.7cqw] leading-[44.4cqw] text-blush">P</span>
+          <span className="col-start-1 row-start-1 mt-[6.1cqw] ml-[7.8cqw] self-start justify-self-start font-pop text-[41.7cqw] leading-[44.4cqw] text-blush-ink">P</span>
           <span className="col-start-1 row-start-1 mt-[33.3cqw] ml-[55.6cqw] self-start justify-self-start font-display text-[5.56cqw] leading-[6.67cqw] text-white">
             PIXEL
             <br />

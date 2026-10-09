@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Package } from "@/lib/service-content";
 
-const nameTone = ["text-sunbeam", "text-blush", "text-sunbeam"];
+const nameTone = ["text-sunbeam", "text-blush-ink", "text-sunbeam"];
 
 function Sprockets() {
   return (
@@ -21,7 +21,7 @@ export default function PackageCard({ pkg, index }: { pkg: Package; index: numbe
         <Sprockets />
 
         <div className="flex grow flex-col px-[9.23%] pt-[clamp(1.25rem,1.67vw,2rem)] pb-[clamp(1.25rem,1.3vw,1.5rem)]">
-          <h3 className={`font-display text-[clamp(1.75rem,1.98vw,2.375rem)] leading-[1.26] uppercase ${pkg.popular ? "text-blush" : nameTone[index % nameTone.length]}`}>
+          <h3 className={`font-display text-[clamp(1.75rem,1.98vw,2.375rem)] leading-[1.26] uppercase ${pkg.popular ? "text-blush-ink" : nameTone[index % nameTone.length]}`}>
             {pkg.name}
           </h3>
           <p className="mt-1 font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] text-white/80">{pkg.summary}</p>

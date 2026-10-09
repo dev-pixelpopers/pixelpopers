@@ -44,7 +44,7 @@ export default function Values() {
             className={`${layer} -mr-[4%] hidden h-auto w-[14.3vw] max-w-[275px] justify-self-end md:block`}
           />
           <div data-wm="heading" className={`${layer} text-center`}>
-            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">What we believe</p>
+            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">What we believe</p>
             <h2 id="values-title" className="mt-[0.3em] font-display text-section leading-[1.12] text-grape uppercase">
               <SplitWords text="What makes us pop" name="wm-words" />
             </h2>

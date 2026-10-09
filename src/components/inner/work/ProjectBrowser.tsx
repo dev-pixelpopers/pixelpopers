@@ -161,7 +161,7 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
                 aria-pressed={active}
                 onClick={() => choose(f.id)}
                 className={`rounded-full border px-[clamp(1rem,1.35vw,1.625rem)] py-[clamp(0.55rem,0.73vw,0.875rem)] font-display text-[clamp(0.8125rem,0.94vw,1.125rem)] leading-tight uppercase transition-colors ${
-                  active ? "border-ink bg-ink text-white" : "border-ink/15 bg-white/60 text-ink hover:border-blush hover:text-blush"
+                  active ? "border-ink bg-ink text-white" : "border-ink/15 bg-white/60 text-ink hover:border-blush hover:text-blush-deep"
                 }`}
               >
                 {f.label}
@@ -173,7 +173,7 @@ export default function ProjectBrowser({ projects }: { projects: Project[] }) {
           type="button"
           data-wb="sort"
           onClick={() => setNewestFirst((v) => !v)}
-          className="font-copy text-[clamp(0.9375rem,0.94vw,1.125rem)] font-medium text-ink/70 transition-colors hover:text-blush"
+          className="font-copy text-[clamp(0.9375rem,0.94vw,1.125rem)] font-medium text-ink/70 transition-colors hover:text-blush-deep"
         >
           Sort: {newestFirst ? "Newest ↓" : "Oldest ↑"}
         </button>

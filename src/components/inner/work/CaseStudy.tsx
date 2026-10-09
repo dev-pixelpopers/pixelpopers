@@ -36,7 +36,7 @@ export function CaseHero({ project }: { project: Project }) {
 
       <div className={`${shell} pt-[clamp(1rem,2.6vw,3.125rem)]`}>
         <Breadcrumb items={[{ label: "Work", href: "/work" }, { label: p.name }]} />
-        <p data-reveal className="mt-[clamp(2rem,3.65vw,4.375rem)] font-haas text-[clamp(1.25rem,2.08vw,2.5rem)] leading-[1.1] text-blush uppercase">
+        <p data-reveal className="mt-[clamp(2rem,3.65vw,4.375rem)] font-haas text-[clamp(1.25rem,2.08vw,2.5rem)] leading-[1.1] text-blush-ink uppercase">
           {p.discipline}
         </p>
         <h1
@@ -50,7 +50,7 @@ export function CaseHero({ project }: { project: Project }) {
         <dl data-reveal-stagger className="mt-[clamp(2rem,3.125vw,3.75rem)] grid grid-cols-2 gap-x-[clamp(1rem,2.08vw,2.5rem)] gap-y-8 lg:grid-cols-4">
           {meta.map((m) => (
             <div key={m.k} className="flex flex-col gap-[clamp(0.5rem,0.6vw,0.75rem)] border-t border-ink/20 pt-[clamp(1rem,1.25vw,1.5rem)]">
-              <dt className="font-display text-micro text-blush uppercase">{m.k}</dt>
+              <dt className="font-display text-micro text-blush-ink uppercase">{m.k}</dt>
               <dd className="font-copy text-copy font-medium text-ink">{m.v}</dd>
             </div>
           ))}
@@ -96,7 +96,7 @@ export function Brief({ project }: { project: Project }) {
   return (
     <section aria-label="The brief" className={`${shell} grid gap-12 md:grid-cols-2 md:gap-[clamp(2rem,6.25vw,7.5rem)]`}>
       <div data-reveal>
-        <h2 className={`${label} text-blush`}>The challenge</h2>
+        <h2 className={`${label} text-blush-ink`}>The challenge</h2>
         <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[45rem] font-copy text-copy leading-[1.67] font-light text-ink">{p.intro.challenge}</p>
       </div>
       <div data-reveal>
@@ -186,7 +186,7 @@ export function PullQuote({ project }: { project: Project }) {
   const { quote } = project;
   return (
     <figure className={`${shell} grid gap-x-[clamp(1rem,4.6vw,5.5rem)] sm:grid-cols-[auto_minmax(0,1fr)]`}>
-      <span aria-hidden className="font-pop text-[clamp(7rem,15.6vw,18.75rem)] leading-none text-blush max-sm:-mb-8">
+      <span aria-hidden className="font-pop text-[clamp(7rem,15.6vw,18.75rem)] leading-none text-blush-ink max-sm:-mb-8">
         “
       </span>
       <div className="sm:pt-[clamp(1.5rem,4.17vw,5rem)]">
@@ -217,7 +217,7 @@ export function FullStory({ project }: { project: Project }) {
     <section aria-labelledby="full-story-title" className={`${shell} flex flex-col gap-[clamp(3rem,4.17vw,5rem)]`}>
       <div className="grid gap-10 lg:grid-cols-[minmax(0,620fr)_minmax(0,848fr)] lg:gap-[clamp(3rem,6.25vw,7.5rem)]">
         <div data-reveal className="flex flex-col gap-[clamp(1rem,1.46vw,1.75rem)] lg:sticky lg:top-10 lg:self-start">
-          <p className="font-haas text-eyebrow leading-none text-blush uppercase">The full story</p>
+          <p className="font-haas text-eyebrow leading-none text-blush-ink uppercase">The full story</p>
           <h2 id="full-story-title" className="font-display text-h3 leading-[1.16] text-grape uppercase">
             How {p.name} found its {p.slug === "fifth-sip" ? "ritual" : "pop"}
           </h2>
@@ -234,7 +234,7 @@ export function FullStory({ project }: { project: Project }) {
       </div>
 
       <figure data-reveal className="flex flex-col gap-6 rounded-3xl bg-white p-[clamp(1.75rem,2.9vw,3.5rem)]">
-        <figcaption className="order-first font-haas text-[clamp(1rem,1.25vw,1.5rem)] leading-none text-blush uppercase">In the client’s words</figcaption>
+        <figcaption className="order-first font-haas text-[clamp(1rem,1.25vw,1.5rem)] leading-none text-blush-ink uppercase">In the client’s words</figcaption>
         <blockquote className="font-copy text-lead leading-[1.53] text-ink">
           <p>{p.story.clientQuote}</p>
         </blockquote>
@@ -262,7 +262,7 @@ export function Gallery({ project }: { project: Project }) {
   return (
     <section aria-labelledby="gallery-title">
       <div data-reveal className={shell}>
-        <p className={`${label} text-blush`}>The gallery</p>
+        <p className={`${label} text-blush-ink`}>The gallery</p>
         <h2 id="gallery-title" className={`mt-[clamp(0.5rem,0.73vw,0.875rem)] ${heading}`}>
           {project.galleryHeading}
         </h2>
@@ -281,7 +281,7 @@ export function Delivered({ project }: { project: Project }) {
   return (
     <section aria-labelledby="delivered-title" className={`${shell} grid gap-8 lg:grid-cols-[minmax(0,560fr)_minmax(0,980fr)] lg:gap-[clamp(2rem,4.9vw,5.875rem)]`}>
       <div data-reveal>
-        <h2 id="delivered-title" className={`${label} text-blush`}>
+        <h2 id="delivered-title" className={`${label} text-blush-ink`}>
           What we delivered
         </h2>
         <p className="mt-[clamp(1rem,1.46vw,1.75rem)] font-copy text-body leading-[1.64] font-light text-ink">{delivered.intro}</p>
@@ -306,7 +306,7 @@ export function Timeline({ project }: { project: Project }) {
   return (
     <section aria-labelledby="timeline-title">
       <div data-reveal className={shell}>
-        <p className={`${label} text-blush`}>The timeline</p>
+        <p className={`${label} text-blush-ink`}>The timeline</p>
         <h2 id="timeline-title" className={`mt-[clamp(0.5rem,0.73vw,0.875rem)] ${heading}`}>
           {weeks} weeks, start to pop
         </h2>
@@ -349,7 +349,7 @@ export function Timeline({ project }: { project: Project }) {
 export function Team({ project }: { project: Project }) {
   return (
     <section aria-labelledby="team-title" className={shell}>
-      <h2 id="team-title" data-reveal className={`${label} text-blush`}>
+      <h2 id="team-title" data-reveal className={`${label} text-blush-ink`}>
         The team behind it
       </h2>
       <ul data-reveal-stagger className="mt-[clamp(1.5rem,2.08vw,2.5rem)] flex flex-wrap gap-[clamp(1rem,2.08vw,2.5rem)]">

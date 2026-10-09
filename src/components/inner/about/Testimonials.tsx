@@ -6,7 +6,7 @@ export default function Testimonials() {
   return (
     <section data-wm="quotes" aria-labelledby="testimonials-title" className="shell">
       <div data-wm="heading" className="text-center">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{testimonials.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{testimonials.eyebrow}</p>
         <h2 id="testimonials-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={testimonials.heading} name="wm-words" />
         </h2>

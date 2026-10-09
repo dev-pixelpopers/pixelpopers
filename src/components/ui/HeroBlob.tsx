@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useRef } from "react";
 
+import { ambient } from "@/lib/ambient";
 import { HERO_MOTION } from "@/lib/hero-motion";
 
 gsap.registerPlugin(useGSAP);
@@ -28,7 +29,7 @@ export default function HeroBlob() {
   const rootRef = useRef<SVGSVGElement>(null);
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const svg = rootRef.current;
       if (!svg) return;
 
@@ -62,21 +63,27 @@ export default function HeroBlob() {
             0,
           );
 
-        // Idle float, handed off once the trace lands. It transforms the whole
-        // SVG rather than the masked group so the mask is not re-rasterised
-        // every frame.
-        tl.to(
-          svg,
-          {
-            rotation: HERO_MOTION.blobRotation + 1.5,
-            scale: 1.03,
-            duration: 7,
-            ease: "sine.inOut",
-            repeat: -1,
-            yoyo: true,
-          },
+        // Idle float, handed off once the trace lands — only after the first
+        // interaction and while the blob is on screen (see `ambient`). It
+        // transforms the whole SVG rather than the masked group so the mask
+        // is not re-rasterised every frame.
+        let stopIdle: (() => void) | undefined;
+        tl.call(
+          contextSafe!(() => {
+            const float = gsap.to(svg, {
+              rotation: HERO_MOTION.blobRotation + 1.5,
+              scale: 1.03,
+              duration: 7,
+              ease: "sine.inOut",
+              repeat: -1,
+              yoyo: true,
+            });
+            stopIdle = ambient(float, svg);
+          }),
+          [],
           HERO_MOTION.blobDraw,
         );
+        return () => stopIdle?.();
       });
     },
     { scope: rootRef },

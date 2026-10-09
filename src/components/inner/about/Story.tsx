@@ -57,7 +57,7 @@ export default function Story() {
 
       <div className="flex flex-col items-start">
         <div data-wm="heading">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">
             {aboutStory.eyebrow}
           </p>
           <h2 id="story-title" className="mt-[clamp(0.75rem,1vw,1.25rem)] font-display text-section leading-[1.12] text-grape uppercase">

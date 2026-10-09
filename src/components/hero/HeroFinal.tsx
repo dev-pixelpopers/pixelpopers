@@ -6,8 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef, type ReactNode } from "react";
 
 import HeroFrame from "@/components/hero/HeroFrame";
-import { letterBounce, POP_LANDED, popEntrance, scrollHandOff } from "@/components/hero/hero-animations";
+import { doodleIdle, letterBounce, POP_LANDED, popEntrance, scrollHandOff } from "@/components/hero/hero-animations";
 import { revealStatic } from "@/components/hero/hero-shared";
+import { ambient } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -41,16 +42,20 @@ export default function HeroFinal({ children }: { children?: ReactNode }) {
           const entrance = popEntrance(q);
           scrollHandOff(q);
 
-          if (!hover) return;
-
-          // The bounce overwrites a letter's tweens, so arming it mid-entrance
-          // would cut that letter's pop short — wait until everything has landed.
+          // Once everything has landed: the doodles' idle wobble (only while
+          // the hero is on screen, after the first interaction) and, with a
+          // fine pointer, the letter bounce — which overwrites a letter's
+          // tweens, so arming it mid-entrance would cut that letter's pop short.
+          let stopIdle: (() => void) | undefined;
           let stopBounce: (() => void) | undefined;
-          entrance.call(() => {
-            stopBounce = letterBounce(q, contextSafe);
-          }, [], POP_LANDED);
+          if (hover) entrance.call(contextSafe(() => (stopBounce = letterBounce(q, contextSafe))), [], POP_LANDED);
+          // The flower's burst settles at 2.6s.
+          entrance.call(contextSafe(() => (stopIdle = ambient(doodleIdle(q), q("[data-hero-frame='headline']")[0] ?? root))), [], 2.6);
 
-          return () => stopBounce?.();
+          return () => {
+            stopIdle?.();
+            stopBounce?.();
+          };
         },
       );
     },

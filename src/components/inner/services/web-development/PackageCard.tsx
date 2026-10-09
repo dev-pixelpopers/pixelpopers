@@ -4,8 +4,8 @@ import type { Package } from "@/lib/service-content";
 /** Title + bullet colours per package (Figma: sunbeam/lagoon, pink/grape, sunbeam/pink). */
 const tones = [
   { title: "text-sunbeam", arrow: "text-lagoon" },
-  { title: "text-blush", arrow: "text-grape" },
-  { title: "text-sunbeam", arrow: "text-blush" },
+  { title: "text-blush-ink", arrow: "text-grape" },
+  { title: "text-sunbeam", arrow: "text-blush-ink" },
 ] as const;
 
 /** Figma "Package — STARTER / GROWTH / FULL POP" on 03.4 Web Development (376:101): each package is a code file. */

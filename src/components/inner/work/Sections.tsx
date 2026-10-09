@@ -21,7 +21,7 @@ export function Intro() {
     <section data-wm="intro" aria-labelledby="what-we-make-title" className="shell flex flex-col gap-[clamp(3.5rem,4.17vw,5rem)]">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,620fr)_minmax(0,848fr)] lg:gap-[clamp(3rem,6.25vw,7.5rem)]">
         <div data-wm="heading" className="flex flex-col gap-[clamp(1rem,1.46vw,1.75rem)] lg:sticky lg:top-10 lg:self-start">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{workIntro.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{workIntro.eyebrow}</p>
           <h2 id="what-we-make-title" className="font-display text-h3 leading-[1.16] text-grape uppercase">
             <SplitWords text={workIntro.heading} name="wm-words" />
           </h2>
@@ -38,7 +38,7 @@ export function Intro() {
 
       <div className="flex flex-col gap-[clamp(1.75rem,2.08vw,2.5rem)]">
         <div data-wm="heading">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{s.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{s.eyebrow}</p>
           <h3 className="mt-[0.2em] font-display text-h2 leading-[1.1] text-grape uppercase">
             <SplitWords text={s.heading} name="wm-words" />
           </h3>
@@ -85,7 +85,7 @@ export function Impact() {
   return (
     <section data-wm="impact" aria-labelledby="impact-title">
       <div data-wm="heading" className="shell">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{impact.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{impact.eyebrow}</p>
         <h2 id="impact-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={impact.heading} name="wm-words" />
         </h2>
@@ -120,7 +120,7 @@ export function Testimonials() {
   return (
     <section data-wm="quotes" aria-labelledby="kind-words-title" className="shell">
       <div data-wm="heading" className="text-center">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{t.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{t.eyebrow}</p>
         <h2 id="kind-words-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={t.heading} name="wm-words" />
         </h2>
@@ -161,7 +161,7 @@ export function Teasers() {
   return (
     <section data-wm="teasers" id="in-the-oven" aria-labelledby="oven-title" className="shell">
       <div data-wm="heading">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{teasers.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{teasers.eyebrow}</p>
         <h2 id="oven-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={teasers.heading} name="wm-words" />
         </h2>
@@ -199,7 +199,7 @@ export function Cta() {
     <section data-wm="cta" aria-labelledby="cta-title" className="shell">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,934fr)_minmax(0,560fr)] lg:px-[3.8%]">
         <div>
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{workCta.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{workCta.eyebrow}</p>
           <h2
             id="cta-title"
             aria-label={workCta.heading.join(" ")}

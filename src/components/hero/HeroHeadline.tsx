@@ -24,7 +24,7 @@ const LINES: Line[] = [
   {
     id: 1,
     text: "We Make",
-    className: "relative font-display text-hero-sm text-blush",
+    className: "relative font-display text-hero-sm text-blush-ink",
     doodle: {
       src: "/icons/doodle-sparkle.svg",
       width: 244,
@@ -121,7 +121,7 @@ function SplitChars({ text }: { text: string }) {
     char === " " ? (
       <Fragment key={i}> </Fragment>
     ) : (
-      <span key={i} data-hero="char" className="inline-block will-change-transform">
+      <span key={i} data-hero="char" className="inline-block">
         {char}
       </span>
     ),

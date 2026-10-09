@@ -90,7 +90,7 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
             ref={closeBtn}
             type="button"
             onClick={onClose}
-            className="flex items-center gap-3 font-display text-nav text-blush uppercase transition-colors hover:text-cream"
+            className="flex items-center gap-3 font-display text-nav text-blush-deep uppercase transition-colors hover:text-cream"
           >
             <svg aria-hidden viewBox="0 0 20 20" className="size-[1.1em]" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <path d="M3 3l14 14M17 3L3 17" />

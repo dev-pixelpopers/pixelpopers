@@ -11,7 +11,7 @@ import { CONTACT_EMAIL, contactHero, contactInfo } from "@/lib/pages/contact";
 import { owners } from "@/lib/site-content";
 
 const avatarBg = ["bg-sunbeam", "bg-lagoon", "bg-blush"];
-const kicker = "font-display text-[clamp(0.875rem,0.94vw,1.125rem)] leading-none text-blush uppercase";
+const kicker = "font-display text-[clamp(0.875rem,0.94vw,1.125rem)] leading-none text-blush-deep uppercase";
 
 /** Each letter in its own inline-block (words kept whole so lines wrap cleanly). */
 function Chars({ text }: { text: string }) {
@@ -20,7 +20,7 @@ function Chars({ text }: { text: string }) {
       {w > 0 ? " " : null}
       <span className="inline-block whitespace-nowrap">
         {Array.from(word).map((ch, c) => (
-          <span key={c} data-whero="char" className="inline-block will-change-transform">
+          <span key={c} data-whero="char" className="inline-block">
             {ch}
           </span>
         ))}
@@ -64,9 +64,6 @@ export default function Intro() {
         )
         .fromTo(q("[data-whero='doodle']"), { scale: 0, rotation: -200, autoAlpha: 0 }, { scale: 1, rotation: -15, autoAlpha: 1, duration: 0.8, ease: "back.out(1.6)" }, 2.2)
         .fromTo(q("[data-whero='form']"), { y: 30, rotation: 1.5 }, { y: 0, rotation: 0, duration: 0.8, ease: "back.out(1.4)" }, 0.5);
-      // The "online" dot never stops pulsing.
-      const dot = q("[data-whero='online']");
-      gsap.fromTo(dot, { boxShadow: "0 0 0 0 rgb(46 194 126 / 0.6)" }, { boxShadow: "0 0 0 10px rgb(46 194 126 / 0)", duration: 1.4, repeat: -1, ease: "power1.out" });
     },
   });
 
@@ -89,7 +86,7 @@ export default function Intro() {
 
         <h1 id="contact-title" aria-label={`${l1} ${l2} ${l3}`} className="mt-[clamp(2rem,3.1vw,3.75rem)] uppercase">
           <span aria-hidden className="block">
-            <span data-whero-line="1" className="ml-[4%] block font-display text-hero-sm leading-[1.07] text-blush sm:ml-[20.7%]">
+            <span data-whero-line="1" className="ml-[4%] block font-display text-hero-sm leading-[1.07] text-blush-ink sm:ml-[20.7%]">
               <Chars text={l1} />
             </span>
             <span data-whero-line="2" className="ml-[4%] block font-haas text-hero-md leading-[1.05] tracking-[-0.033em] text-grape sm:ml-[20.7%]">
@@ -107,14 +104,19 @@ export default function Intro() {
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               data-whero="hello"
-              className="mt-3.5 font-haas text-[clamp(1.5rem,2.3vw,2.75rem)] leading-tight break-all text-grape transition-colors hover:text-blush"
+              className="mt-3.5 font-haas text-[clamp(1.5rem,2.3vw,2.75rem)] leading-tight break-all text-grape transition-colors hover:text-blush-ink"
             >
               {CONTACT_EMAIL}
             </a>
 
             <div data-whero="card" className="mt-[clamp(1.75rem,2.9vw,3.5rem)] w-full max-w-[35rem] rounded-3xl border border-white bg-white/70 px-8 py-8">
               <p className="flex items-center gap-3.5 font-haas text-small leading-tight text-ink">
-                <span aria-hidden data-whero="online" className="size-3.5 rounded-full bg-[#2EC27E]" />
+                {/* The "online" dot's pulse is a CSS ring (transform + opacity,
+                    composited) rather than an animated box-shadow, which
+                    repainted every frame. */}
+                <span aria-hidden className="relative size-3.5 rounded-full bg-[#2EC27E]">
+                  <span className="absolute inset-0 rounded-full bg-[#2EC27E] motion-safe:animate-ping" />
+                </span>
                 {contactInfo.response.title}
               </p>
               <p className="mt-5 font-copy text-[clamp(0.9375rem,0.89vw,1.0625rem)] leading-[1.53] text-ink/70">{contactInfo.response.body}</p>

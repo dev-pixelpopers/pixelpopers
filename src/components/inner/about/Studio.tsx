@@ -11,7 +11,7 @@ export default function Studio() {
     <>
       <section id="studio" aria-labelledby="perks-title" className="shell scroll-mt-8">
         <div data-wm="heading">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{perks.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{perks.eyebrow}</p>
           <h2 id="perks-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
             <SplitWords text={perks.heading} name="wm-words" />
           </h2>

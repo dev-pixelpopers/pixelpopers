@@ -31,7 +31,7 @@ export default function PopButton({
         aria-hidden
         className={`${block} h-[clamp(2.375rem,3.54vw,4.25rem)] shrink-0 bg-white transition-all duration-300 ease-out group-hover:w-full absolute z-0 group-hover:bg-sunbeam`}
       />
-      <span className="relative z-10 px-5 font-display whitespace-nowrap text-[#F27793] uppercase">
+      <span className="relative z-10 px-5 font-display whitespace-nowrap text-blush-deep uppercase">
         {label}
       </span>
     </a>

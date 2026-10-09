@@ -12,7 +12,7 @@ export default function QuoteCards({ id, eyebrow, heading, items }: Props) {
   return (
     <section data-wm="quotes" aria-labelledby={id} className="shell">
       <div data-reveal data-wm="heading" className="text-center">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{eyebrow}</p>
         <h2 id={id} data-wm="title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           {heading}
         </h2>

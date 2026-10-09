@@ -39,14 +39,14 @@ const sliders = [
 ];
 
 const issue = [
-  { title: "Website copy", page: "p.2", tone: "text-blush" },
+  { title: "Website copy", page: "p.2", tone: "text-blush-ink" },
   { title: "Blog articles", page: "p.4", tone: "text-lagoon" },
   { title: "SEO content", page: "p.6", tone: "text-sunbeam" },
-  { title: "Social captions", page: "p.8", tone: "text-blush" },
+  { title: "Social captions", page: "p.8", tone: "text-blush-ink" },
   { title: "Video scripts", page: "p.10", tone: "text-lagoon" },
   { title: "Email newsletters", page: "p.12", tone: "text-lav" },
   { title: "Tone-of-voice guides", page: "p.14", tone: "text-sunbeam" },
-  { title: "Product descriptions", page: "p.16", tone: "text-blush" },
+  { title: "Product descriptions", page: "p.16", tone: "text-blush-ink" },
 ];
 
 const columns = [
@@ -86,7 +86,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <div className="relative z-10 pt-[clamp(1rem,2.6vw,3.125rem)]">
             <Breadcrumb items={[{ label: "Services", href: "/services" }, { label: service.name }]} />
             <h1 id="hero-title" className="mt-[clamp(1.25rem,2.6vw,3.125rem)] uppercase">
-              <span className="block font-display text-[clamp(2.75rem,6.25vw,7.5rem)] leading-[1.275] text-blush">{l1}</span>
+              <span className="block font-display text-[clamp(2.75rem,6.25vw,7.5rem)] leading-[1.275] text-blush-ink">{l1}</span>
               <span className="-mt-[1.2vw] block font-haas text-[clamp(3.25rem,7.81vw,9.375rem)] leading-[1.087] tracking-[-0.05em] text-grape">{l2}</span>
               <span className="mt-[0.89vw] flex items-start gap-[0.52vw]">
                 <span className="font-display text-[clamp(1.75rem,4.17vw,5rem)] leading-[1.275] text-lagoon">{l3}</span>
@@ -121,7 +121,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               <p className="mt-auto pt-6 font-copy text-[clamp(0.875rem,0.885vw,1.0625rem)] font-medium text-[#8C8784]">38 words of nothing&nbsp; ·&nbsp; 0 personality</p>
             </article>
             <article data-reveal className={`flex min-h-[clamp(18rem,23.96vw,28.75rem)] flex-col rounded-[clamp(1.5rem,1.67vw,2rem)] bg-blush p-[clamp(1.5rem,2.08vw,2.5rem)] pb-[clamp(2rem,3.2vw,3.875rem)] text-white ${paperShadow}`}>
-              <h3 className="grid h-[clamp(2.125rem,2.08vw,2.5rem)] w-[clamp(7.5rem,7.29vw,8.75rem)] place-items-center rounded-full bg-white font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-blush">
+              <h3 className="grid h-[clamp(2.125rem,2.08vw,2.5rem)] w-[clamp(7.5rem,7.29vw,8.75rem)] place-items-center rounded-full bg-white font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-blush-deep">
                 AFTER
               </h3>
               <p className="mt-[clamp(1.5rem,2.08vw,2.5rem)] max-w-[34rem] font-display text-[clamp(1.75rem,2.71vw,3.25rem)] leading-[1.19] uppercase">Coffee that tastes like Saturday. Every day.</p>
@@ -207,7 +207,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             <div className="mt-[clamp(1.25rem,1.3vw,1.5625rem)] grid gap-x-[1.46vw] gap-y-8 lg:grid-cols-[minmax(0,1060fr)_minmax(0,420fr)]">
               <div className="flex flex-col">
                 <h3 className={`${serif.className} text-[clamp(1.375rem,2.6vw,3.125rem)] leading-[1.16] font-bold text-ink`}>LOCAL CAFÉ’S WEBSITE COPY SO GOOD, CUSTOMERS READ IT TWICE</h3>
-                <p className={`${serif.className} mt-[clamp(0.75rem,1.46vw,1.75rem)] text-[clamp(1rem,1.25vw,1.5rem)] text-blush`}>Experts baffled as “About Us” page outperforms the brunch menu.</p>
+                <p className={`${serif.className} mt-[clamp(0.75rem,1.46vw,1.75rem)] text-[clamp(1rem,1.25vw,1.5rem)] text-blush-ink`}>Experts baffled as “About Us” page outperforms the brunch menu.</p>
                 <div className="mt-[clamp(1rem,1.46vw,1.75rem)] grid gap-y-4 md:min-h-[19.8vw] md:grid-cols-3 md:divide-x md:divide-ink/30">
                   {columns.map((text, i) => (
                     <p key={i} className={`${serif.className} text-[clamp(0.9375rem,0.94vw,1.125rem)] leading-[1.67] text-ink md:px-[0.78vw] md:first:pl-0 md:last:pr-0`}>
@@ -267,8 +267,8 @@ export default function Sections({ service }: { service: ServiceDetail }) {
         <div className="mt-[clamp(2rem,2.8vw,3.375rem)] grid items-start gap-y-12 lg:grid-cols-[minmax(0,820fr)_minmax(0,694fr)] lg:gap-x-[3.85vw]">
           <article data-reveal className={`flex min-h-[clamp(16rem,26vw,31.25rem)] flex-col rounded-[clamp(0.75rem,0.83vw,1rem)] ${paper} p-[clamp(1.25rem,2.08vw,2.5rem)] ${cardShadow}`}>
             <p className={`${serif.className} text-[clamp(1.0625rem,1.25vw,1.5rem)] leading-[1.75] text-ink`}>
-              Looking for the best <Kw tone="text-blush">specialty coffee</Kw> near you? Fifth Sip roasts <Kw tone="text-grape">single-origin beans</Kw> in-house every morning, pairs them with an{" "}
-              <Kw tone="text-lagoon">all-day brunch</Kw> menu and serves the <Kw tone="text-blush">flat white</Kw> locals queue for. <Kw tone="text-grape">Order online</Kw>, book a table, or grab a bag of{" "}
+              Looking for the best <Kw tone="text-blush-ink">specialty coffee</Kw> near you? Fifth Sip roasts <Kw tone="text-grape">single-origin beans</Kw> in-house every morning, pairs them with an{" "}
+              <Kw tone="text-lagoon">all-day brunch</Kw> menu and serves the <Kw tone="text-blush-ink">flat white</Kw> locals queue for. <Kw tone="text-grape">Order online</Kw>, book a table, or grab a bag of{" "}
               <Kw tone="text-lagoon">freshly roasted beans</Kw> to brew at home.
             </p>
             <p className="mt-auto pt-8 font-display text-[clamp(0.6875rem,0.73vw,0.875rem)] text-grape/70">6 keywords · readability: easy · 52 words</p>
@@ -330,7 +330,7 @@ function DraftDesk() {
             <span data-strike="0.08em" className="text-[#8C8784] [box-decoration-break:slice]" style={strike("#F27793", "0.08em")}>
               is a leading provider of premium coffee solutions
             </span>{" "}
-            <strong data-insert className="inline-block font-bold text-blush">
+            <strong data-insert className="inline-block font-bold text-blush-ink">
               the neighbourhood café
             </strong>{" "}
             where every cup is roasted in-house, poured with care and served with a smile. Come for the{" "}

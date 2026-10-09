@@ -211,7 +211,7 @@ export default function ContactSection() {
       <div className="flex flex-col justify-center pt-[clamp(3rem,7vw,8rem)] motion-safe:sticky motion-safe:top-0 motion-safe:min-h-svh motion-safe:pt-0">
         <div className="shell flex flex-col gap-y-8 lg:flex-row lg:items-start lg:gap-x-16">
           <header className="flex min-w-0 flex-col gap-2">
-            <p className="text-eyebrow leading-none font-bold text-blush uppercase">
+            <p className="text-eyebrow leading-none font-bold text-blush-ink uppercase">
               {/* A paragraph can't carry aria-label: the readable text is visually hidden instead. */}
               <span className="sr-only">{EYEBROW}</span>
               <span aria-hidden>

@@ -5,8 +5,8 @@ import { serif } from "@/lib/inner-fonts";
 /** Per-card look from Figma: tilt (Figma −2° / 1° / 2°, flipped for CSS), title and pencil colours. */
 const looks = [
   { tilt: "rotate-[2deg]", name: "text-grape", pencil: "text-lagoon" },
-  { tilt: "rotate-[-1deg]", name: "text-blush", pencil: "text-grape" },
-  { tilt: "rotate-[-2deg]", name: "text-grape", pencil: "text-blush" },
+  { tilt: "rotate-[-1deg]", name: "text-blush-ink", pencil: "text-grape" },
+  { tilt: "rotate-[-2deg]", name: "text-grape", pencil: "text-blush-ink" },
 ];
 
 /** Figma "Package — STARTER / GROWTH / FULL POP" on 03.6 Content Writing: a taped sheet of lined paper. */
@@ -25,7 +25,7 @@ export default function PackageCard({ pkg, index }: { pkg: Package; index: numbe
         <span aria-hidden className="col-start-1 row-start-1 ml-[6.9%] w-0.5 justify-self-start bg-blush/60" />
 
         <div className="col-start-1 row-start-1 flex flex-col pt-[clamp(2rem,2.6vw,3.125rem)] pr-[11.5%] pb-[clamp(2rem,2.6vw,3.125rem)] pl-[11.5%]">
-          <h3 className={`${serif.className} text-[clamp(1.75rem,2.08vw,2.5rem)] leading-[1.3] font-bold uppercase ${pkg.popular ? "text-blush" : look.name}`}>{pkg.name}</h3>
+          <h3 className={`${serif.className} text-[clamp(1.75rem,2.08vw,2.5rem)] leading-[1.3] font-bold uppercase ${pkg.popular ? "text-blush-ink" : look.name}`}>{pkg.name}</h3>
           <p className="font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] text-ink/80">{pkg.summary}</p>
           <p className={`${serif.className} mt-1.5 text-[clamp(0.9375rem,0.94vw,1.125rem)] text-ink/60 italic`}>
             {pkg.price} · {pkg.timeline}

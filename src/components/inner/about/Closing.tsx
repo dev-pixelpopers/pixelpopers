@@ -18,7 +18,7 @@ export default function Closing() {
       />
       <div className="col-start-1 row-start-1 grid gap-10 lg:grid-cols-[minmax(0,900fr)_minmax(0,560fr)] lg:gap-[clamp(1.5rem,1.77vw,2.125rem)] lg:px-[3.8%]">
         <div>
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{aboutCta.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{aboutCta.eyebrow}</p>
           <h2
             id="cta-title"
             aria-label={aboutCta.heading.join(" ")}

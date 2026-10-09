@@ -18,7 +18,7 @@ export default function SplitWords({ text, name }: SplitWordsProps) {
   return words.map((word, i) => (
     <Fragment key={i}>
       <span className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em] align-bottom">
-        <span data-split={name} className="inline-block origin-bottom-left will-change-transform">
+        <span data-split={name} className="inline-block origin-bottom-left">
           {word}
         </span>
       </span>

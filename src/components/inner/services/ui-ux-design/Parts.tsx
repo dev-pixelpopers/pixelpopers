@@ -193,7 +193,7 @@ export function ComponentLibrary() {
               <span className="font-haas text-[4.08cqw] text-ink">Fifth Sip Beans</span>
               <span className="mt-[1.4cqw] font-copy text-[3.27cqw] text-ink/60">Medium roast · 250g</span>
               <span className="mt-[3.5cqw] flex items-center justify-between">
-                <span className="font-haas text-[5.3cqw] text-blush">$18</span>
+                <span className="font-haas text-[5.3cqw] text-blush-ink">$18</span>
                 <span className={`${pill} h-[8.16cqw] w-[30.6cqw] bg-grape text-[3.06cqw] text-white`}>Add to bag</span>
               </span>
             </div>
@@ -275,7 +275,7 @@ export function FlowBoard() {
           account?
         </span>
         <span className={`${layer} mt-[14.23%] ml-[32.37%] grid h-[1.76cqw] w-[3.53%] place-items-center rounded-full bg-[#2ec27e]/15 font-display text-[0.82cqw] text-[#2ec27e]`}>YES</span>
-        <span className={`${layer} mt-[24.43%] ml-[32.37%] grid h-[1.76cqw] w-[3.53%] place-items-center rounded-full bg-blush/15 font-display text-[0.82cqw] text-blush`}>NO</span>
+        <span className={`${layer} mt-[24.43%] ml-[32.37%] grid h-[1.76cqw] w-[3.53%] place-items-center rounded-full bg-blush/15 font-display text-[0.82cqw] text-blush-ink`}>NO</span>
 
         {nodes.map((n) => (
           <div key={n.title} className={`${layer} ${n.pos} flex aspect-[220/84] flex-col items-center justify-center rounded-[1.26cqw] shadow-[0_10px_24px_rgb(34_1_40/0.15)] ${n.cls} ${n.title.startsWith("Aha") ? "aspect-[180/84]" : ""}`}>
@@ -283,7 +283,7 @@ export function FlowBoard() {
             <span className="mt-[0.3cqw] font-copy text-[0.88cqw] font-medium opacity-80">{n.sub}</span>
           </div>
         ))}
-        <span className={`${layer} mt-[13.6%] ml-[84.38%] flex w-[11.34%] justify-center font-display whitespace-nowrap text-[0.82cqw] text-blush`}>avg. 3 taps to first win</span>
+        <span className={`${layer} mt-[13.6%] ml-[84.38%] flex w-[11.34%] justify-center font-display whitespace-nowrap text-[0.82cqw] text-blush-ink`}>avg. 3 taps to first win</span>
 
         <div className="col-start-1 row-start-1 mb-[2cqw] flex items-center justify-between self-end px-[2.52cqw] pr-[9.2cqw] font-copy text-[0.945cqw] font-medium text-ink/70">
           <span className="flex items-center gap-[2.3cqw]">
@@ -319,7 +319,7 @@ export function FlowBoard() {
             <FlowNode {...nodes[1]} />
           </div>
           <div className="flex flex-col gap-2">
-            <span className="mx-auto rounded-full bg-blush/15 px-3 py-1 font-display text-[0.6875rem] text-blush">NO</span>
+            <span className="mx-auto rounded-full bg-blush/15 px-3 py-1 font-display text-[0.6875rem] text-blush-deep">NO</span>
             <FlowNode {...nodes[2]} />
             <span aria-hidden className="text-center text-[#B5A7C4]">↓</span>
             <FlowNode {...nodes[3]} />
@@ -329,7 +329,7 @@ export function FlowBoard() {
         <FlowStep {...nodes[4]} />
         <FlowArrow />
         <FlowStep {...nodes[5]} />
-        <li className="mt-2 text-center font-display text-[0.6875rem] text-blush">avg. 3 taps to first win</li>
+        <li className="mt-2 text-center font-display text-[0.6875rem] text-blush-deep">avg. 3 taps to first win</li>
       </ol>
     </>
   );
@@ -430,7 +430,7 @@ export function ArtboardTest() {
           </li>
         ))}
       </ul>
-      <span className="mt-[13.2cqw] font-display text-[3.95cqw] text-blush">3 / 4 tasks passed</span>
+      <span className="mt-[13.2cqw] font-display text-[3.95cqw] text-blush-ink">3 / 4 tasks passed</span>
     </div>
   );
 }

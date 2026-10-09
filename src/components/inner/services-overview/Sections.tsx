@@ -23,7 +23,7 @@ const toneBg: Record<Tone, string> = {
   sunbeam: "bg-sunbeam text-ink",
 };
 const toneText: Record<Tone, string> = {
-  blush: "text-blush",
+  blush: "text-blush-ink",
   grape: "text-grape",
   lagoon: "text-lagoon",
   sunbeam: "text-sunbeam",
@@ -47,7 +47,7 @@ export function Explained() {
   return (
     <section aria-labelledby="explained-title" className="shell">
       <div data-wm="heading">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{explained.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{explained.eyebrow}</p>
         <h2 id="explained-title" className="mt-3 font-display text-h2 leading-[1.1] text-grape uppercase">
           <SplitWords text={explained.heading} name="wm-words" />
         </h2>
@@ -69,7 +69,7 @@ export function Explained() {
               <p className="font-copy text-small leading-[1.6] font-light text-ink">{row.explained}</p>
               <Link
                 href={`/services/${row.slug}`}
-                className="mt-auto font-haas text-small text-blush uppercase transition-colors hover:text-grape"
+                className="mt-auto font-haas text-small text-blush-ink uppercase transition-colors hover:text-grape"
               >
                 Explore {detail.name} →
               </Link>
@@ -100,7 +100,7 @@ export function Faq() {
       className="shell grid gap-10 lg:grid-cols-[minmax(0,640fr)_minmax(0,900fr)] lg:gap-[clamp(2rem,3.85vw,4.625rem)]"
     >
       <div data-wm="heading" className="flex flex-col items-start">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{servicesFaq.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{servicesFaq.eyebrow}</p>
         <h2 id="faq-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={servicesFaq.heading[0]} name="wm-words" />
           <br />
@@ -238,7 +238,7 @@ export function Models() {
                 <span data-wm="model-chip" className={`rounded-full px-[clamp(1.25rem,2vw,2.5rem)] py-[0.9rem] font-display text-micro leading-none text-ink uppercase ${toneSoft[m.tone]}`}>
                   {m.chip}
                 </span>
-                <Link href="/contact" className="font-display text-micro text-blush uppercase hover:underline">
+                <Link href="/contact" className="font-display text-micro text-blush-ink uppercase hover:underline">
                   Learn more<span className="sr-only"> about the {m.name.toLowerCase()} model</span> →
                 </Link>
               </div>
@@ -287,7 +287,7 @@ export function Closing() {
     <section data-wm="cta" aria-labelledby="cta-title" className="shell">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,934fr)_minmax(0,560fr)] lg:px-[3.8%]">
         <div>
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{servicesCta.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{servicesCta.eyebrow}</p>
           <h2
             id="cta-title"
             aria-label={servicesCta.heading.join(" ")}

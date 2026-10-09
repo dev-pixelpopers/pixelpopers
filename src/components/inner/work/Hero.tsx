@@ -19,7 +19,7 @@ function Chars({ text }: { text: string }) {
       {w > 0 ? " " : null}
       <span className="inline-block whitespace-nowrap">
         {Array.from(word).map((ch, c) => (
-          <span key={c} data-whero="char" className="inline-block will-change-transform">
+          <span key={c} data-whero="char" className="inline-block">
             {ch}
           </span>
         ))}
@@ -140,7 +140,7 @@ export default function Hero() {
           <span aria-hidden className="block">
             <span
               data-whero-line="1"
-              className="block font-display text-hero-sm leading-[1.07] text-blush sm:ml-[min(17.1vw,20.5625rem)]"
+              className="block font-display text-hero-sm leading-[1.07] text-blush-ink sm:ml-[min(17.1vw,20.5625rem)]"
             >
               <Chars text={l1} />
             </span>

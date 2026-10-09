@@ -49,7 +49,7 @@ const layers = [
   { icon: "▢", label: "Home — 390", indent: 0, tone: "text-grape" },
   { icon: "#", label: "Nav", indent: 1, tone: "text-grape" },
   { icon: "#", label: "Hero", indent: 1, tone: "text-grape" },
-  { icon: "◆", label: "Card / Promo", indent: 2, tone: "text-blush", active: true },
+  { icon: "◆", label: "Card / Promo", indent: 2, tone: "text-blush-ink", active: true },
   { icon: "◆", label: "Button / Pop", indent: 2, tone: "text-grape" },
   { icon: "T", label: "Headline", indent: 2, tone: "text-grape" },
   { icon: "▢", label: "Product grid", indent: 1, tone: "text-grape" },
@@ -83,7 +83,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <div className="col-start-1 row-start-1 pt-[clamp(1rem,2.6vw,3.125rem)] lg:relative lg:z-10 lg:w-[58%]">
             <Breadcrumb items={[{ label: "Services", href: "/services" }, { label: service.name }]} />
             <h1 id="hero-title" className="mt-[clamp(1.5rem,3.3vw,3.9rem)] uppercase">
-              <span className="block font-display text-[clamp(3rem,6.77vw,8.125rem)] leading-[1.02] text-blush">{l1}</span>
+              <span className="block font-display text-[clamp(3rem,6.77vw,8.125rem)] leading-[1.02] text-blush-ink">{l1}</span>
               <span className="mt-10 grid w-full border-2 border-lagoon lg:mt-[max(0.25rem,calc(2.6rem-2vw))] lg:w-[45.3vw]">
                 <span className="col-start-1 row-start-1 pl-1 font-haas text-[clamp(3.25rem,7.81vw,9.375rem)] leading-[1.2] tracking-[-0.05em] text-grape">{l2}</span>
                 <Handles border="border-lagoon" />
@@ -169,7 +169,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <span data-float="8" className="col-span-2 w-fit justify-self-center rotate-[8deg] rounded-full bg-lagoon px-8 py-3 font-display text-[clamp(0.875rem,1.04cqw,1.25rem)] text-white shadow-[0_10px_24px_rgb(34_1_40/0.15)] lg:col-span-1 lg:col-start-1 lg:row-start-1 lg:mt-[10.75%] lg:ml-[43.44%] lg:w-[12.5%] lg:justify-self-start lg:px-0 lg:py-[1.12cqw] lg:text-center">
             UX MAGIC ✦
           </span>
-          <span aria-hidden className="hidden font-pop text-[10.42cqw] leading-none text-blush lg:col-start-1 lg:row-start-1 lg:mt-[14.58%] lg:ml-[44.79%] lg:block lg:w-[10.42%] lg:self-start lg:justify-self-start lg:text-center">
+          <span aria-hidden className="hidden font-pop text-[10.42cqw] leading-none text-blush-ink lg:col-start-1 lg:row-start-1 lg:mt-[14.58%] lg:ml-[44.79%] lg:block lg:w-[10.42%] lg:self-start lg:justify-self-start lg:text-center">
             →
           </span>
 
@@ -183,7 +183,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             <Phone className="w-full">
               <PhoneShot src="/assets/inner/liquidity.webp" w={736} h={552} alt="Hi-fi mobile landing page for a liquidity product, with a clear headline and call to action" sizes="(min-width: 1024px) 20vw, 45vw" />
             </Phone>
-            <figcaption className="mt-4 font-display text-[clamp(0.875rem,1.04cqw,1.25rem)] text-blush lg:mt-[1.04cqw]">HI-FI</figcaption>
+            <figcaption className="mt-4 font-display text-[clamp(0.875rem,1.04cqw,1.25rem)] text-blush-deep lg:mt-[1.04cqw]">HI-FI</figcaption>
           </figure>
 
           {[
@@ -335,7 +335,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       {/* ── Four artboards (process) — hover / tap reveals the dev notes ── */}
       <section aria-labelledby="artboards-title" className="shell mt-[clamp(4rem,9.4vw,11.25rem)]">
         <SectionTitle eyebrow="How we do it" title={<span id="artboards-title">Four artboards to launch</span>} />
-        <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush uppercase">
+        <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">
           <span className="hidden [@media(hover:hover)]:inline">Hover</span>
           <span className="[@media(hover:hover)]:hidden">Tap</span> an artboard to read the dev notes&nbsp;&nbsp;↘
         </p>

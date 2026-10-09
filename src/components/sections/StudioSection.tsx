@@ -379,7 +379,7 @@ export default function StudioSection() {
           </div>
 
           <div className="flex w-full flex-col items-start gap-8 md:w-[70%]">
-            <h2 className="relative font-display text-hero-sm leading-[1.09] text-blush">
+            <h2 className="relative font-display text-hero-sm leading-[1.09] text-blush-ink">
               {HEADLINE.map((word, i) => (
                 <span key={word} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
                   <span data-studio="word" className="inline-block origin-bottom-left">

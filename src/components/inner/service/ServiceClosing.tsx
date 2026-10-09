@@ -23,7 +23,7 @@ function DefaultPackage({ pkg }: { pkg: Package }) {
       <ul className="flex flex-col gap-3 font-copy text-small font-medium">
         {pkg.features.map((f) => (
           <li key={f} className="flex gap-3">
-            <span aria-hidden className="text-blush">✦</span>
+            <span aria-hidden className="text-blush-ink">✦</span>
             {f}
           </li>
         ))}
@@ -87,7 +87,7 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section aria-labelledby="faq-title" className="shell grid gap-10 lg:grid-cols-[minmax(0,600fr)_minmax(0,900fr)] lg:gap-[clamp(3rem,4.9vw,5.875rem)]">
         <div data-wm="heading">
-          <p data-wm="eyebrow" className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush uppercase">Good questions</p>
+          <p data-wm="eyebrow" className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush-ink uppercase">Good questions</p>
           <h2 id="faq-title" className="mt-4 font-display text-[clamp(2rem,3.54vw,4.25rem)] leading-[1.18] text-grape uppercase">
             <SplitWords text="Asked &" name="wm-words" />
             <br />
@@ -122,7 +122,7 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
 
       {/* ── More ways to pop ──────────────────────────────────────── */}
       <section aria-labelledby="more-title" className="shell text-center">
-        <h2 id="more-title" data-reveal className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] text-blush uppercase">
+        <h2 id="more-title" data-reveal className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] text-blush-ink uppercase">
           More ways to pop
         </h2>
         <ul data-wm="more" className="mx-auto mt-10 flex max-w-[75rem] flex-wrap justify-center gap-x-5 gap-y-8">
@@ -143,7 +143,7 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
       <section data-wm="cta" aria-labelledby="cta-title" className="shell">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:px-[3.75rem]">
           <div>
-            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">Ready to pop?</p>
+            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">Ready to pop?</p>
             <h2
               id="cta-title"
               aria-label={`Let's talk ${service.ctaHeading}`}

@@ -16,7 +16,7 @@ export default function Process() {
     >
       <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-8 lg:pr-[10.4%]">
         <div data-wm="heading">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{howWeWork.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{howWeWork.eyebrow}</p>
           <h2 id="process-title" className="mt-[0.3em] font-display text-section leading-[1.12] text-white uppercase">
             <SplitWords text={howWeWork.heading} name="wm-words" />
           </h2>

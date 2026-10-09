@@ -114,7 +114,7 @@ export function AfterSend() {
       className="shell grid gap-10 lg:grid-cols-[minmax(0,620fr)_minmax(0,848fr)] lg:gap-[clamp(3rem,6.25vw,7.5rem)]"
     >
       <div data-wm="heading" className="flex flex-col gap-[clamp(1rem,1.46vw,1.75rem)] lg:sticky lg:top-10 lg:self-start">
-        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{afterSend.eyebrow}</p>
+        <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{afterSend.eyebrow}</p>
         <h2 id="after-title" className="font-display text-h3 leading-[1.16] text-grape uppercase">
           <SplitWords text={afterSend.heading} name="wm-words" />
         </h2>
@@ -123,7 +123,7 @@ export function AfterSend() {
       <ol data-wm="after" className="flex flex-col gap-6">
         {afterSend.steps.map((s, i) => (
           <li key={s.title} data-wm="after-step" className="flex gap-[clamp(1rem,1.67vw,2rem)] rounded-3xl bg-white p-[clamp(1.5rem,2.08vw,2.5rem)] max-sm:flex-col">
-            <span aria-hidden className="relative w-[clamp(4rem,5.7vw,6.875rem)] shrink-0 font-display text-[clamp(2.5rem,3.33vw,4rem)] leading-none text-blush">
+            <span aria-hidden className="relative w-[clamp(4rem,5.7vw,6.875rem)] shrink-0 font-display text-[clamp(2.5rem,3.33vw,4rem)] leading-none text-blush-ink">
               <span data-wm="after-num" className="inline-block origin-bottom-left">
                 {String(i + 1).padStart(2, "0")}
               </span>
@@ -147,7 +147,7 @@ export function WhereWhen() {
     <section data-wm="where-section" aria-labelledby="where-title" className="shell flex flex-col gap-[clamp(2rem,2.9vw,3.5rem)]">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,760fr)_minmax(0,708fr)] lg:items-end lg:gap-[clamp(3rem,6.25vw,7.5rem)]">
         <div data-wm="heading">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{whereWhen.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{whereWhen.eyebrow}</p>
           <h2 id="where-title" className="mt-3 font-display text-h2 leading-[1.1] text-grape uppercase">
             <SplitWords text={whereWhen.heading} name="wm-words" />
           </h2>

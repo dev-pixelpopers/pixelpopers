@@ -27,12 +27,12 @@ const u = (px: number, base: number) => `${+((px / base) * 100).toFixed(3)}cqw`;
 
 /* ── Hero data ─────────────────────────────────────────────────────────── */
 const letterLook = [
-  { color: "text-blush", rotate: "rotate-[6deg]", drop: 0.215 },
-  { color: "text-blush", rotate: "rotate-[-5deg]", drop: 0.031 },
+  { color: "text-blush-ink", rotate: "rotate-[6deg]", drop: 0.215 },
+  { color: "text-blush-ink", rotate: "rotate-[-5deg]", drop: 0.031 },
   { color: "text-grape", rotate: "rotate-[3deg]", drop: 0.277 },
-  { color: "text-blush", rotate: "rotate-[-7deg]", drop: 0.092 },
+  { color: "text-blush-ink", rotate: "rotate-[-7deg]", drop: 0.092 },
   { color: "text-lagoon", rotate: "rotate-[5deg]", drop: 0.246 },
-  { color: "text-blush", rotate: "rotate-[-4deg]", drop: 0 },
+  { color: "text-blush-ink", rotate: "rotate-[-4deg]", drop: 0 },
 ];
 const speedLines = [240, 220, 200, 180, 160, 140, 120];
 /** Bounce trail: y offset (Figma px from the line top) and opacity. */
@@ -113,7 +113,7 @@ const scenes = [
 /* ── Formats ───────────────────────────────────────────────────────────── */
 const formats = [
   { ratio: "16:9", use: "YouTube · Web", aspect: "aspect-[16/9]", tone: "border-lagoon bg-lagoon/15 text-lagoon" },
-  { ratio: "1:1", use: "Feed posts", aspect: "aspect-square", tone: "border-blush bg-blush/15 text-blush" },
+  { ratio: "1:1", use: "Feed posts", aspect: "aspect-square", tone: "border-blush bg-blush/15 text-blush-ink" },
   { ratio: "4:5", use: "Instagram", aspect: "aspect-[4/5]", tone: "border-grape bg-grape/15 text-grape" },
   { ratio: "9:16", use: "Reels · TikTok · Stories", aspect: "aspect-[9/16]", tone: "border-sunbeam bg-sunbeam/15 text-[#C99528]" },
 ];
@@ -413,14 +413,14 @@ function Panel({ index }: { index: number }) {
               <span key={i} className="h-[10cqw] w-[1.2cqw] rounded-full bg-ink/40" style={{ marginTop: `${i * 1.2}cqw` }} />
             ))}
           </span>
-          <span className={`${layer} mt-[8cqw] ml-[40cqw] font-pop text-[36cqw] leading-[36cqw] text-blush`}>P</span>
+          <span className={`${layer} mt-[8cqw] ml-[40cqw] font-pop text-[36cqw] leading-[36cqw] text-blush-ink`}>P</span>
           <span aria-hidden className={`${layer} mt-[50cqw] ml-[12cqw] h-[0.8cqw] w-[76cqw] bg-ink/30`} />
         </>
       );
     case 1:
       return (
         <>
-          <span className={`${layer} mt-[19cqw] ml-[30cqw] origin-bottom scale-x-[1.4] scale-y-[0.6] font-pop text-[36cqw] leading-[36cqw] text-blush`}>P</span>
+          <span className={`${layer} mt-[19cqw] ml-[30cqw] origin-bottom scale-x-[1.4] scale-y-[0.6] font-pop text-[36cqw] leading-[36cqw] text-blush-ink`}>P</span>
           <span aria-hidden className={`${layer} mt-[46cqw] ml-[24cqw] h-[0.8cqw] w-[6cqw] bg-ink/40`} />
           <span aria-hidden className={`${layer} mt-[46cqw] ml-[72cqw] h-[0.8cqw] w-[6cqw] bg-ink/40`} />
           <span aria-hidden className={`${layer} mt-[50cqw] ml-[12cqw] h-[0.8cqw] w-[76cqw] bg-ink/30`} />
@@ -438,7 +438,7 @@ function Panel({ index }: { index: number }) {
               }).join(" ")}
             />
           </svg>
-          <span className="col-start-1 row-start-1 place-self-center font-pop text-[14cqw] leading-[16cqw] text-blush">POP!</span>
+          <span className="col-start-1 row-start-1 place-self-center font-pop text-[14cqw] leading-[16cqw] text-blush-ink">POP!</span>
         </>
       );
     case 3:

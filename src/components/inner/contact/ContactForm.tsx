@@ -24,7 +24,7 @@ const chip =
 const field =
   "w-full rounded-[18px] border border-ink/12 bg-cream/60 px-6 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] text-ink placeholder:text-ink/45 focus:border-grape focus:outline-2 focus:outline-grape";
 const label = "font-haas text-[0.9375rem] leading-none text-ink/70";
-const step = "font-display text-micro tracking-wide text-blush uppercase";
+const step = "font-display text-micro tracking-wide text-blush-deep uppercase";
 
 /**
  * Figma "Project form": service + budget chips and the "about you" fields.
@@ -80,7 +80,7 @@ export default function ContactForm() {
 
       {sent ? (
         <div ref={thanksRef} role="status" className="relative mt-8 flex flex-col items-start gap-5 rounded-3xl bg-cream/60 p-[clamp(1.5rem,2.5vw,3rem)]">
-          <p data-thanks="title" className="font-display text-[clamp(1.5rem,2.08vw,2.5rem)] leading-tight text-blush uppercase">Thanks, {sent}!</p>
+          <p data-thanks="title" className="font-display text-[clamp(1.5rem,2.08vw,2.5rem)] leading-tight text-blush-ink uppercase">Thanks, {sent}!</p>
           <Burst pieces={18} ring="border-blush" className="top-[clamp(2.5rem,3.5vw,4rem)] left-[clamp(4rem,8vw,9rem)] size-0" />
           <p className="max-w-[40rem] font-copy text-body leading-[1.64] font-light text-ink">
             Your mail app should have opened with your brief ready to go — just hit send there. If nothing popped up, email us
@@ -151,19 +151,19 @@ export default function ContactForm() {
             <div className="mt-5 grid gap-x-5 gap-y-[1.875rem] sm:grid-cols-2">
               <label className="flex flex-col gap-3">
                 <span className={label}>
-                  Your name <span aria-hidden className="text-blush">*</span>
+                  Your name <span aria-hidden className="text-blush-ink">*</span>
                 </span>
                 <input name="name" required autoComplete="name" placeholder="Jane Doe" className={`${field} h-[clamp(3.5rem,3.75vw,4.5rem)]`} />
               </label>
               <label className="flex flex-col gap-3">
                 <span className={label}>
-                  Email <span aria-hidden className="text-blush">*</span>
+                  Email <span aria-hidden className="text-blush-ink">*</span>
                 </span>
                 <input name="email" type="email" required autoComplete="email" placeholder="jane@brand.com" className={`${field} h-[clamp(3.5rem,3.75vw,4.5rem)]`} />
               </label>
               <label className="flex flex-col gap-3">
                 <span className={label}>
-                  Company / brand <span aria-hidden className="text-blush">*</span>
+                  Company / brand <span aria-hidden className="text-blush-ink">*</span>
                 </span>
                 <input name="company" required autoComplete="organization" placeholder="Brand name" className={`${field} h-[clamp(3.5rem,3.75vw,4.5rem)]`} />
               </label>
@@ -173,7 +173,7 @@ export default function ContactForm() {
               </label>
               <label className="flex flex-col gap-3 sm:col-span-2">
                 <span className={label}>
-                  Project details <span aria-hidden className="text-blush">*</span>
+                  Project details <span aria-hidden className="text-blush-ink">*</span>
                 </span>
                 <textarea
                   name="details"

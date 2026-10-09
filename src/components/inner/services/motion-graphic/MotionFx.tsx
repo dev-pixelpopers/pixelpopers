@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { ambientLoops } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -29,12 +30,14 @@ export default function MotionFx({ children, className = "" }: { children: React
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", (ctx) => {
         const letters = gsap.utils.toArray<HTMLElement>("[data-bounce]");
         if (letters.length) {
           const tl = gsap.timeline();
           tl.from(letters, { yPercent: -140, autoAlpha: 0, duration: 1.1, ease: "bounce.out", stagger: 0.08 });
-          tl.to(letters, {
+          // The endless hop is its own tween (picked up by ambientLoops below),
+          // started once the entrance lands.
+          gsap.to(letters, {
             keyframes: [
               { yPercent: -22, duration: 0.28, ease: "power2.out" },
               { yPercent: 0, duration: 0.6, ease: "bounce.out" },
@@ -42,6 +45,7 @@ export default function MotionFx({ children, className = "" }: { children: React
             stagger: 0.07,
             repeat: -1,
             repeatDelay: 2.6,
+            delay: tl.duration(),
           });
         }
 
@@ -113,6 +117,8 @@ export default function MotionFx({ children, className = "" }: { children: React
             scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true },
           });
         });
+        // Endless idle loops only run on screen, after the first interaction.
+        return ambientLoops(ctx);
       });
       return () => mm.revert();
     },

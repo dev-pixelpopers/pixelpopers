@@ -58,7 +58,7 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
                   aria-hidden
                   className="w-2 shrink-0 rounded-full bg-blush"
                 />
-                <p className="font-display text-[clamp(1.25rem,1.667vw,2rem)] leading-[1.44] text-blush">
+                <p className="font-display text-[clamp(1.25rem,1.667vw,2rem)] leading-[1.44] text-blush-ink">
                   “{b.text}”
                 </p>
               </blockquote>

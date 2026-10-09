@@ -27,7 +27,7 @@ export function LongFormSplit({ id, eyebrow, heading, aside, children, className
     >
       <div className="flex flex-col gap-[clamp(1rem,1.46vw,1.75rem)] lg:sticky lg:top-10 lg:self-start">
         <div data-wm="heading" className="flex flex-col gap-[clamp(1rem,1.46vw,1.75rem)]">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{eyebrow}</p>
           <h2 id={id} className="font-display text-h3 leading-[1.16] text-grape uppercase">
             <SplitWords text={heading} name="wm-words" />
           </h2>

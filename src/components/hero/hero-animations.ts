@@ -25,11 +25,10 @@ type ContextSafeFunc = ReturnType<typeof useGSAP>["contextSafe"];
  *   0.55  "Your Website"
  *   0.95  "Poppin'"
  *   1.60  flower doodle   bursts in and throws a ring of sparks
- *   2.60  doodles         settle into a gentle endless wobble
+ *   (then `doodleIdle` — the doodles' endless wobble — takes over)
  *
- * Call from a `(prefers-reduced-motion: no-preference)` branch. Returns the timeline; the
- * entrance has fully landed by `POP_LANDED` seconds (the idle wobble after
- * that repeats forever, so the timeline itself never completes).
+ * Call from a `(prefers-reduced-motion: no-preference)` branch. Returns the
+ * timeline; the entrance has fully landed by `POP_LANDED` seconds.
  */
 export function popEntrance(q: Q) {
   const line1 = q("[data-line='1'] [data-hero='char']");
@@ -84,27 +83,31 @@ export function popEntrance(q: Q) {
       },
       1.68,
     )
-    .to(sparks, { autoAlpha: 0, scale: 0, duration: 0.35, ease: "power1.in" }, 2.1)
-
-    // Idle: the doodles never quite stop moving.
-    .to(
-      [sparkle, flower],
-      {
-        rotation: (i, el) => settleRotation(i, el) + 6,
-        y: -8,
-        duration: 2.4,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-        stagger: 0.7,
-      },
-      2.6,
-    );
+    .to(sparks, { autoAlpha: 0, scale: 0, duration: 0.35, ease: "power1.in" }, 2.1);
 
   // Lines are only containers here — the letters carry the reveal.
   gsap.set(q("[data-hero='line']"), { autoAlpha: 1 });
 
   return tl;
+}
+
+/**
+ * The doodles' idle wobble, for once the entrance has landed. Paused: hand
+ * it to `ambient()`, which only plays it after the visitor's first
+ * interaction and while the hero is on screen.
+ */
+export function doodleIdle(q: Q) {
+  const [sparkle, flower] = q("[data-hero='doodle']");
+  return gsap.to([sparkle, flower], {
+    rotation: (i, el) => settleRotation(i, el) + 6,
+    y: -8,
+    duration: 2.4,
+    ease: "sine.inOut",
+    yoyo: true,
+    repeat: -1,
+    stagger: 0.7,
+    paused: true,
+  });
 }
 
 /** Seconds into `popEntrance` by which every letter has settled. */
@@ -150,13 +153,13 @@ export function scrollHandOff(q: Q) {
   });
 
   // The entrance owns yPercent/autoAlpha on the lines; the hand-off
-  // uses x/y/scale/filter and the *mask* opacity, so the two compose
+  // uses x/y/scale and the *mask* opacity, so the two compose
   // instead of fighting over the same properties.
   const mask = (line: number) => q(`[data-line='${line}'] [data-hero='mask']`);
 
-  tl.to(mask(1), { x: () => -innerWidth * 0.18, y: () => -innerHeight * 0.18, scale: 0.85, opacity: 0, filter: "blur(8px)" }, 0)
-    .to(mask(2), { scale: 0.7, opacity: 0, filter: "blur(10px)" }, 0)
-    .to(mask(3), { x: () => innerWidth * 0.22, scale: 0.9, opacity: 0, filter: "blur(8px)" }, 0)
+  tl.to(mask(1), { x: () => -innerWidth * 0.18, y: () => -innerHeight * 0.18, scale: 0.85, opacity: 0 }, 0)
+    .to(mask(2), { scale: 0.7, opacity: 0 }, 0)
+    .to(mask(3), { x: () => innerWidth * 0.22, scale: 0.9, opacity: 0 }, 0)
     .to(
       q("[data-hero='doodle-wrap']"),
       {

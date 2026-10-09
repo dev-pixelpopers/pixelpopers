@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
 
 import { marquee } from "@/lib/pages/services";
+import { ambient } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -45,6 +46,8 @@ export default function Marquee() {
             { xPercent: i === 0 ? -25 : 0, duration: 38, ease: "none", repeat: -1 },
           ),
         );
+        // Idle only while on screen, after the first interaction (see ambient).
+        const stops = loops.map((loop) => ambient(loop, root.current!));
         gsap.utils.toArray<HTMLElement>("[data-band]").forEach((band, i) => {
           gsap.fromTo(
             band,
@@ -64,6 +67,7 @@ export default function Marquee() {
             });
           },
         });
+        return () => stops.forEach((stop) => stop());
       });
       return () => mm.revert();
     },

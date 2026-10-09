@@ -89,7 +89,7 @@ export default function BlogExplorer({ posts }: { posts: Post[] }) {
                 className={`rounded-full border px-[clamp(1rem,1.25vw,1.5rem)] py-[clamp(0.625rem,0.83vw,1rem)] font-display text-[clamp(0.75rem,0.9375vw,1.125rem)] leading-none uppercase transition-colors ${
                   on
                     ? "border-ink bg-ink text-white"
-                    : "border-ink/15 bg-white/60 text-ink hover:border-blush hover:text-blush"
+                    : "border-ink/15 bg-white/60 text-ink hover:border-blush hover:text-blush-deep"
                 }`}
               >
                 {c}
@@ -108,7 +108,7 @@ export default function BlogExplorer({ posts }: { posts: Post[] }) {
           />
           <span
             aria-hidden
-            className="font-copy text-2xl leading-none font-bold text-blush"
+            className="font-copy text-2xl leading-none font-bold text-blush-ink"
           >
             ⌕
           </span>
@@ -142,7 +142,7 @@ export default function BlogExplorer({ posts }: { posts: Post[] }) {
                 Featured
               </span>
             </p>
-            <h2 className="mt-[clamp(1rem,1.77vw,2.125rem)] font-haas text-[clamp(1.625rem,2.5vw,3rem)] leading-[1.21] text-blush">
+            <h2 className="mt-[clamp(1rem,1.77vw,2.125rem)] font-haas text-[clamp(1.625rem,2.5vw,3rem)] leading-[1.21] text-blush-ink">
               <Link
                 href={`/blog/${featured.slug}`}
                 className="hover:text-grape"
@@ -178,7 +178,7 @@ export default function BlogExplorer({ posts }: { posts: Post[] }) {
               </div>
               <Link
                 href={`/blog/${featured.slug}`}
-                className="font-display text-[clamp(0.875rem,0.9375vw,1.125rem)] text-blush uppercase hover:text-grape"
+                className="font-display text-[clamp(0.875rem,0.9375vw,1.125rem)] text-blush-deep uppercase hover:text-grape"
               >
                 Read more <span aria-hidden>→</span>
                 <span className="sr-only">: {featured.title}</span>
@@ -202,7 +202,7 @@ export default function BlogExplorer({ posts }: { posts: Post[] }) {
               if (window.location.hash)
                 history.replaceState(null, "", window.location.pathname);
             }}
-            className="ml-4 text-blush underline-offset-4 hover:underline"
+            className="ml-4 text-blush-ink underline-offset-4 hover:underline"
           >
             Clear filters
           </button>

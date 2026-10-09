@@ -42,7 +42,7 @@ export default function Comments({ comments }: { comments: Comment[] }) {
               </p>
               <span
                 aria-hidden
-                className="mt-4 font-display text-[0.8125rem] text-blush uppercase"
+                className="mt-4 font-display text-[0.8125rem] text-blush-deep uppercase"
               >
                 Reply
               </span>

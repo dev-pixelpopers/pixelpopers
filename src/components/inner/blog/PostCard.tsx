@@ -55,7 +55,7 @@ export default function PostCard({
           ) : null}
           <span
             aria-hidden
-            className="mt-auto pt-6 font-display text-micro text-blush uppercase"
+            className="mt-auto pt-6 font-display text-micro text-blush-ink uppercase"
           >
             Read more →
           </span>

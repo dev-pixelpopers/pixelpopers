@@ -20,7 +20,7 @@ const accentRing: Record<Owner["accent"], string> = {
   sunbeam: "ring-sunbeam",
 };
 
-const statTones = ["text-blush", "text-lagoon", "text-sunbeam"];
+const statTones = ["text-blush-ink", "text-lagoon-ink", "text-sunbeam-ink"];
 
 const HEADLINE = "Three Friends. One Loud Idea.";
 const STORY =
@@ -66,11 +66,10 @@ export default function LeadershipSection() {
               },
             });
 
-            // ── Left column: logo, then owners scale up out of a blur ──────────
+            // ── Left column: logo, then owners scale up and fade in ────────────
             tl.from("[data-lead='logo']", {
               autoAlpha: 0,
               scale: 0.6,
-              filter: "blur(14px)",
               duration: 0.9,
               ease: "back.out(1.8)",
             })
@@ -81,7 +80,6 @@ export default function LeadershipSection() {
                   y: 70,
                   scale: 0.82,
                   rotation: (i) => [-10, 8, -6][i] ?? 0,
-                  filter: "blur(10px)",
                   duration: 0.9,
                   stagger: 0.14,
                 },
@@ -211,7 +209,7 @@ export default function LeadershipSection() {
 
           {/* ── Right: the story ──────────────────────────────────────────── */}
           <div className="flex flex-col items-start gap-[clamp(1rem,2.6vh,2rem)]">
-            <p className="text-eyebrow leading-none font-bold text-blush uppercase">
+            <p className="text-eyebrow leading-none font-bold text-blush-ink uppercase">
               <SplitWords text="Our Story" name="lead-eyebrow" />
             </p>
 

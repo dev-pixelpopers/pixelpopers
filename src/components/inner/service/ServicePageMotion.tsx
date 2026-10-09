@@ -76,7 +76,7 @@ function hero(scope: HTMLElement) {
   if (l1) out.to(l1, { x: () => -innerWidth * 0.18, rotation: -6 }, 0);
   if (l2) out.to(l2, { y: 50 }, 0);
   if (l3) out.to(l3, { x: () => innerWidth * 0.22, rotation: 6 }, 0);
-  out.to(h1, { opacity: 0, filter: "blur(8px)", duration: 0.6 }, 0)
+  out.to(h1, { opacity: 0, duration: 0.6 }, 0)
     .to(textCol, { y: -40, opacity: 0, duration: 0.8 }, 0.2)
     .to(grid, { scale: 0.96, y: -30, duration: 1 }, 0);
 }

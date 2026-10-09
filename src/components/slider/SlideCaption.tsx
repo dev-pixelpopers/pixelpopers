@@ -44,7 +44,7 @@ export default function SlideCaption({ active, count, title, barRef, className =
       aria-live="polite"
       className={`shell pointer-events-none absolute inset-x-0 bottom-[clamp(1.25rem,6vh,4rem)] flex items-end gap-6 ${className}`}
     >
-      <p className="overflow-hidden font-display text-nav whitespace-nowrap text-blush">
+      <p className="overflow-hidden font-display text-nav whitespace-nowrap text-blush-deep">
         <span data-caption="swap" className="inline-block">
           {pad(active + 1)}
         </span>

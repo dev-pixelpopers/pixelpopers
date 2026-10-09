@@ -33,7 +33,7 @@ export default function SectionTitle({
   return (
     <div data-reveal data-wm="heading" className={`${align === "center" ? "text-center" : ""} ${className}`}>
       {eyebrow ? (
-        <p data-wm="eyebrow" className={`font-haas text-eyebrow leading-none text-blush uppercase ${eyebrowClassName}`}>
+        <p data-wm="eyebrow" className={`font-haas text-eyebrow leading-none text-blush-ink uppercase ${eyebrowClassName}`}>
           {eyebrow}
         </p>
       ) : null}

@@ -783,7 +783,7 @@ export const workTestimonials = {
   eyebrow: "Kind words",
   heading: "Clients who popped",
   items: [
-    { quote: "They didn’t just design a logo — they gave our café a personality people want to photograph.", role: "Founder", company: "Fifth Sip Café", initial: "F", card: "bg-white text-ink", mark: "text-blush", avatar: "bg-blush text-white", tilt: "rotate-1", offset: "" },
+    { quote: "They didn’t just design a logo — they gave our café a personality people want to photograph.", role: "Founder", company: "Fifth Sip Café", initial: "F", card: "bg-white text-ink", mark: "text-blush-ink", avatar: "bg-blush text-white", tilt: "rotate-1", offset: "" },
     { quote: "Fast, funny and frighteningly good. Our new site doubled demo requests in the first month.", role: "Head of Marketing", company: "Liquidity", initial: "H", card: "bg-grape text-white", mark: "text-sunbeam", avatar: "bg-sunbeam text-ink", tilt: "-rotate-1", offset: "lg:mt-10" },
     { quote: "The reels they made for our launch outperformed everything we’d posted before.", role: "Brand Manager", company: "Radiance Beauty", initial: "B", card: "bg-white text-ink", mark: "text-lagoon", avatar: "bg-lagoon text-white", tilt: "rotate-1", offset: "" },
   ],

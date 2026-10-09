@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { ambientLoops } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -23,7 +24,7 @@ export default function UxMotion({ children, className = "" }: { children: React
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", (ctx) => {
         gsap.utils.toArray<HTMLElement>("[data-float]").forEach((el, i) => {
           gsap.to(el, {
             y: -(Number(el.dataset.float) || 8),
@@ -62,6 +63,8 @@ export default function UxMotion({ children, className = "" }: { children: React
             scrollTrigger: { trigger: svg, start: "top 80%", once: true },
           });
         });
+        // Endless idle loops only run on screen, after the first interaction.
+        return ambientLoops(ctx);
       });
       return () => mm.revert();
     },

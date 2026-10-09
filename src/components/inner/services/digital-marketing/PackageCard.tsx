@@ -5,7 +5,7 @@ import type { Package } from "@/lib/service-content";
 const tones = [
   { bar: "bg-lagoon/80", star: "text-lagoon" },
   { bar: "bg-grape/80", star: "text-grape" },
-  { bar: "bg-blush/80", star: "text-blush" },
+  { bar: "bg-blush/80", star: "text-blush-ink" },
 ] as const;
 
 /* Bar heights from the Figma icon (120-unit box). */
@@ -27,7 +27,7 @@ export default function PackageCard({
         <div className="flex items-start justify-between gap-4">
           <div>
             <h3
-              className={`font-display text-[clamp(1.75rem,1.98vw,2.375rem)] leading-[1.26] uppercase ${pkg.popular ? "text-blush" : "text-grape"}`}
+              className={`font-display text-[clamp(1.75rem,1.98vw,2.375rem)] leading-[1.26] uppercase ${pkg.popular ? "text-blush-ink" : "text-grape"}`}
             >
               {pkg.name}
             </h3>

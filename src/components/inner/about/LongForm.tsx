@@ -25,7 +25,7 @@ export function LongFormSplit({ id, eyebrow, heading, paragraphs, stats, classNa
     >
       <div className="flex flex-col gap-[clamp(1rem,1.46vw,1.75rem)] lg:sticky lg:top-10 lg:self-start">
         <div data-wm="heading" className="flex flex-col gap-[clamp(1rem,1.46vw,1.75rem)]">
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{eyebrow}</p>
           <h2 id={id} className="font-display text-h3 leading-[1.16] text-grape uppercase">
             <SplitWords text={heading} name="wm-words" />
           </h2>
@@ -70,7 +70,7 @@ export function Audience() {
     <section data-wm="audience" aria-labelledby="audience-title" className="shell flex flex-col gap-[clamp(2rem,2.9vw,3.5rem)]">
       <div data-wm="heading" className="grid gap-8 lg:grid-cols-[minmax(0,760fr)_minmax(0,708fr)] lg:items-end lg:gap-[clamp(3rem,6.25vw,7.5rem)]">
         <div>
-          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush uppercase">{audience.eyebrow}</p>
+          <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{audience.eyebrow}</p>
           <h2 id="audience-title" className="mt-3 font-display text-h2 leading-[1.1] text-grape uppercase">
             <SplitWords text={audience.heading} name="wm-words" />
           </h2>
