@@ -1,0 +1,70 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# admin.pixelpopers.com — Pixel Popers CMS (Laravel)
+#
+# For hosts where the subdomain's document root is this project folder
+# instead of its /public folder (common on cPanel / shared hosting). If you
+# can point the document root at /public, do that instead — this file is then
+# never used.
+#
+# Every request is served from /public; nothing else in this folder (.env,
+# the database, storage, vendor…) is ever reachable from the web.
+# ─────────────────────────────────────────────────────────────────────────────
+
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+# Never serve secrets, data or tooling files, even if a rewrite is bypassed.
+# (Dot-files are blocked by name; the .well-known folder holds no dot-files.)
+<FilesMatch "^\.(?!well-known)|\.(env|sqlite|sqlite3|db|log|sql|bak|zip|md|lock|json|xml|yml|yaml|neon|sh)$|^(artisan|composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|vite\.config\.js)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # SSL certificate checks (AutoSSL / Let's Encrypt) must reach the folder
+    # as-is, over plain HTTP too.
+    RewriteRule ^\.well-known/ - [L]
+
+    # Always HTTPS (works behind proxies / Cloudflare that set X-Forwarded-Proto).
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Pass the Authorization header through to PHP.
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Block the project's private folders outright. (Not "storage" or "vendor":
+    # /storage/… is how uploads are served — through the public/storage link —
+    # and packages may publish assets to public/vendor. The rewrite below
+    # already sends those URLs into /public, never to the real folders.)
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|scripts|tests|node_modules)(/|$) - [F,L]
+
+    # The site root goes to Laravel (which redirects to /admin).
+    RewriteRule ^$ public/index.php [L,QSA]
+
+    # Everything else is served from /public.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
+
+# Uploads from the admin (images, short videos) need room.
+<IfModule mod_php.c>
+    php_value upload_max_filesize 32M
+    php_value post_max_size 40M
+    php_value max_execution_time 120
+    php_value memory_limit 256M
+</IfModule>
+<IfModule mod_php8.c>
+    php_value upload_max_filesize 32M
+    php_value post_max_size 40M
+    php_value max_execution_time 120
+    php_value memory_limit 256M
+</IfModule>
