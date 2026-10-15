@@ -239,7 +239,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               <span className={`${layer} mt-[29.17%] ml-[18.75%] h-[3.125cqw] w-[62.5%] rounded-full bg-black/45 blur-[2.08cqw]`} />
               <div className={`${layer} ml-[27.08%] grid aspect-[880/550] w-[45.83%] rounded-[1.25cqw] border border-white/12 bg-[#120118] p-[0.83cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="overflow-hidden rounded-[0.625cqw]">
-                  <PhoneShot slot="devices-laptop" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="46vw" />
+                  <PhoneShot slot="devices-laptop" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="46vw" contain />
                 </div>
               </div>
               <span className={`${layer} mt-[28.65%] ml-[46.88%] h-[2.08cqw] w-[6.25%] bg-[#120118]`} />
