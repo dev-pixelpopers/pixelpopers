@@ -33,7 +33,10 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Off: its /storage/{path} route would answer (403) for uploads on
+            // the public disk whenever public/storage isn't linked. Uploads are
+            // served by the fallback in routes/web.php instead.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
