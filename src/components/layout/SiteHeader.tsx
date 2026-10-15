@@ -16,7 +16,7 @@ export default function SiteHeader({ ctaHref = "#contact" }: SiteHeaderProps) {
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
-    <header className="shell relative z-20 flex items-center justify-between gap-4 py-6 md:py-10">
+    <header className="shell relative z-30 flex items-center justify-between gap-4 py-6 md:py-10">
       <button
         type="button"
         aria-haspopup="dialog"
