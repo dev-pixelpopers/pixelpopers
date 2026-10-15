@@ -33,8 +33,9 @@ export function Phone({
   );
 }
 
-export function PhoneShot({ slot, src, w, h, alt, sizes }: { slot: string; src: string; w: number; h: number; alt: string; sizes: string }) {
-  return <Image slot={slot} src={src} alt={alt} width={w} height={h} sizes={sizes} className="h-full w-full object-cover" />;
+/** A screen inside a device frame; `contain` shows the whole picture instead of filling (and cropping to) the screen. */
+export function PhoneShot({ slot, src, w, h, alt, sizes, contain = false }: { slot: string; src: string; w: number; h: number; alt: string; sizes: string; contain?: boolean }) {
+  return <Image slot={slot} src={src} alt={alt} width={w} height={h} sizes={sizes} className={`h-full w-full ${contain ? "object-contain" : "object-cover"}`} />;
 }
 
 /** Low-fi wireframe screen content. */

@@ -246,7 +246,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               <span className={`${layer} mt-[30.52%] ml-[42.71%] h-[0.73cqw] w-[14.58%] rounded-full bg-[#120118]`} />
               <div className={`${layer} mt-[6.77%] ml-[17.19%] grid aspect-[340/460] w-[17.71%] rounded-[1.77cqw] border border-white/12 bg-[#120118] p-[0.73cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="overflow-hidden rounded-[1.15cqw]">
-                  <PhoneShot slot="devices-tablet" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="18vw" />
+                  <PhoneShot slot="devices-tablet" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="18vw" contain />
                 </div>
               </div>
               <div className={`${layer} mt-[7.81%] ml-[69.27%] grid aspect-[220/450] w-[11.46%] rounded-[1.98cqw] border border-white/12 bg-[#120118] p-[0.52cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
