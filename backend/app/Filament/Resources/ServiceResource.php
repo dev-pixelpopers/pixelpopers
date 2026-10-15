@@ -168,11 +168,40 @@ class ServiceResource extends Resource
                             ]),
                         ]),
                 ]),
+                SchemaComponents\Tabs\Tab::make('Images')->icon('heroicon-o-photo')->schema(fn (?Service $record) => self::imageSlots($record)),
                 SchemaComponents\Tabs\Tab::make('SEO')->icon('heroicon-o-magnifying-glass')->schema([
                     Fields::seo('meta_title', 'meta_description'),
                 ]),
             ])->columnSpanFull(),
         ]);
+    }
+
+    /** One upload per picture in the page's design, grouped by page section; an empty slot keeps the built-in image. */
+    private static function imageSlots(?Service $record): array
+    {
+        $slots = Service::IMAGE_SLOTS[$record?->slug] ?? [];
+        if ($slots === []) {
+            return [SchemaComponents\Text::make('This service uses the standard layout, which has no design images to replace.')];
+        }
+
+        $site = rtrim((string) config('app.frontend_url'), '/');
+        $groups = [];
+        foreach ($slots as $slot => [$default, $label, $section]) {
+            $groups[$section][] = Fields::media("images.{$slot}", $label, str_ends_with($default, '.mp4') ? 'video' : 'image')
+                ->placeholder($default === '' ? 'Not set' : 'Original: '.$default)
+                ->helperText($default === ''
+                    ? 'Optional. Use Upload to add one; empty keeps the design’s placeholder.'
+                    : new \Illuminate\Support\HtmlString('Empty = original (<a href="'.e($site.$default).'" target="_blank" rel="noopener" class="underline">view</a>). Use Upload to replace it.'));
+        }
+
+        return [
+            SchemaComponents\Text::make('Upload a replacement for any picture on this service’s page, section by section. Leave a slot empty to keep the original. Use the same proportions as the original for the best fit.'),
+            ...array_map(
+                fn (string $section, array $fields) => SchemaComponents\Section::make($section)->collapsible()->schema([SchemaComponents\Grid::make(2)->schema($fields)]),
+                array_keys($groups),
+                $groups,
+            ),
+        ];
     }
 
     public static function table(Table $table): Table

@@ -51,6 +51,8 @@ export type ServiceDetail = {
   ctaButton: string;
   /** Sections switched off in the CMS: overview, included, process, audience, insights, why_us, packages, faqs, more, cta. */
   hidden?: string[];
+  /** Images uploaded in the CMS, keyed by the built-in file each replaces. */
+  images?: Record<string, string>;
 };
 
 export const serviceDetails: ServiceDetail[] = [

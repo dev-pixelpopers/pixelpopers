@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/inner/services/ServiceImage";
 
 /*
   UI mock-ups for the growth-dashboard page (Figma 371:21). Every mock-up is
@@ -162,6 +162,7 @@ export function PostPhone({ className = "" }: { className?: string }) {
             </span>
           </div>
           <Image
+            slot="hero-post"
             src="/assets/inner/fifth-sip.webp"
             alt=""
             width={857}
@@ -248,6 +249,7 @@ export function ProfilePhone({ className = "" }: { className?: string }) {
               "img" in t ? (
                 <Image
                   key={i}
+                  slot={`grid-${tiles.slice(0, i + 1).filter((x) => "img" in x).length}`}
                   src={`/assets/inner/${t.img}`}
                   alt=""
                   width={t.w}
@@ -542,13 +544,14 @@ export type Story = {
   tilt: string;
 };
 
-export function StoryAd({ story }: { story: Story }) {
+export function StoryAd({ story, slot }: { story: Story; slot?: string }) {
   return (
     <figure className={`@container ${story.tilt}`}>
       <div
         className={`grid aspect-[340/600] overflow-hidden rounded-[9.41cqw] ${story.frame} ${cardShadow}`}
       >
         <Image
+          slot={slot}
           src={`/assets/inner/${story.img}`}
           alt={story.alt}
           width={story.w}

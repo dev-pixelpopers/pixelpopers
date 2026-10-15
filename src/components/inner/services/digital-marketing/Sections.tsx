@@ -523,7 +523,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 <RevealCard as="div" label={`Step ${n}: ${step.title} — skip to the next frame`} className="block rounded-[2rem]">
                   <div className="grid overflow-hidden rounded-[2rem]">
                     <div className={`col-start-1 row-start-1 transition-[translate,opacity] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${frontOut}`}>
-                      <StoryAd story={{ ...s, tilt: "" }} />
+                      <StoryAd story={{ ...s, tilt: "" }} slot={`story-${(i % stories.length) + 1}`} />
                     </div>
                     {/* Next frame: the process step */}
                     <div className={`@container col-start-1 row-start-1 translate-x-full transition-[translate] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${backIn}`}>

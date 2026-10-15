@@ -86,6 +86,38 @@ class AdminRoundTripTest extends TestCase
         }
     }
 
+    public function test_a_service_image_upload_replaces_the_built_in_file(): void
+    {
+        $service = Service::where('slug', 'motion-graphic')->first();
+        Livewire::test(EditService::class, ['record' => $service->getRouteKey()])
+            ->assertSee('Video in the player (MP4)')
+            ->fillForm(['images.reel-2' => 'https://cms.test/storage/uploads/images/reel.webp'])
+            ->call('save')->assertHasNoFormErrors();
+
+        $this->assertSame(
+            ['reel-2' => 'https://cms.test/storage/uploads/images/reel.webp'],
+            $service->fresh()->imageOverrides(),
+        );
+        $this->assertSame(
+            'https://cms.test/storage/uploads/images/reel.webp',
+            $this->getJson('/api/v1/services/motion-graphic')->json('data.images')['reel-2'] ?? null,
+        );
+    }
+
+    public function test_brand_identity_spots_are_replaced_one_by_one(): void
+    {
+        $service = Service::where('slug', 'brand-identity')->first();
+        Livewire::test(EditService::class, ['record' => $service->getRouteKey()])
+            ->assertSee('Brand in the wild')->assertSee('Before photo (left side)')
+            ->fillForm(['images.wild-merch' => 'https://cms.test/m.webp', 'images.before' => 'https://cms.test/b.webp'])
+            ->call('save')->assertHasNoFormErrors();
+
+        $this->assertSame(
+            ['wild-merch' => 'https://cms.test/m.webp', 'before' => 'https://cms.test/b.webp'],
+            $this->getJson('/api/v1/services/brand-identity')->json('data.images'),
+        );
+    }
+
     public function test_every_case_study_survives_an_unchanged_save(): void
     {
         $fields = ['cover', 'services', 'categories', 'intro', 'brand', 'results', 'quote', 'story', 'gallery', 'delivered', 'phases', 'team'];

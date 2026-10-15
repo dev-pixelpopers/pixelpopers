@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/inner/services/ServiceImage";
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import RevealCard from "@/components/inner/RevealCard";
 import SectionTitle from "@/components/inner/SectionTitle";
@@ -119,7 +119,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             </div>
 
             <Phone className={`${layer} ml-[34.51%] w-[35.4%]`}>
-              <PhoneShot src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="(min-width: 1024px) 22vw, 55vw" />
+              <PhoneShot slot="hero-phone" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="(min-width: 1024px) 22vw, 55vw" />
             </Phone>
             <div className={`${layer} mt-[20.35%] ml-[36.81%] grid aspect-[348/190] w-[30.8%] border-2 border-blush`}>
               <Handles border="border-blush" />
@@ -183,7 +183,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           </figure>
           <figure data-reveal className="flex flex-col items-center lg:col-start-1 lg:row-start-1 lg:ml-[63.02%] lg:w-[19.79%] lg:self-start lg:justify-self-start">
             <Phone className="w-full">
-              <PhoneShot src="/assets/inner/liquidity.webp" w={736} h={552} alt="Hi-fi mobile landing page for a liquidity product, with a clear headline and call to action" sizes="(min-width: 1024px) 20vw, 45vw" />
+              <PhoneShot slot="hifi-screen" src="/assets/inner/liquidity.webp" w={736} h={552} alt="Hi-fi mobile landing page for a liquidity product, with a clear headline and call to action" sizes="(min-width: 1024px) 20vw, 45vw" />
             </Phone>
             <figcaption className="mt-4 font-display text-[clamp(0.875rem,1.04cqw,1.25rem)] text-blush-deep lg:mt-[1.04cqw]">HI-FI</figcaption>
           </figure>
@@ -239,19 +239,19 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               <span className={`${layer} mt-[29.17%] ml-[18.75%] h-[3.125cqw] w-[62.5%] rounded-full bg-black/45 blur-[2.08cqw]`} />
               <div className={`${layer} ml-[27.08%] grid aspect-[880/550] w-[45.83%] rounded-[1.25cqw] border border-white/12 bg-[#120118] p-[0.83cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="overflow-hidden rounded-[0.625cqw]">
-                  <PhoneShot src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="46vw" />
+                  <PhoneShot slot="devices-laptop" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="46vw" />
                 </div>
               </div>
               <span className={`${layer} mt-[28.65%] ml-[46.88%] h-[2.08cqw] w-[6.25%] bg-[#120118]`} />
               <span className={`${layer} mt-[30.52%] ml-[42.71%] h-[0.73cqw] w-[14.58%] rounded-full bg-[#120118]`} />
               <div className={`${layer} mt-[6.77%] ml-[17.19%] grid aspect-[340/460] w-[17.71%] rounded-[1.77cqw] border border-white/12 bg-[#120118] p-[0.73cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="overflow-hidden rounded-[1.15cqw]">
-                  <PhoneShot src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="18vw" />
+                  <PhoneShot slot="devices-tablet" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="18vw" />
                 </div>
               </div>
               <div className={`${layer} mt-[7.81%] ml-[69.27%] grid aspect-[220/450] w-[11.46%] rounded-[1.98cqw] border border-white/12 bg-[#120118] p-[0.52cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="col-start-1 row-start-1 overflow-hidden rounded-[1.56cqw]">
-                  <PhoneShot src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="12vw" />
+                  <PhoneShot slot="devices-phone" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="12vw" />
                 </div>
                 <span className="col-start-1 row-start-1 mt-[0.52cqw] h-[1.04cqw] w-[3.65cqw] self-start justify-self-center rounded-full bg-[#120118]" />
               </div>
@@ -306,6 +306,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             </div>
             <div className="grid aspect-[934/596]">
               <Image
+                slot="tested-heatmap"
                 src="/assets/inner/liquidity.webp"
                 alt="Heatmap over a landing page: clicks cluster on the headline and the call-to-action button"
                 width={736}

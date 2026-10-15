@@ -5,6 +5,7 @@ import ServiceLongForm from "@/components/inner/service/ServiceLongForm";
 import ServiceClosing from "@/components/inner/service/ServiceClosing";
 import ServicePageMotion from "@/components/inner/service/ServicePageMotion";
 import { conceptFor } from "@/components/inner/services/registry";
+import { ServiceMediaProvider } from "@/components/inner/services/ServiceImage";
 import { getServiceDetail, getServiceDetails, getSite } from "@/lib/content";
 import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
@@ -56,7 +57,9 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
 
   return (
     <ServicePageMotion className={pageClassName}>
-      <Sections service={service} />
+      <ServiceMediaProvider images={service.images}>
+        <Sections service={service} />
+      </ServiceMediaProvider>
       <ServiceLongForm service={service} hideProcess={processInConcept} />
       <ServiceClosing
         service={service}

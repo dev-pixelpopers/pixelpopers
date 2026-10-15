@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/inner/services/ServiceImage";
 import type { ReactNode } from "react";
 import { owners as defaultOwners } from "@/lib/site-content";
 
@@ -33,8 +33,8 @@ export function Phone({
   );
 }
 
-export function PhoneShot({ src, w, h, alt, sizes }: { src: string; w: number; h: number; alt: string; sizes: string }) {
-  return <Image src={src} alt={alt} width={w} height={h} sizes={sizes} className="h-full w-full object-cover" />;
+export function PhoneShot({ slot, src, w, h, alt, sizes }: { slot: string; src: string; w: number; h: number; alt: string; sizes: string }) {
+  return <Image slot={slot} src={src} alt={alt} width={w} height={h} sizes={sizes} className="h-full w-full object-cover" />;
 }
 
 /** Low-fi wireframe screen content. */
@@ -148,6 +148,7 @@ export function ComponentLibrary({ owners = defaultOwners }: { owners?: typeof d
             {owners.map((o, i) => (
               <Image
                 key={o.name}
+                slot={`library-avatar-${i + 1}`}
                 src={o.avatar}
                 alt={o.name}
                 width={118}
@@ -182,6 +183,7 @@ export function ComponentLibrary({ owners = defaultOwners }: { owners?: typeof d
         <Cell label="Card / Product">
           <div className="mt-[3.47cqw] flex gap-[4.08cqw]">
             <Image
+              slot="library-product"
               src="/assets/inner/brand-identity/fifth-sip-packaging.webp"
               alt="Fifth Sip coffee beans product shot"
               width={980}
@@ -398,6 +400,7 @@ export function ArtboardDesign() {
     <div className="flex h-full flex-col p-[7.9cqw]">
       <span className="h-[7.9cqw] rounded-[1.6cqw] bg-grape" />
       <Image
+        slot="artboard-design"
         src="/assets/inner/ui-shop.webp"
         alt="Hi-fi e-commerce screens designed in Figma"
         width={1600}

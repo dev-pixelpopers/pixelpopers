@@ -76,6 +76,8 @@ class Transformers
             'ctaButton' => $s->cta_button,
             // Sections switched off in the CMS (keys of Service::SECTIONS).
             'hidden' => $s->hiddenSections(),
+            // Uploaded replacements for the design's images, keyed by slot (Service::IMAGE_SLOTS).
+            'images' => (object) $s->imageOverrides(),
             'updatedAt' => $s->updated_at?->toIso8601String(),
         ];
     }

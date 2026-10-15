@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { useServiceMedia } from "@/components/inner/services/ServiceImage";
 import { useRef, useState } from "react";
 import { mono } from "@/lib/inner-fonts";
 
@@ -19,6 +19,7 @@ function clock(t: number) {
  */
 export default function VideoPlayer({ className = "" }: { className?: string }) {
   const video = useRef<HTMLVideoElement>(null);
+  const reel = useServiceMedia("/assets/videos/snackbar-video.mp4", "hero-video");
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState({ now: 12, total: 30 });
 
@@ -38,6 +39,7 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
   return (
     <figure className={`@container grid aspect-[820/480] grid-cols-[minmax(0,1fr)] grid-rows-[minmax(0,1fr)] overflow-hidden rounded-[clamp(1rem,1.46vw,1.75rem)] bg-ink shadow-[0_24px_60px_rgb(34_1_40/0.2)] ${className}`}>
       <Image
+        slot="hero-poster"
         src="/assets/inner/motion.webp"
         alt="Animation editor style frame with an easing graph, keyframe timeline and colourful layers"
         width={1120}
@@ -50,7 +52,7 @@ export default function VideoPlayer({ className = "" }: { className?: string }) 
       {playing ? (
         <video
           ref={video}
-          src="/assets/videos/snackbar-video.mp4"
+          src={reel}
           autoPlay
           muted
           playsInline

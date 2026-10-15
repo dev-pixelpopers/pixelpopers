@@ -1,23 +1,37 @@
 "use client";
 
-import Image from "next/image";
+import Image, { useServiceMedia } from "@/components/inner/services/ServiceImage";
 import { useState, type CSSProperties } from "react";
 
 /**
  * "The glow-up" comparison card. The after-photo is clipped to the right of
  * the handle; a native range input (stretched invisibly over the card) drives
- * it, so it works with mouse, touch and keyboard alike.
+ * it, so it works with mouse, touch and keyboard alike. Both photos can be
+ * replaced in the CMS (slots "before" / "after"); until a before-photo is
+ * uploaded, that side shows the plain-text "generic logo" placeholder.
  */
 export default function BeforeAfter() {
   const [pos, setPos] = useState(50);
+  const before = useServiceMedia("", "before");
 
   return (
     <figure className="@container grid aspect-[4/3] grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-[clamp(1.5rem,2.08vw,2.5rem)] bg-[#dcd6d3] shadow-[0_24px_60px_rgb(34_1_40/0.15)] md:aspect-[1588/640]">
       {/* Before — generic, no system */}
-      <div className="col-start-1 row-start-1 grid w-1/2 place-content-center gap-[0.6em] px-4 text-center text-[#8c8784]">
-        <p className="font-copy text-[clamp(1.125rem,3.27cqw,3.25rem)] leading-tight">fifth sip coffee co.</p>
-        <p className="font-copy text-[clamp(0.75rem,1.26cqw,1.25rem)]">(generic font, no system, no story)</p>
-      </div>
+      {before ? (
+        <Image
+          src={before}
+          alt="The brand before the redesign"
+          width={1588}
+          height={640}
+          sizes="(min-width: 1024px) 83vw, 100vw"
+          className="col-start-1 row-start-1 h-full w-full object-cover"
+        />
+      ) : (
+        <div className="col-start-1 row-start-1 grid w-1/2 place-content-center gap-[0.6em] px-4 text-center text-[#8c8784]">
+          <p className="font-copy text-[clamp(1.125rem,3.27cqw,3.25rem)] leading-tight">fifth sip coffee co.</p>
+          <p className="font-copy text-[clamp(0.75rem,1.26cqw,1.25rem)]">(generic font, no system, no story)</p>
+        </div>
+      )}
 
       {/* After — the finished identity */}
       <div
@@ -25,6 +39,7 @@ export default function BeforeAfter() {
         style={{ clipPath: `inset(0 0 0 ${pos}%)`, "--from": `${Math.min(pos, 50)}%` } as CSSProperties}
       >
         <Image
+          slot="after"
           src="/assets/inner/brand-identity/fifth-sip-packaging.webp"
           alt="Fifth Sip coffee identity applied to cups, a tray, a bag, a coffee pouch and menus"
           width={980}

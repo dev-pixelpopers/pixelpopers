@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/inner/services/ServiceImage";
 import type { CSSProperties } from "react";
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import SectionTitle from "@/components/inner/SectionTitle";
@@ -218,6 +218,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                   ))}
                 </div>
                 <Image
+                  slot="post-photo"
                   src="/assets/inner/writing.webp"
                   alt="A writer at a café table with a laptop and an iced latte"
                   width={698}

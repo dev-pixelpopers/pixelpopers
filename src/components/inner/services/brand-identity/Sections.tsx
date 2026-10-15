@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/inner/services/ServiceImage";
 import type { ReactNode } from "react";
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import SectionTitle from "@/components/inner/SectionTitle";
@@ -102,6 +102,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             </div>
             <div data-parallax="-10" className={`${layer} mt-[62.43%] ml-[37.43%] aspect-[520/350] w-[57.78%] rotate-[-6deg] overflow-hidden rounded-[2.67cqw] border-[1.11cqw] border-white ${cardShadow}`}>
               <Image
+                slot="hero"
                 src="/assets/inner/brand-identity/fifth-sip-packaging.webp"
                 alt=""
                 width={980}
@@ -270,10 +271,10 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       <section id="applications" aria-labelledby="wild-title" className="shell mt-[clamp(4.5rem,7.3vw,8.75rem)] scroll-mt-8">
         <SectionTitle eyebrow="Brand in the wild" title={<span id="wild-title">Every touchpoint, on brand</span>} />
         <div data-reveal-stagger className={`grid gap-[clamp(1rem,1.56vw,1.875rem)] lg:grid-cols-[minmax(0,980fr)_minmax(0,578fr)] ${headingGap}`}>
-          <Photo src="fifth-sip-packaging.webp" w={980} h={640} label="Packaging" alt="Fifth Sip coffee packaging: branded cups, tray, carrier bag, coffee pouch and menus" className="aspect-[980/640] rounded-[clamp(1.5rem,1.875vw,2.25rem)]" sizes="(min-width: 1024px) 51vw, 100vw" />
+          <Photo slot="wild-packaging" src="fifth-sip-packaging.webp" w={980} h={640} label="Packaging" alt="Fifth Sip coffee packaging: branded cups, tray, carrier bag, coffee pouch and menus" className="aspect-[980/640] rounded-[clamp(1.5rem,1.875vw,2.25rem)]" sizes="(min-width: 1024px) 51vw, 100vw" />
           <div className="grid gap-[clamp(1rem,1.56vw,1.875rem)] sm:grid-cols-2 lg:grid-cols-1">
-            <Photo src="fifth-sip-merch.webp" w={578} h={305} label="Merch" alt="Fifth Sip carrier bag and decaf coffee pouch" className="aspect-[578/305] rounded-[clamp(1.5rem,1.67vw,2rem)]" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" />
-            <Photo src="kern-social.webp" w={578} h={305} label="Social" alt="Kern café social media grid with branded cups and aprons" className="aspect-[578/305] rounded-[clamp(1.5rem,1.67vw,2rem)]" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" />
+            <Photo slot="wild-merch" src="fifth-sip-merch.webp" w={578} h={305} label="Merch" alt="Fifth Sip carrier bag and decaf coffee pouch" className="aspect-[578/305] rounded-[clamp(1.5rem,1.67vw,2rem)]" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" />
+            <Photo slot="wild-social" src="kern-social.webp" w={578} h={305} label="Social" alt="Kern café social media grid with branded cups and aprons" className="aspect-[578/305] rounded-[clamp(1.5rem,1.67vw,2rem)]" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" />
           </div>
         </div>
 
@@ -352,10 +353,10 @@ export default function Sections({ service }: { service: ServiceDetail }) {
   );
 }
 
-function Photo({ src, w, h, label, alt, className, sizes }: { src: string; w: number; h: number; label: string; alt: string; className: string; sizes: string }) {
+function Photo({ slot, src, w, h, label, alt, className, sizes }: { slot: string; src: string; w: number; h: number; label: string; alt: string; className: string; sizes: string }) {
   return (
     <figure className={`grid overflow-hidden ${cardShadow} ${className}`}>
-      <Image src={`/assets/inner/brand-identity/${src}`} alt={alt} width={w} height={h} sizes={sizes} className="col-start-1 row-start-1 h-full w-full object-cover" />
+      <Image slot={slot} src={`/assets/inner/brand-identity/${src}`} alt={alt} width={w} height={h} sizes={sizes} className="col-start-1 row-start-1 h-full w-full object-cover" />
       <figcaption className="col-start-1 row-start-1 m-[clamp(1rem,1.56vw,1.875rem)] self-end font-display text-[clamp(0.75rem,0.94vw,1.125rem)] text-white uppercase drop-shadow-[0_1px_6px_rgb(0_0_0/0.35)]">
         {label}
       </figcaption>

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/inner/services/ServiceImage";
 import type { CSSProperties, ReactNode } from "react";
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import SectionTitle from "@/components/inner/SectionTitle";
@@ -257,9 +257,9 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       >
         <SectionTitle align="center" tone="dark" eyebrow="Social reels" title={<span id="reels-title">Made for the thumb-stop</span>} titleClassName="!text-white" />
         <ul data-reveal-stagger className="mt-[clamp(1.75rem,2.4vw,2.875rem)] flex items-start justify-center gap-[clamp(0.5rem,1.56vw,1.875rem)]">
-          <Reel base={320} img={filmFrames[0]} views="1.2M" title="Glow routine" className="mt-[2.08vw] w-[clamp(6.25rem,16.67vw,20rem)] rotate-[6deg]" />
-          <Reel base={380} img={{ src: "motion-graphic/reel-clim.webp", w: 494, h: 480, alt: "Colourful product set for the Clim campaign" }} views="3.4M" title="Bold flavour drop" fit className="w-[clamp(7.5rem,19.79vw,23.75rem)]" />
-          <Reel base={320} img={filmFrames[2]} views="860K" title="Behind the motion" className="mt-[2.08vw] w-[clamp(6.25rem,16.67vw,20rem)] rotate-[-6deg]" />
+          <Reel slot="reel-1" base={320} img={filmFrames[0]} views="1.2M" title="Glow routine" className="mt-[2.08vw] w-[clamp(6.25rem,16.67vw,20rem)] rotate-[6deg]" />
+          <Reel slot="reel-2" base={380} img={{ src: "motion-graphic/reel-clim.webp", w: 494, h: 480, alt: "Colourful product set for the Clim campaign" }} views="3.4M" title="Bold flavour drop" fit className="w-[clamp(7.5rem,19.79vw,23.75rem)]" />
+          <Reel slot="reel-3" base={320} img={filmFrames[2]} views="860K" title="Behind the motion" className="mt-[2.08vw] w-[clamp(6.25rem,16.67vw,20rem)] rotate-[-6deg]" />
         </ul>
       </section>
 
@@ -295,9 +295,9 @@ function FilmStrip() {
       <div className="flex flex-col gap-[1cqw] rounded-[0.8cqw] bg-ink py-[1cqw] shadow-[0_24px_60px_rgb(34_1_40/0.2)]">
         {holes}
         <ul className="flex gap-[0.8cqw] pl-[1.4cqw]">
-          {filmFrames.map((f) => (
+          {filmFrames.map((f, i) => (
             <li key={f.src} className="h-[9.8cqw] w-[15.6cqw] shrink-0 overflow-hidden rounded-[0.4cqw]">
-              <Image src={`/assets/inner/${f.src}`} alt={f.alt} width={f.w} height={f.h} sizes="(min-width: 1024px) 9vw, 16vw" className="h-full w-full object-cover" />
+              <Image slot={`film-${i + 1}`} src={`/assets/inner/${f.src}`} alt={f.alt} width={f.w} height={f.h} sizes="(min-width: 1024px) 9vw, 16vw" className="h-full w-full object-cover" />
             </li>
           ))}
         </ul>
@@ -447,6 +447,7 @@ function Panel({ index }: { index: number }) {
       return (
         <>
           <Image
+            slot="storyboard-4"
             src="/assets/inner/brand-identity/fifth-sip-packaging.webp"
             alt="Fifth Sip packaging: cups, tray, menu and coffee pouch"
             width={980}
@@ -463,7 +464,7 @@ function Panel({ index }: { index: number }) {
       return (
         <>
           <span className={`${layer} mt-[8cqw] ml-[34cqw] h-[56cqw] w-[32cqw] rounded-[4.8cqw] bg-ink p-[1.6cqw]`}>
-            <Image src="/assets/inner/ui-shop.webp" alt="Shop app interface sliding up on a phone" width={1600} height={900} sizes="12vw" className="h-full w-full rounded-[3.6cqw] object-cover object-left" />
+            <Image slot="storyboard-5" src="/assets/inner/ui-shop.webp" alt="Shop app interface sliding up on a phone" width={1600} height={900} sizes="12vw" className="h-full w-full rounded-[3.6cqw] object-cover object-left" />
           </span>
           <svg viewBox="0 0 40 110" aria-hidden className={`${layer} mt-[20cqw] ml-[73cqw] w-[8cqw] fill-none stroke-lagoon`} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 104V8M6 24 20 8l14 16" />
@@ -495,6 +496,7 @@ function Panel({ index }: { index: number }) {
 
 /** Figma "Reel 1–3" (380:26 / 34 / 42): phone-shaped reel cards on the dark band. */
 function Reel({
+  slot,
   base,
   img,
   views,
@@ -502,6 +504,7 @@ function Reel({
   fit,
   className,
 }: {
+  slot: string;
   base: number;
   img: (typeof filmFrames)[number];
   views: string;
@@ -516,6 +519,7 @@ function Reel({
       <article className="grid overflow-hidden bg-ink shadow-[0_30px_60px_rgb(0_0_0/0.4)]" style={{ aspectRatio: `${base} / ${h}`, borderRadius: c(40), padding: c(10) }}>
         <div className="col-start-1 row-start-1 grid overflow-hidden" style={{ borderRadius: c(32) }}>
           <Image
+            slot={slot}
             src={`/assets/inner/${img.src}`}
             alt={img.alt}
             width={img.w}

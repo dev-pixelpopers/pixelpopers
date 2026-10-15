@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/inner/services/ServiceImage";
 import type { ReactNode } from "react";
 import { mono } from "@/lib/inner-fonts";
 
@@ -104,6 +104,7 @@ export function BrowserPreview({ className = "", priority = false }: { className
           </span>
         </div>
         <Image
+          slot="hero-browser"
           src="/assets/inner/elevate.webp"
           alt="The Elevate website — “Drop your design” — on a laptop and phone"
           width={1600}
@@ -210,6 +211,7 @@ export function Devices({ className = "" }: { className?: string }) {
     <figure className={`@container grid aspect-[1430/800] ${className}`}>
       <div className={`${at} mt-[2.1%] w-[69.93%] rounded-[1.96cqw] bg-ink p-[1.26cqw] ${deviceShadow}`}>
         <Image
+          slot="devices-laptop"
           src="/assets/inner/elevate.webp"
           alt="Elevate website at desktop width"
           width={1600}
@@ -222,6 +224,7 @@ export function Devices({ className = "" }: { className?: string }) {
       <span aria-hidden className={`${at} mt-[49.51%] ml-[20.98%] aspect-[400/16] w-[27.97%] rounded-[0.56cqw] bg-ink`} />
       <div className={`${at} mt-[16.08%] ml-[61.54%] w-[26.57%] rounded-[2.52cqw] bg-ink p-[0.98cqw] ${deviceShadow}`}>
         <Image
+          slot="devices-tablet"
           src="/assets/inner/liquidity.webp"
           alt="Liquidity landing page at tablet width"
           width={736}
@@ -232,6 +235,7 @@ export function Devices({ className = "" }: { className?: string }) {
       </div>
       <div className={`${at} mt-[23.08%] ml-[83.92%] w-[16.08%] rounded-[2.52cqw] bg-ink p-[0.7cqw] ${deviceShadow}`}>
         <Image
+          slot="devices-phone"
           src="/assets/inner/ui-shop.webp"
           alt="Online shop design at phone width"
           width={1600}
@@ -340,6 +344,7 @@ export function CmsEditor({ className = "" }: { className?: string }) {
               <span className={`mt-[1.51cqw] ${fieldLabel}`}>Hero image</span>
               <span className="mt-[0.57cqw] grid grid-cols-[340fr_360fr] gap-[1.26cqw]">
                 <Image
+                  slot="cms-preview"
                   src="/assets/inner/elevate.webp"
                   alt="Current hero image: the Elevate website on a laptop"
                   width={1600}
