@@ -14,10 +14,11 @@ import {
   STUDIO_UNWIND_VH,
 } from "@/components/ui/studio-cube-motion";
 import GlowOrb, { STUDIO_FALLOFF } from "@/components/ui/GlowOrb";
+import { homeStudio, type HomeStudio } from "@/lib/home-content";
+import type { Project } from "@/lib/site-content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const HEADLINE = "We’re A Funky Creative Studio".split(" ");
 
 /**
  * Looping ribbon in the hero blob's style: it enters bottom-left, loops around
@@ -44,12 +45,61 @@ const rand = (i: number, salt = 1) => {
   return x - Math.floor(x);
 };
 
-/** Floating service badges orbiting the cube. */
-const BADGES = [
+type Badge = {
+  label: string;
+  rotate: number;
+  exitX: number;
+  exitY: number;
+  className: string;
+  style?: CSSProperties;
+};
+
+/** Floating service badges orbiting the cube: the design's three hand-placed spots. */
+const BADGES: Badge[] = [
   { label: "Strategy", rotate: -8, exitX: -160, exitY: -120, className: "top-[4%] left-[2%] bg-sunbeam text-ink" },
   { label: "Branding", rotate: 6, exitX: 180, exitY: -60, className: "top-[38%] -right-[6%] bg-lagoon text-white" },
   { label: "Motion", rotate: -4, exitX: -120, exitY: 160, className: "bottom-[6%] left-[10%] bg-blush text-white" },
 ];
+
+const EXTRA_TONES = ["bg-grape text-white", "bg-sunbeam text-ink", "bg-lagoon text-white", "bg-blush text-white"];
+
+/**
+ * Badges beyond the design's three (added in the CMS) fill the gaps around
+ * the cube first — bottom-right, top-right, left, bottom, top — then fan out
+ * by the golden angle, so any number fit without stacking. Each gets a
+ * cycling brand colour and flies out away from the cube.
+ */
+const EXTRA_SPOTS: [number, number][] = [
+  [86, 86],
+  [80, 4],
+  [-2, 52],
+  [48, 100],
+  [46, -4],
+];
+function badgesFor(labels: readonly string[]): Badge[] {
+  return labels
+    .filter((label) => label.trim() !== "")
+    .map((label, i) => {
+      const designed = BADGES[i];
+      if (designed) return { ...designed, label };
+      const spot = EXTRA_SPOTS[i - BADGES.length];
+      const angle = (i * 137.508 + 25) * (Math.PI / 180);
+      // Unit direction from the cube's centre, for the exit and the fallback ring.
+      const [x, y] = spot
+        ? [(spot[0] - 50) / 50, (spot[1] - 50) / 50]
+        : [Math.cos(angle), Math.sin(angle)];
+      return {
+        label,
+        rotate: Math.round((rand(i, 11) - 0.5) * 16),
+        exitX: Math.round(x * 180),
+        exitY: Math.round(y * 160),
+        className: EXTRA_TONES[(i - BADGES.length) % EXTRA_TONES.length],
+        style: spot
+          ? { left: `${spot[0]}%`, top: `${spot[1]}%`, translate: "-50% -50%" }
+          : { left: `${50 + x * 46}%`, top: `${50 + y * 46}%`, translate: "-50% -50%" },
+      };
+    });
+}
 
 /**
  * Scrubbed timeline, in timeline units (the whole thing maps onto the sticky
@@ -63,8 +113,17 @@ const BADGES = [
  *   4.5  focus   — cube swells, badges drift
  *   7.0  exit    — words peel up, swoosh draws off, cube spins away
  */
-export default function StudioSection() {
+type StudioSectionProps = {
+  content?: HomeStudio;
+  /** Showreel clips for the cube (the slider folds into it). */
+  projects?: readonly Project[];
+};
+
+export default function StudioSection({ content = homeStudio, projects }: StudioSectionProps) {
   const rootRef = useRef<HTMLElement>(null);
+  const headline = content.headline.split(" ");
+  // Each badge keeps its spot and colour in the design; the CMS names it.
+  const badges = badgesFor(content.badges);
 
   useGSAP(
     () => {
@@ -197,7 +256,7 @@ export default function StudioSection() {
             .to(cube, { scale: 1.08, duration: 2.5, ease: "sine.inOut" }, 4.5)
             .to(
               badges,
-              { yPercent: (i) => [-60, 40, -30][i] ?? 0, duration: 2.5, ease: "sine.inOut" },
+              { yPercent: (i) => [-60, 40, -30][i] ?? (i % 2 ? 35 : -45), duration: 2.5, ease: "sine.inOut" },
               4.5,
             )
 
@@ -337,7 +396,7 @@ export default function StudioSection() {
               falloff={STUDIO_FALLOFF}
               className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[220%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-70"
             />
-            <StudioCube />
+            <StudioCube projects={projects} />
 
             {
               // The cube's pop on the way out: a ring and confetti from its
@@ -359,15 +418,16 @@ export default function StudioSection() {
               </div>
             }
 
-            {BADGES.map((badge) => (
+            {badges.map((badge, i) => (
               <span
-                key={badge.label}
+                key={i}
                 data-studio="badge"
                 data-rotate={badge.rotate}
                 data-exit-x={badge.exitX}
                 data-exit-y={badge.exitY}
                 aria-hidden
                 className={`absolute rounded-full border-2 border-ink px-[0.9em] py-[0.35em] font-display text-nav whitespace-nowrap uppercase shadow-card ${badge.className}`}
+                style={badge.style}
               >
                 {badge.label}
               </span>
@@ -376,11 +436,11 @@ export default function StudioSection() {
 
           <div className="flex w-full flex-col items-start gap-8 md:w-[70%]">
             <h2 className="relative font-display text-hero-sm leading-[1.09] text-blush-ink">
-              {HEADLINE.map((word, i) => (
-                <span key={word} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+              {headline.map((word, i) => (
+                <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
                   <span data-studio="word" className="inline-block origin-bottom-left">
                     {word}
-                    {i < HEADLINE.length - 1 && " "}
+                    {i < headline.length - 1 && " "}
                   </span>
                 </span>
               ))}
@@ -406,11 +466,10 @@ export default function StudioSection() {
               data-studio="copy"
               className="max-w-[34rem] text-body leading-[1.64] text-ink capitalize"
             >
-              From strategy to execution, we offer a full suite of creative services
-              designed to elevate your brand and captivate your audience.
+              {content.copy}
             </p>
             <div data-studio="cta" className="pointer-events-auto origin-left">
-              <PopButton href="#contact" label="Start a Project" />
+              <PopButton href={content.cta.href} label={content.cta.label} />
             </div>
           </div>
         </div>

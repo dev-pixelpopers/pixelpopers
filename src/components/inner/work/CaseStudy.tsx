@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Breadcrumb from "@/components/inner/Breadcrumb";
-import { owners } from "@/lib/site-content";
+import { owners as defaultOwners } from "@/lib/site-content";
 import type { Project } from "@/lib/pages/work";
 import { accentBg, cardShadow, wide } from "./tokens";
 
@@ -347,7 +347,7 @@ export function Timeline({ project }: { project: Project }) {
   );
 }
 
-export function Team({ project }: { project: Project }) {
+export function Team({ project, owners = defaultOwners }: { project: Project } & { owners?: typeof defaultOwners }) {
   return (
     <section aria-labelledby="team-title" className={shell}>
       <h2 id="team-title" data-reveal className={`${label} text-blush-ink`}>

@@ -1,6 +1,6 @@
 import { Burst } from "@/components/inner/motion/bits";
 import SplitWords from "@/components/ui/SplitWords";
-import { audience } from "@/lib/pages/about";
+import { audience as defaultAudience } from "@/lib/pages/about";
 
 type SplitProps = {
   id: string;
@@ -65,7 +65,7 @@ export function LongFormSplit({ id, eyebrow, heading, paragraphs, stats, classNa
 }
 
 /** Figma "Long-form · Who we work with": heading + lead, three audience cards, closing paragraph. */
-export function Audience() {
+export function Audience({ audience = defaultAudience }: { audience?: typeof defaultAudience } = {}) {
   return (
     <section data-wm="audience" aria-labelledby="audience-title" className="shell flex flex-col gap-[clamp(2rem,2.9vw,3.5rem)]">
       <div data-wm="heading" className="grid gap-8 lg:grid-cols-[minmax(0,760fr)_minmax(0,708fr)] lg:items-end lg:gap-[clamp(3rem,6.25vw,7.5rem)]">

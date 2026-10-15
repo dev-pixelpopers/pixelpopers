@@ -4,13 +4,10 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { marquees } from "@/lib/pages/work";
+import { marquees as defaultMarquees } from "@/lib/pages/work";
 import { ambient } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
-
-const services = marquees.services.map((s) => `${s} ✦ `).join("");
-const next = `${marquees.next} ✦ `;
 
 /**
  * Two crossing ticker bands (lagoon +2°, sunbeam −2°) from Figma 333:21.
@@ -21,8 +18,10 @@ const next = `${marquees.next} ✦ `;
  * rush along with the scroll — the faster you scroll, the faster they run —
  * then ease back to their idle pace.
  */
-export default function Marquee() {
+export default function Marquee({ marquees = defaultMarquees }: { marquees?: typeof defaultMarquees } = {}) {
   const root = useRef<HTMLDivElement>(null);
+  const services = marquees.services.map((s) => `${s} ✦ `).join("");
+  const next = `${marquees.next} ✦ `;
 
   useGSAP(
     () => {

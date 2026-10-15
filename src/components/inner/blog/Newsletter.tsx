@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { newsletter } from "@/lib/pages/blog";
+import { newsletter as defaultNewsletter } from "@/lib/pages/blog";
+import { submitForm } from "@/lib/forms";
 
 /**
  * Figma "Newsletter band": sunbeam card with a giant Modak "P" bleeding off
  * the right edge. Static form — submitting just swaps in a thank-you note.
  */
-export default function Newsletter() {
+export default function Newsletter({ newsletter = defaultNewsletter }: { newsletter?: typeof defaultNewsletter } = {}) {
   const [done, setDone] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <section
@@ -44,9 +47,15 @@ export default function Newsletter() {
             </p>
           ) : (
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                setDone(true);
+                const data = new FormData(e.currentTarget);
+                setSending(true);
+                setError(null);
+                const result = await submitForm("newsletter", { email: data.get("email"), source: "blog", _gotcha: data.get("_gotcha") });
+                setSending(false);
+                if (result.ok) setDone(true);
+                else setError(result.message);
               }}
               className="mt-[clamp(1.5rem,1.46vw,1.75rem)] flex max-w-[52rem] flex-col gap-3 sm:flex-row"
             >
@@ -55,20 +64,28 @@ export default function Newsletter() {
               </label>
               <input
                 id="newsletter-email"
+                name="email"
                 type="email"
                 required
                 autoComplete="email"
                 placeholder="you@brand.com"
                 className="h-[clamp(3.25rem,3.54vw,4.25rem)] w-full min-w-0 rounded-full sm:flex-1 bg-white px-[clamp(1.25rem,1.56vw,1.875rem)] font-copy text-[clamp(1rem,1.04vw,1.25rem)] text-ink outline-none placeholder:text-ink/50 focus:ring-2 focus:ring-ink sm:max-w-[32.5rem]"
               />
+              <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
               <button
                 type="submit"
-                className="h-[clamp(3.25rem,3.54vw,4.25rem)] rounded-full bg-ink px-10 font-display text-[clamp(0.875rem,0.9375vw,1.125rem)] text-white uppercase transition-colors hover:bg-grape sm:w-[clamp(11rem,11.46vw,13.75rem)]"
+                disabled={sending}
+                className="h-[clamp(3.25rem,3.54vw,4.25rem)] rounded-full bg-ink disabled:opacity-60 px-10 font-display text-[clamp(0.875rem,0.9375vw,1.125rem)] text-white uppercase transition-colors hover:bg-grape sm:w-[clamp(11rem,11.46vw,13.75rem)]"
               >
                 Subscribe
               </button>
             </form>
           )}
+          {error ? (
+            <p role="alert" className="mt-3 font-copy text-[0.9375rem] text-ink">
+              {error}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

@@ -230,7 +230,9 @@ const stories: Story[] = [
 ];
 
 export default function Sections({ service }: { service: ServiceDetail }) {
-  const [l1, l2, l3] = service.heroLines;
+  const [l1, l2, ...rest] = service.heroLines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
 
   return (
     <GrowthMotion className="flex flex-col pb-[clamp(5rem,9.9vw,11.875rem)]">
@@ -500,6 +502,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       </section>
 
       {/* ── Process as story ads — hover / tap skips to the next frame ── */}
+      {service.hidden?.includes("process") ? null : (
       <section aria-labelledby="ads-title" className={`shell ${sectionGap}`}>
         <SectionTitle eyebrow="How we do it" title={<span id="ads-title">Four stories to growth</span>} />
         <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">
@@ -510,13 +513,13 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           data-reveal-stagger
           className="mt-[clamp(2rem,3.6vw,4.375rem)] grid items-start gap-x-[clamp(1rem,3.125vw,3.75rem)] gap-y-8 sm:grid-cols-2 lg:w-[96.98%] lg:grid-cols-4"
         >
-          {stories.map((s, i) => {
-            const step = service.process[i];
+          {service.process.map((step, i) => {
+            const s = stories[i % stories.length];
             const next = service.process[i + 1];
             const n = String(i + 1).padStart(2, "0");
             const light = s.frame === "bg-sunbeam";
             return (
-              <li key={s.headline} className={`mx-auto w-full max-w-[22rem] sm:max-w-none ${s.tilt}`}>
+              <li key={i} className={`mx-auto w-full max-w-[22rem] sm:max-w-none ${s.tilt}`}>
                 <RevealCard as="div" label={`Step ${n}: ${step.title} — skip to the next frame`} className="block rounded-[2rem]">
                   <div className="grid overflow-hidden rounded-[2rem]">
                     <div className={`col-start-1 row-start-1 transition-[translate,opacity] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${frontOut}`}>
@@ -551,6 +554,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           })}
         </ol>
       </section>
+      )}
     </GrowthMotion>
   );
 }

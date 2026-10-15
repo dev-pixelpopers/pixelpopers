@@ -1,18 +1,18 @@
 import SplitWords from "@/components/ui/SplitWords";
-import { journey } from "@/lib/pages/about";
+import { journey as defaultJourney } from "@/lib/pages/about";
 
 /**
  * "Our journey" 2019 → 2026. Columns have no gap so each column's track
  * segment meets the next one, drawing one continuous timeline on desktop.
  */
-export default function Journey() {
+export default function Journey({ journey = defaultJourney }: { journey?: typeof defaultJourney } = {}) {
   return (
     <section aria-labelledby="journey-title" className="shell">
       <div data-wm="heading">
         <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{journey.eyebrow}</p>
         <h2 id="journey-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={journey.heading[0]} name="wm-words" />
-          <br className="hidden sm:block" /> <SplitWords text={journey.heading[1]} name="wm-words" />
+          <br className="hidden sm:block" /> <SplitWords text={journey.heading.slice(1).join(" ")} name="wm-words" />
         </h2>
       </div>
 

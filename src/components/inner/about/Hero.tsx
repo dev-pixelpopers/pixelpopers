@@ -8,7 +8,7 @@ import { Burst } from "@/components/inner/motion/bits";
 import { burst } from "@/components/inner/motion/kit";
 import { usePopHero } from "@/components/inner/motion/usePopHero";
 import PopButton from "@/components/ui/PopButton";
-import { aboutHero } from "@/lib/pages/about";
+import { aboutHero as defaultAboutHero } from "@/lib/pages/about";
 
 /*
   Hero of Figma frame 330:21. The three headline lines share one `w-fit`
@@ -41,8 +41,10 @@ function Chars({ text }: { text: string }) {
   ));
 }
 
-export default function Hero() {
-  const [l1, l2, l3] = aboutHero.lines;
+export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typeof defaultAboutHero } = {}) {
+  const [l1, l2, ...rest] = aboutHero.lines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
   const [left, middle, right] = aboutHero.images;
   const rootRef = useRef<HTMLElement>(null);
 

@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
-import { filters, PAGE_SIZE, type Category, type Project } from "@/lib/pages/work";
+import { filters as defaultFilters, PAGE_SIZE, type Category, type Project } from "@/lib/pages/work";
 import FeaturedCard from "./FeaturedCard";
 import ProjectCard from "./ProjectCard";
 import { wide } from "./tokens";
@@ -27,7 +27,7 @@ type Filter = "all" | Category;
  * the scroll. All scrubbed except the chips. It is rebuilt whenever the
  * filter, sort or "Load more" changes which cards are on screen.
  */
-export default function ProjectBrowser({ projects }: { projects: Project[] }) {
+export default function ProjectBrowser({ projects, filters = defaultFilters }: { projects: Project[] } & { filters?: typeof defaultFilters }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [newestFirst, setNewestFirst] = useState(true);
   const [visible, setVisible] = useState(PAGE_SIZE);

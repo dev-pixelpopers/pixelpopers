@@ -1,16 +1,16 @@
 import Image from "next/image";
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import SectionTitle from "@/components/inner/SectionTitle";
-import { owners } from "@/lib/site-content";
-import { authorBios, formatDate, slugify, type Post } from "@/lib/pages/blog";
+import { owners as defaultOwners, type Owner } from "@/lib/site-content";
+import { authorBios as defaultAuthorBios, formatDate, slugify, type Post } from "@/lib/pages/blog";
 import PostCard from "./PostCard";
 import PostCover from "./PostCover";
 
-const ownerOf = (name: string) => owners.find((o) => o.name === name);
+const ownerOf = (name: string, owners: readonly Owner[] = defaultOwners) => owners.find((o) => o.name === name);
 
 /** Breadcrumb, centred Nevera title, author/date row and the cover with the read-time sticker. */
-export function PostHero({ post }: { post: Post }) {
-  const owner = ownerOf(post.author);
+export function PostHero({ post, owners }: { post: Post; owners?: readonly Owner[] }) {
+  const owner = ownerOf(post.author, owners);
   return (
     <header className="relative isolate">
       {/* Decorative glow bleeding up behind the site header, so it can't sit in flow. */}
@@ -101,8 +101,8 @@ export function PostTags({ tags }: { tags: string[] }) {
 }
 
 /** Figma "Author card" (grape, giant Modak P) plus the long-form author bio paragraph. */
-export function AuthorCard({ author }: { author: Post["author"] }) {
-  const owner = ownerOf(author);
+export function AuthorCard({ author, authorBios = defaultAuthorBios, owners }: { author: string; authorBios?: Record<string, { short: string; long: string }>; owners?: readonly Owner[] }) {
+  const owner = ownerOf(author, owners);
   const bio = authorBios[author];
   return (
     <section

@@ -1,8 +1,8 @@
 import SplitWords from "@/components/ui/SplitWords";
-import { testimonials } from "@/lib/pages/about";
+import { testimonials as defaultTestimonials } from "@/lib/pages/about";
 
 /** "Kind words — What clients say": three tilted quote cards, the middle one dropped. */
-export default function Testimonials() {
+export default function Testimonials({ testimonials = defaultTestimonials }: { testimonials?: typeof defaultTestimonials } = {}) {
   return (
     <section data-wm="quotes" aria-labelledby="testimonials-title" className="shell">
       <div data-wm="heading" className="text-center">

@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
 
-import { marquee } from "@/lib/pages/services";
+import { marquee as defaultMarquee } from "@/lib/pages/services";
 import { ambient } from "@/lib/ambient";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -32,7 +32,7 @@ function Band({ words, className }: { words: string[]; className: string }) {
  * rush along with the scroll — the faster you scroll, the faster they run —
  * then ease back to their idle pace.
  */
-export default function Marquee() {
+export default function Marquee({ marquee = defaultMarquee }: { marquee?: typeof defaultMarquee } = {}) {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(

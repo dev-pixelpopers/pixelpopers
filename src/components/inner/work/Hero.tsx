@@ -6,7 +6,7 @@ import { Fragment, useRef } from "react";
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import { rand } from "@/components/inner/motion/kit";
 import { usePopHero } from "@/components/inner/motion/usePopHero";
-import { workHero } from "@/lib/pages/work";
+import { workHero as defaultWorkHero } from "@/lib/pages/work";
 
 /** Confetti thrown when the badge bursts on the way out. */
 const BURST_PIECES = 14;
@@ -37,8 +37,10 @@ function Chars({ text }: { text: string }) {
   in spinning at 1.45s and counts up to the project total, and on the way out
   it strains, wobbles and bursts into a ring and confetti.
 */
-export default function Hero() {
-  const [l1, l2, l3] = workHero.lines;
+export default function Hero({ workHero = defaultWorkHero }: { workHero?: typeof defaultWorkHero } = {}) {
+  const [l1, l2, ...rest] = workHero.lines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
   const rootRef = useRef<HTMLElement>(null);
 
   usePopHero(rootRef, {

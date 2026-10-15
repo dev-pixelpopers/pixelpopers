@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { owners } from "@/lib/site-content";
+import { owners as defaultOwners } from "@/lib/site-content";
 
 /*
   Building blocks for the UI/UX design-tool canvas page (Figma 367:78).
@@ -94,7 +94,7 @@ function Cell({ label, children }: { label: string; children: ReactNode }) {
 
 const pill = "grid place-items-center rounded-full font-haas leading-none";
 
-export function ComponentLibrary() {
+export function ComponentLibrary({ owners = defaultOwners }: { owners?: typeof defaultOwners } = {}) {
   return (
     <div data-reveal className={`rounded-[clamp(1.5rem,2.08vw,2.5rem)] bg-white p-[clamp(1rem,2.08vw,2.5rem)] ${cardShadow}`}>
       <ul aria-label="Component library" className="grid gap-[clamp(0.75rem,1.04vw,1.25rem)] md:grid-cols-2 lg:grid-cols-3">

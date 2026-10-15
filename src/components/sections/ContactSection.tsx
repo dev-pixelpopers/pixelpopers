@@ -13,13 +13,10 @@ import {
 } from "@/components/sections/agency-motion";
 import { deferSetup } from "@/lib/defer-setup";
 import PopButton from "@/components/ui/PopButton";
+import { homeContact, type HomeContact } from "@/lib/home-content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const EYEBROW = "Let’s Build Something";
-const HEADLINE = ["Extraordinary", "Together"];
-const COPY =
-  "Whether you need a complete brand overhaul, a high-converting web experience, or a full-scale marketing campaign, our team of experts is ready to execute. Tell us about your goals, and let’s turn your vision into reality.";
 
 /** Stable pseudo-random 0–1 per index. */
 const rand = (i: number, salt = 1) => {
@@ -61,7 +58,8 @@ function Letters({ text, hook }: { text: string; hook: string }) {
  * button pops. Where Our Story pins (`stage:`) it then plays back out and
  * hands its screen to Our Story the same way.
  */
-export default function ContactSection() {
+export default function ContactSection({ content = homeContact }: { content?: HomeContact }) {
+  const { eyebrow: EYEBROW, headline: HEADLINE, copy: COPY, cta } = content;
   const rootRef = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -249,7 +247,7 @@ export default function ContactSection() {
             </p>
             <div data-contact="cta-out" className="pointer-events-auto">
               <div data-contact="cta">
-                <PopButton href="mailto:hello@pixelpopers.com" label="Schedule a Strategy Call" />
+                <PopButton href={cta.href} label={cta.label} />
               </div>
             </div>
           </div>

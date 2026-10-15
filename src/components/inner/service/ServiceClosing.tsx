@@ -4,7 +4,7 @@ import { Burst, Chars } from "@/components/inner/motion/bits";
 import SectionTitle from "@/components/inner/SectionTitle";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
-import { serviceDetails, type Package, type ServiceDetail } from "@/lib/service-content";
+import { serviceDetails as defaultServiceDetails, type Package, type ServiceDetail } from "@/lib/service-content";
 
 const chipColors = [
   "bg-grape text-white rotate-3",
@@ -49,7 +49,9 @@ type ServiceClosingProps = {
  * pop" and the CTA. The site footer follows from the (inner) layout.
  * Motion hooks (`data-wm`) are picked up by ServicePageMotion.
  */
-export default function ServiceClosing({ service, renderPackage }: ServiceClosingProps) {
+export default function ServiceClosing({ service, renderPackage, serviceDetails = defaultServiceDetails }: ServiceClosingProps & { serviceDetails?: typeof defaultServiceDetails }) {
+  const hidden = new Set(service.hidden ?? []);
+  const show = (key: string) => !hidden.has(key);
   const others = serviceDetails.filter((s) => s.slug !== service.slug);
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -64,6 +66,7 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
   return (
     <div className="flex flex-col gap-[clamp(5rem,6.25vw,7.5rem)] pb-[clamp(4rem,6.25vw,7.5rem)]">
       {/* ── Packages ──────────────────────────────────────────────── */}
+      {show("packages") ? (
       <section aria-labelledby="packages-title" className="shell">
         <SectionTitle align="center" eyebrow="Pick your pop" title={<span id="packages-title">Packages</span>} />
         <ul data-wm="packages" className="mt-14 grid items-start gap-8 md:grid-cols-3 md:gap-[clamp(1rem,1.77vw,2.125rem)]">
@@ -83,8 +86,10 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
           Prices are starting points — every project gets a fixed quote after a free 30-minute call.
         </p>
       </section>
+      ) : null}
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
+      {show("faqs") ? (
       <section aria-labelledby="faq-title" className="shell grid gap-10 lg:grid-cols-[minmax(0,600fr)_minmax(0,900fr)] lg:gap-[clamp(3rem,4.9vw,5.875rem)]">
         <div data-wm="heading">
           <p data-wm="eyebrow" className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush-ink uppercase">Good questions</p>
@@ -119,8 +124,10 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
         </div>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       </section>
+      ) : null}
 
       {/* ── More ways to pop ──────────────────────────────────────── */}
+      {show("more") ? (
       <section aria-labelledby="more-title" className="shell text-center">
         <h2 id="more-title" data-reveal className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] text-blush-ink uppercase">
           More ways to pop
@@ -138,8 +145,10 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
           ))}
         </ul>
       </section>
+      ) : null}
 
       {/* ── CTA ───────────────────────────────────────────────────── */}
+      {show("cta") ? (
       <section data-wm="cta" aria-labelledby="cta-title" className="shell">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:px-[3.75rem]">
           <div>
@@ -169,6 +178,7 @@ export default function ServiceClosing({ service, renderPackage }: ServiceClosin
           </div>
         </div>
       </section>
+      ) : null}
     </div>
   );
 }

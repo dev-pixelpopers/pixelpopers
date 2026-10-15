@@ -1,13 +1,13 @@
 import { Burst } from "@/components/inner/motion/bits";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
-import { howWeWork } from "@/lib/pages/about";
+import { howWeWork as defaultHowWeWork } from "@/lib/pages/about";
 
 /**
  * "How we work — From spark to pop": the dark rounded band with four numbered
  * steps joined by a hairline. Columns follow Figma's 440px rhythm.
  */
-export default function Process() {
+export default function Process({ howWeWork = defaultHowWeWork }: { howWeWork?: typeof defaultHowWeWork } = {}) {
   return (
     <section
       aria-labelledby="process-title"

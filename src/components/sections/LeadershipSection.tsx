@@ -10,7 +10,8 @@ import { deferSetup } from "@/lib/defer-setup";
 import { LEADERSHIP_TUCK_VH } from "@/components/sections/agency-motion";
 import BrandLogo from "@/components/ui/BrandLogo";
 import SplitWords from "@/components/ui/SplitWords";
-import { owners, studioStats, type Owner } from "@/lib/site-content";
+import { homeLeadership, type HomeLeadership } from "@/lib/home-content";
+import { owners as builtInOwners, type Owner } from "@/lib/site-content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -22,10 +23,6 @@ const accentRing: Record<Owner["accent"], string> = {
 
 const statTones = ["text-blush-ink", "text-lagoon-ink", "text-sunbeam-ink"];
 
-const HEADLINE = "Three Friends. One Loud Idea.";
-const STORY =
-  "Pixel Popers started at a kitchen table with a simple belief: brands deserve to be felt, not just seen. Today we are a full-service crew of strategists, designers and developers who obsess over the details that make people stop scrolling — and keep coming back.";
-const PHILOSOPHY = "Strategy first. Craft always. Never boring.";
 
 /**
  * Leadership & story. The stage holds in a sticky 100vh frame while the reader
@@ -33,7 +30,10 @@ const PHILOSOPHY = "Strategy first. Craft always. Never boring.";
  * reverses only when it is scrolled back above, so it replays on re-entry.
  * Nothing animates out on the way down.
  */
-export default function LeadershipSection() {
+type LeadershipSectionProps = { content?: HomeLeadership; owners?: readonly Owner[] };
+
+export default function LeadershipSection({ content = homeLeadership, owners = builtInOwners }: LeadershipSectionProps) {
+  const { headline: HEADLINE, story: STORY, philosophy: PHILOSOPHY, stats: studioStats } = content;
   const rootRef = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -210,7 +210,7 @@ export default function LeadershipSection() {
           {/* ── Right: the story ──────────────────────────────────────────── */}
           <div className="flex flex-col items-start gap-[clamp(1rem,2.6vh,2rem)]">
             <p className="text-eyebrow leading-none font-bold text-blush-ink uppercase">
-              <SplitWords text="Our Story" name="lead-eyebrow" />
+              <SplitWords text={content.eyebrow} name="lead-eyebrow" />
             </p>
 
             <h2

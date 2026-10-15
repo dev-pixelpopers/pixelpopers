@@ -73,7 +73,9 @@ const stickies = [
 ];
 
 export default function Sections({ service }: { service: ServiceDetail }) {
-  const [l1, l2, l3] = service.heroLines;
+  const [l1, l2, ...rest] = service.heroLines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
 
   return (
     <ContentFx className="flex flex-col pb-[clamp(5rem,12.5vw,15rem)]">

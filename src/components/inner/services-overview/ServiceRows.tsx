@@ -4,8 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Burst } from "@/components/inner/motion/bits";
-import { serviceDetails } from "@/lib/service-content";
-import { serviceRows, type Tone } from "@/lib/pages/services";
+import { serviceDetails as defaultServiceDetails } from "@/lib/service-content";
+import { serviceRows as defaultServiceRows, type Tone } from "@/lib/pages/services";
 
 const toneText: Record<Tone, string> = {
   blush: "text-blush-ink",
@@ -19,7 +19,7 @@ const toneText: Record<Tone, string> = {
  * panel, white type) — the second by default as in Figma — and the highlight
  * follows the pointer / keyboard focus.
  */
-export default function ServiceRows() {
+export default function ServiceRows({ serviceDetails = defaultServiceDetails, serviceRows = defaultServiceRows }: { serviceDetails?: typeof defaultServiceDetails; serviceRows?: typeof defaultServiceRows } = {}) {
   const [active, setActive] = useState(1);
 
   return (

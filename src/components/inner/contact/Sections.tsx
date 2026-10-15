@@ -1,11 +1,11 @@
 import { Burst } from "@/components/inner/motion/bits";
 import SectionTitle from "@/components/inner/SectionTitle";
 import SplitWords from "@/components/ui/SplitWords";
-import { afterSend, channels, chatFaq, nextSteps, whereWhen } from "@/lib/pages/contact";
+import { afterSend as defaultAfterSend, channels as defaultChannels, chatFaq as defaultChatFaq, nextSteps as defaultNextSteps, whereWhen as defaultWhereWhen } from "@/lib/pages/contact";
 
 /* ── What happens next: three tilted step cards ───────────────────────── */
 
-export function NextSteps() {
+export function NextSteps({ nextSteps = defaultNextSteps }: { nextSteps?: typeof defaultNextSteps } = {}) {
   return (
     <section aria-labelledby="next-title" className="shell">
       <SectionTitle align="center" eyebrow={nextSteps.eyebrow} title={<span id="next-title">{nextSteps.heading}</span>} />
@@ -36,7 +36,7 @@ export function NextSteps() {
 
 /* ── Other ways to say hi ─────────────────────────────────────────────── */
 
-export function Channels() {
+export function Channels({ channels = defaultChannels }: { channels?: typeof defaultChannels } = {}) {
   return (
     <section aria-labelledby="channels-title" className="shell">
       <SectionTitle align="center" eyebrow={channels.eyebrow} title={<span id="channels-title">{channels.heading}</span>} />
@@ -70,7 +70,7 @@ export function Channels() {
 
 /* ── Chat-style FAQ ───────────────────────────────────────────────────── */
 
-export function ChatFaq() {
+export function ChatFaq({ chatFaq = defaultChatFaq }: { chatFaq?: typeof defaultChatFaq } = {}) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -88,7 +88,7 @@ export function ChatFaq() {
         <h2 id="chat-title" className="font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={chatFaq.heading[0]} name="wm-words" />
           <br />
-          <SplitWords text={chatFaq.heading[1]} name="wm-words" />
+          <SplitWords text={chatFaq.heading.slice(1).join(" ")} name="wm-words" />
         </h2>
         <p data-wm="lead" className="mt-6 font-copy text-body leading-[1.64] font-light text-ink">{chatFaq.sub}</p>
       </div>
@@ -107,7 +107,7 @@ export function ChatFaq() {
 
 /* ── Long-form: what happens after you hit send ──────────────────────── */
 
-export function AfterSend() {
+export function AfterSend({ afterSend = defaultAfterSend }: { afterSend?: typeof defaultAfterSend } = {}) {
   return (
     <section
       aria-labelledby="after-title"
@@ -142,7 +142,7 @@ export function AfterSend() {
 
 /* ── Long-form: where we work, hours, response times ─────────────────── */
 
-export function WhereWhen() {
+export function WhereWhen({ whereWhen = defaultWhereWhen }: { whereWhen?: typeof defaultWhereWhen } = {}) {
   return (
     <section data-wm="where-section" aria-labelledby="where-title" className="shell flex flex-col gap-[clamp(2rem,2.9vw,3.5rem)]">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,760fr)_minmax(0,708fr)] lg:items-end lg:gap-[clamp(3rem,6.25vw,7.5rem)]">

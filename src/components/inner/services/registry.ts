@@ -13,6 +13,7 @@ import MotionSections from "./motion-graphic/Sections";
 import MotionPackage from "./motion-graphic/PackageCard";
 import ContentSections from "./content-writing/Sections";
 import ContentPackage from "./content-writing/PackageCard";
+import GenericSections from "./generic/Sections";
 
 export type ServiceConcept = {
   /** Hero + the page's own concept sections (everything above the long-form copy). */
@@ -33,3 +34,13 @@ export const serviceConcepts: Record<ServiceSlug, ServiceConcept> = {
   "motion-graphic": { Sections: MotionSections, PackageCard: MotionPackage },
   "content-writing": { Sections: ContentSections, PackageCard: ContentPackage },
 };
+
+/**
+ * A service added in the CMS has no bespoke concept: it gets the generic hero
+ * and the brand-identity package card, with every shared block below.
+ */
+const genericConcept: ServiceConcept = { Sections: GenericSections, PackageCard: BrandPackage };
+
+export function conceptFor(slug: string): ServiceConcept {
+  return serviceConcepts[slug as ServiceSlug] ?? genericConcept;
+}

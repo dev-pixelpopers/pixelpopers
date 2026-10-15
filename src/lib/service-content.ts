@@ -49,6 +49,8 @@ export type ServiceDetail = {
   faqs: Faq[];
   ctaHeading: string;
   ctaButton: string;
+  /** Sections switched off in the CMS: overview, included, process, audience, insights, why_us, packages, faqs, more, cta. */
+  hidden?: string[];
 };
 
 export const serviceDetails: ServiceDetail[] = [

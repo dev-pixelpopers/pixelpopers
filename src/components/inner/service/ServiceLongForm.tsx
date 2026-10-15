@@ -34,11 +34,14 @@ export default function ServiceLongForm({
   /** Pages whose concept section already tells the process (hover cards) skip the text version. */
   hideProcess?: boolean;
 }) {
-  const a = accentClasses[service.accent];
+  const a = accentClasses[service.accent] ?? accentClasses.blush;
+  const hidden = new Set(service.hidden ?? []);
+  const show = (key: string) => !hidden.has(key);
 
   return (
     <div className="shell flex flex-col gap-[clamp(5rem,8.3vw,10rem)] pb-[clamp(5rem,8.3vw,10rem)]">
       {/* ── The full story ─────────────────────────────────────────── */}
+      {show("overview") ? (
       <section aria-labelledby="overview-title" data-wm="longform" className="grid gap-12 lg:grid-cols-[minmax(0,620fr)_minmax(0,968fr)] lg:gap-[clamp(3rem,6.25vw,7.5rem)]">
         <div className="flex flex-col gap-7 lg:sticky lg:top-10 lg:self-start">
           <div data-wm="heading" className="flex flex-col gap-7">
@@ -86,8 +89,10 @@ export default function ServiceLongForm({
           )}
         </div>
       </section>
+      ) : null}
 
       {/* ── What's included ────────────────────────────────────────── */}
+      {show("included") ? (
       <section aria-labelledby="included-title">
         <SectionTitle eyebrow="What's included" title={<span id="included-title">Everything in the box</span>} />
         <ul data-wm="included" className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,9 +108,10 @@ export default function ServiceLongForm({
           ))}
         </ul>
       </section>
+      ) : null}
 
       {/* ── Step by step ───────────────────────────────────────────── */}
-      {hideProcess ? null : (
+      {hideProcess || !show("process") ? null : (
       <section aria-labelledby="steps-title">
         <SectionTitle eyebrow="Step by step" title={<span id="steps-title">How the work gets done</span>} />
         <ol data-wm="steps" className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -125,6 +131,7 @@ export default function ServiceLongForm({
       )}
 
       {/* ── Who it's for ───────────────────────────────────────────── */}
+      {show("audience") ? (
       <section aria-labelledby="audience-title">
         <SectionTitle eyebrow="Who it's for" title={<span id="audience-title">Made for brands like yours</span>} />
         <ul data-wm="aud" className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -137,8 +144,10 @@ export default function ServiceLongForm({
           ))}
         </ul>
       </section>
+      ) : null}
 
       {/* ── Good to know ───────────────────────────────────────────── */}
+      {show("insights") ? (
       <section aria-labelledby="guide-title">
         <SectionTitle eyebrow="Good to know" title={<span id="guide-title">The short guide</span>} />
         <div data-wm="guides" className="mt-14 grid gap-12 md:grid-cols-3">
@@ -151,8 +160,10 @@ export default function ServiceLongForm({
           ))}
         </div>
       </section>
+      ) : null}
 
       {/* ── Why us ─────────────────────────────────────────────────── */}
+      {show("why_us") ? (
       <section
         aria-labelledby="why-title"
         data-wm="why"
@@ -169,6 +180,7 @@ export default function ServiceLongForm({
           ))}
         </div>
       </section>
+      ) : null}
     </div>
   );
 }

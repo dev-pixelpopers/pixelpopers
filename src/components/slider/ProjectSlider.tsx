@@ -19,12 +19,10 @@ import {
   VIDEO_CUBE_FACES,
 } from "@/components/ui/cube-faces";
 import { CUBE_TRAVEL_VH } from "@/components/ui/studio-cube-motion";
-import { projects } from "@/lib/site-content";
+import { projects as builtInProjects, type Project } from "@/lib/site-content";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const COUNT = projects.length;
-const SLOT_ANGLE = 360 / COUNT;
 /** >1 opens a gap between tiles around the ring. */
 const GAP_RATIO = 1.5;
 /** Camera distance as a multiple of the ring radius. */
@@ -48,6 +46,11 @@ type ProjectSliderProps = {
    * relies on it; off leaves a plain ring slider.
    */
   foldIntoCube?: boolean;
+  /**
+   * The clips (the CMS's Showreel). Six fill the ring and fold into the
+   * Studio cube's six faces.
+   */
+  projects?: readonly Project[];
 };
 
 /**
@@ -60,7 +63,9 @@ type ProjectSliderProps = {
  *   - a caption under the ring — "01 / 06", the project name and a bar that
  *     fills as the clip plays — swaps with each tile
  */
-export default function ProjectSlider({ foldIntoCube = true }: ProjectSliderProps) {
+export default function ProjectSlider({ foldIntoCube = true, projects = builtInProjects }: ProjectSliderProps) {
+  const COUNT = projects.length;
+  const SLOT_ANGLE = 360 / COUNT;
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const foldRef = useRef<HTMLDivElement>(null);

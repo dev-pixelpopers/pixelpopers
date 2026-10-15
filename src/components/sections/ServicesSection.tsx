@@ -8,7 +8,7 @@ import { useRef, type CSSProperties } from "react";
 import { deferSetup } from "@/lib/defer-setup";
 import ServiceTile from "@/components/ui/ServiceTile";
 import { CUBE_TRAVEL_VH, STUDIO_EXIT_VH, STUDIO_UNWIND_VH } from "@/components/ui/studio-cube-motion";
-import { services } from "@/lib/site-content";
+import { services as builtInServices, type Service } from "@/lib/site-content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -30,7 +30,7 @@ const rand = (i: number, salt = 1) => {
  * popped, the top row's bubbles swell and pop right there; the rest pop as
  * they scroll up into view after the pin lets go (see `bubblePop`).
  */
-export default function ServicesSection() {
+export default function ServicesSection({ services = builtInServices }: { services?: readonly Service[] }) {
   const rootRef = useRef<HTMLElement>(null);
 
   useGSAP(

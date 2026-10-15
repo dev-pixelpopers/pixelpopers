@@ -1,0 +1,2 @@
+# The Laravel CMS is deployed separately; the Next.js site never needs it.
+backend

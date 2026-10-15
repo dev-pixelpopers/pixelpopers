@@ -6,7 +6,8 @@ import { useRef, useState, type FormEvent } from "react";
 
 import { Burst } from "@/components/inner/motion/bits";
 import { burst, squashPop } from "@/components/inner/motion/kit";
-import { CONTACT_EMAIL, contactForm } from "@/lib/pages/contact";
+import { CONTACT_EMAIL as DEFAULT_CONTACT_EMAIL, contactForm as defaultContactForm } from "@/lib/pages/contact";
+import { submitForm } from "@/lib/forms";
 
 gsap.registerPlugin(useGSAP);
 
@@ -28,12 +29,17 @@ const step = "font-display text-micro tracking-wide text-blush-deep uppercase";
 
 /**
  * Figma "Project form": service + budget chips and the "about you" fields.
- * There is no backend yet, so submitting opens the visitor's mail app with
- * everything pre-filled and swaps the form for an inline thank-you — which
- * squash-pops in with a burst of confetti (unless reduced motion is on).
+ * Submitting sends the brief to the CMS inbox (via /api/forms/contact) and
+ * swaps the form for an inline thank-you — which squash-pops in with a burst
+ * of confetti (unless reduced motion is on). If the CMS can't be reached, it
+ * falls back to opening the visitor's mail app with everything pre-filled.
  */
-export default function ContactForm() {
+export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactForm = defaultContactForm }: { CONTACT_EMAIL?: string; contactForm?: typeof defaultContactForm } = {}) {
   const [sent, setSent] = useState<string | null>(null);
+  /** How the brief went out: straight to the inbox, or through the visitor's mail app. */
+  const [via, setVia] = useState<"inbox" | "mail">("inbox");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const thanksRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -52,11 +58,39 @@ export default function ContactForm() {
     { dependencies: [sent], scope: thanksRef },
   );
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const name = String(data.get("name") ?? "").trim();
     const services = data.getAll("services").map(String);
+    const firstName = name.split(" ")[0] || "friend";
+
+    setSending(true);
+    setError(null);
+    const result = await submitForm("contact", {
+      name,
+      email: data.get("email"),
+      company: data.get("company"),
+      website: data.get("website") || null,
+      services,
+      budget: data.get("budget"),
+      details: data.get("details"),
+      _gotcha: data.get("_gotcha"),
+    });
+    setSending(false);
+
+    if (result.ok) {
+      setVia("inbox");
+      setSent(firstName);
+      return;
+    }
+    if (!result.offline) {
+      // Validation: show the first problem the CMS reported.
+      setError(Object.values(result.errors ?? {})[0]?.[0] ?? result.message);
+      return;
+    }
+
+    // The CMS is unreachable: hand the brief to the visitor's mail app instead.
     const lines = [
       `Name: ${name}`,
       `Email: ${data.get("email")}`,
@@ -69,7 +103,8 @@ export default function ContactForm() {
     ];
     const subject = `New project enquiry from ${name || "the website"}`;
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
-    setSent(name.split(" ")[0] || "friend");
+    setVia("mail");
+    setSent(firstName);
   }
 
   return (
@@ -83,8 +118,9 @@ export default function ContactForm() {
           <p data-thanks="title" className="font-display text-[clamp(1.5rem,2.08vw,2.5rem)] leading-tight text-blush-ink uppercase">Thanks, {sent}!</p>
           <Burst pieces={18} ring="border-blush" className="top-[clamp(2.5rem,3.5vw,4rem)] left-[clamp(4rem,8vw,9rem)] size-0" />
           <p className="max-w-[40rem] font-copy text-body leading-[1.64] font-light text-ink">
-            Your mail app should have opened with your brief ready to go — just hit send there. If nothing popped up, email us
-            directly at{" "}
+            {via === "inbox"
+              ? "Your brief is in our inbox. One of the founders will reply within one working day — keep an eye on your email. Anything to add? Write to us at "
+              : "Your mail app should have opened with your brief ready to go — just hit send there. If nothing popped up, email us directly at "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-grape underline">
               {CONTACT_EMAIL}
             </a>{" "}
@@ -186,16 +222,25 @@ export default function ContactForm() {
             </div>
           </fieldset>
 
+          {/* Honeypot: hidden from people, filled in by bots (the CMS ignores those). */}
+          <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           <div className="flex flex-col items-start gap-5">
             <button
               type="submit"
-              className="group inline-flex h-[clamp(3.25rem,3.54vw,4.25rem)] items-center bg-blush px-[clamp(1.25rem,1.25vw,1.5rem)] font-display text-nav text-white uppercase transition-colors hover:bg-grape"
+              disabled={sending}
+              aria-busy={sending}
+              className="group inline-flex disabled:opacity-60 h-[clamp(3.25rem,3.54vw,4.25rem)] items-center bg-blush px-[clamp(1.25rem,1.25vw,1.5rem)] font-display text-nav text-white uppercase transition-colors hover:bg-grape"
             >
               {contactForm.submit}
               <span aria-hidden className="ml-3 transition-transform group-hover:translate-x-1">
                 →
               </span>
             </button>
+            {error ? (
+              <p role="alert" className="font-copy text-[0.9375rem] text-blush-deep">
+                {error}
+              </p>
+            ) : null}
             <p className="font-copy text-[0.9375rem] text-ink/55">{contactForm.fine}</p>
           </div>
         </form>

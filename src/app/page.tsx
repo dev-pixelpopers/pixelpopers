@@ -11,55 +11,91 @@ import ServicesSection from "@/components/sections/ServicesSection";
 // import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import StudioSection from "@/components/sections/StudioSection";
 import ProjectSlider from "@/components/slider/ProjectSlider";
-import { owners } from "@/lib/site-content";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { getClients, getHome, getPosts, getServiceTiles, getShowreel, getSite, getTeam, getCategories } from "@/lib/content";
+import { homeAgency, homeBlog, homeContact, homeHero, homeLeadership, homeStudio } from "@/lib/home-content";
+import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getHome();
+  return {
+    title: seo.title,
+    description: seo.description,
+    alternates: { canonical: "/" },
+    openGraph: { title: seo.title, description: seo.description, ...(seo.ogImage ? { images: [seo.ogImage] } : {}) },
+    twitter: { title: seo.title, description: seo.description },
+  };
+}
 
 /** Organization + WebSite structured data for the home page. */
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: SITE_NAME,
-      url: SITE_URL,
-      logo: `${SITE_URL}/assets/logo-pixelpopers.png`,
-      description: SITE_DESCRIPTION,
-      email: "hello@pixelpopers.com",
-      foundingDate: "2019",
-      founders: owners.map((o) => ({ "@type": "Person", name: o.name, jobTitle: o.role })),
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${SITE_URL}/#website`,
-      name: SITE_NAME,
-      url: SITE_URL,
-      publisher: { "@id": `${SITE_URL}/#organization` },
-    },
-  ],
-};
-export default function Home() {
+function structuredData(site: Awaited<ReturnType<typeof getSite>>, owners: Awaited<ReturnType<typeof getTeam>>["owners"]) {
+  const url = site.site_url || SITE_URL;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${url}/#organization`,
+        name: site.site_name,
+        url,
+        logo: `${url}/assets/logo-pixelpopers.png`,
+        description: site.site_description,
+        email: site.company_email,
+        foundingDate: "2019",
+        founders: owners.map((o) => ({ "@type": "Person", name: o.name, jobTitle: o.role })),
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${url}/#website`,
+        name: site.site_name,
+        url,
+        publisher: { "@id": `${url}/#organization` },
+      },
+    ],
+  };
+}
+
+export default async function Home() {
+  const [home, site, team, tiles, showreel, clients, posts, { categoryTone }] = await Promise.all([
+    getHome(),
+    getSite(),
+    getTeam(),
+    getServiceTiles(),
+    getShowreel(),
+    getClients(),
+    getPosts(),
+    getCategories(),
+  ]);
+  const { sections } = home;
+  // The home page's sections are one scroll choreography (each tucks under the
+  // previous one's exit), so only the closing blog teaser can be switched off;
+  // the rest fall back to their built-in copy if the CMS has none.
+  const blog = sections.blog;
+  const featured = (blog ?? homeBlog).featured_slugs
+    .map((slug) => posts.find((post) => post.slug === slug))
+    .filter((post) => post !== undefined);
+
+  const agency = sections.agency ?? homeAgency;
+
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cream">
       <SiteHeader />
       <main className="flex flex-1 flex-col">
-        <HeroFinal>
-          <ProjectSlider />
+        <HeroFinal lines={(sections.hero ?? homeHero).lines}>
+          <ProjectSlider projects={showreel} />
         </HeroFinal>
-        <StudioSection />
-        <ServicesSection />
+        <StudioSection content={sections.studio ?? homeStudio} projects={showreel} />
+        <ServicesSection services={tiles} />
         {/* <ShowcaseSection /> */}
-        <AgencySection />
-        <ContactSection />
-        <LeadershipSection />
-        <BlogSection />
+        <AgencySection eyebrow={agency.eyebrow} heading={agency.heading} copy={agency.copy} cta={agency.cta} clients={clients} />
+        <ContactSection content={sections.contact ?? homeContact} />
+        <LeadershipSection content={sections.leadership ?? homeLeadership} owners={team.owners} />
+        {blog ? <BlogSection content={blog} posts={featured} tones={categoryTone} /> : null}
       </main>
-      <SiteFooter />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(site, team.owners)) }}
+      />
     </div>
   );
 }

@@ -32,7 +32,9 @@ const pipeline = [
 ];
 
 export default function Sections({ service }: { service: ServiceDetail }) {
-  const [l1, l2, l3] = service.heroLines;
+  const [l1, l2, ...rest] = service.heroLines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
 
   return (
     <ShipMotion className="flex flex-col pb-[clamp(5rem,11.2vw,13.4375rem)]">

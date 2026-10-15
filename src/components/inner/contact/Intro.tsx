@@ -1,14 +1,14 @@
 "use client";
 
-import gsap from "gsap";
+import type { ComponentProps } from "react";
 import Image from "next/image";
 import { Fragment, useRef } from "react";
 
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import ContactForm from "@/components/inner/contact/ContactForm";
 import { usePopHero } from "@/components/inner/motion/usePopHero";
-import { CONTACT_EMAIL, contactHero, contactInfo } from "@/lib/pages/contact";
-import { owners } from "@/lib/site-content";
+import { CONTACT_EMAIL as DEFAULT_CONTACT_EMAIL, contactHero as defaultContactHero, contactInfo as defaultContactInfo } from "@/lib/pages/contact";
+import { owners as defaultOwners } from "@/lib/site-content";
 
 const avatarBg = ["bg-sunbeam", "bg-lagoon", "bg-blush"];
 const kicker = "font-display text-[clamp(0.875rem,0.94vw,1.125rem)] leading-none text-blush-deep uppercase";
@@ -40,8 +40,10 @@ function Chars({ text }: { text: string }) {
   another, the social pills pop, the doodle spins), and the form card rises
   in tilted while its chips pop. Both ship hidden so they don't flash first.
 */
-export default function Intro() {
-  const [l1, l2, l3] = contactHero.lines;
+export default function Intro({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactHero = defaultContactHero, contactInfo = defaultContactInfo, owners = defaultOwners, contactForm, showInfo = true }: { CONTACT_EMAIL?: string; contactHero?: typeof defaultContactHero; contactInfo?: typeof defaultContactInfo; owners?: typeof defaultOwners; /** The project form's copy (passed to ContactForm). */ contactForm?: NonNullable<ComponentProps<typeof ContactForm>>["contactForm"]; /** The Contact info section is switched off in the CMS. */ showInfo?: boolean } = {}) {
+  const [l1, l2, ...rest] = contactHero.lines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
   const rootRef = useRef<HTMLElement>(null);
 
   usePopHero(rootRef, {
@@ -99,6 +101,7 @@ export default function Intro() {
         </h1>
 
         <div className="mt-[clamp(2.5rem,4.9vw,5.875rem)] grid gap-12 lg:-mr-[clamp(0rem,2.4vw,2.875rem)] lg:grid-cols-[minmax(0,560fr)_minmax(0,960fr)] lg:gap-[clamp(2rem,5.9vw,7.125rem)]">
+          {showInfo ? (
           <div className="flex flex-col items-start lg:pt-10">
             <p data-whero="hello" className={kicker}>{contactInfo.sayHello}</p>
             <a
@@ -170,10 +173,13 @@ export default function Intro() {
               className="pointer-events-none -mt-[clamp(1.5rem,2.1vw,2.5rem)] ml-[clamp(2rem,6vw,7.25rem)] hidden h-auto w-[clamp(8rem,12.4vw,15rem)] motion-reduce:-rotate-[15deg] lg:block"
             />
           </div>
+          ) : (
+            <div aria-hidden />
+          )}
 
           <div>
             <div data-whero="form">
-              <ContactForm />
+              <ContactForm CONTACT_EMAIL={CONTACT_EMAIL} contactForm={contactForm} />
             </div>
           </div>
         </div>

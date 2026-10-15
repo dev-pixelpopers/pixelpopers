@@ -2,17 +2,17 @@ import Link from "next/link";
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import SectionTitle from "@/components/inner/SectionTitle";
 import {
-  blogHero,
-  getPost,
-  journalIntro,
-  popularSlugs,
-  posts,
-  resources,
+  blogHero as defaultBlogHero,
+  journalIntro as defaultJournalIntro,
+  popularSlugs as defaultPopularSlugs,
+  posts as defaultPosts,
+  resources as defaultResources,
   slugify,
-  startHere,
-  topics,
-  trendingTags,
+  startHere as defaultStartHere,
+  topics as defaultTopics,
+  trendingTags as defaultTrendingTags,
 } from "@/lib/pages/blog";
+import type { Post } from "@/lib/pages/blog";
 import { cardShadow, toneFill, toneText } from "./tones";
 
 /* ------------------------------------------------------------------ */
@@ -23,8 +23,10 @@ import { cardShadow, toneFill, toneText } from "./tones";
  * The first two lines start 171px (12.6% of the 1360px block) in from the
  * third, so the three lines share one `w-fit` block sized by the widest line.
  */
-export function BlogHero() {
-  const [l1, l2, l3] = blogHero.lines;
+export function BlogHero({ blogHero = defaultBlogHero }: { blogHero?: typeof defaultBlogHero } = {}) {
+  const [l1, l2, ...rest] = blogHero.lines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
   return (
     <section aria-labelledby="blog-title" className="relative isolate">
       {/* Decorative glows bleed up behind the header, so they can't sit in flow. */}
@@ -56,7 +58,7 @@ export function BlogHero() {
 /* Long-form · About the journal + Start here                          */
 /* ------------------------------------------------------------------ */
 
-export function JournalIntro() {
+export function JournalIntro({ journalIntro = defaultJournalIntro }: { journalIntro?: typeof defaultJournalIntro } = {}) {
   return (
     <section
       aria-labelledby="journal-title"
@@ -96,7 +98,7 @@ export function JournalIntro() {
   );
 }
 
-export function StartHere() {
+export function StartHere({ startHere = defaultStartHere, posts = defaultPosts }: { startHere?: typeof defaultStartHere; posts?: readonly Post[] } = {}) {
   return (
     <section
       aria-labelledby="start-title"
@@ -118,7 +120,7 @@ export function StartHere() {
         className="grid gap-[clamp(1rem,1.67vw,2rem)] sm:grid-cols-2 lg:grid-cols-4"
       >
         {startHere.guides.map((g, i) => {
-          const post = getPost(g.slug);
+          const post = posts.find((p) => p.slug === g.slug);
           if (!post) return null;
           return (
             <li key={g.slug}>
@@ -159,8 +161,14 @@ export function StartHere() {
 
 const popularTones = ["blush", "lagoon", "sunbeam", "grape", "blush"] as const;
 
-export function PopularAndTopics() {
-  const popular = popularSlugs.map(getPost).filter((p) => p !== undefined);
+type PopularAndTopicsProps = {
+  popularSlugs?: readonly string[];
+  topics?: typeof defaultTopics;
+  posts?: readonly Post[];
+};
+
+export function PopularAndTopics({ popularSlugs = defaultPopularSlugs, topics = defaultTopics, posts = defaultPosts }: PopularAndTopicsProps = {}) {
+  const popular = popularSlugs.map((slug) => posts.find((p) => p.slug === slug)).filter((p) => p !== undefined);
   return (
     <div className="shell grid gap-[clamp(3.5rem,5vw,6rem)] lg:grid-cols-[minmax(0,780fr)_minmax(0,700fr)] lg:gap-[clamp(3rem,5.9vw,7.125rem)]">
       <section aria-labelledby="popular-title">
@@ -251,7 +259,7 @@ export function PopularAndTopics() {
 
 const resourceTilt = ["-rotate-1", "rotate-1", "-rotate-1"];
 
-export function Resources() {
+export function Resources({ resources = defaultResources }: { resources?: typeof defaultResources } = {}) {
   return (
     <section aria-labelledby="resources-title" className="shell">
       <SectionTitle
@@ -295,7 +303,7 @@ export function Resources() {
   );
 }
 
-export function TrendingTags() {
+export function TrendingTags({ trendingTags = defaultTrendingTags }: { trendingTags?: typeof defaultTrendingTags } = {}) {
   return (
     <section aria-labelledby="tags-title" className="shell">
       <h2

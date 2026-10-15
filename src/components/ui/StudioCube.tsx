@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { useEffect, useRef } from "react";
 
 import { VIDEO_CUBE_FACES } from "@/components/ui/cube-faces";
-import { projects } from "@/lib/site-content";
+import { projects as builtInProjects, type Project } from "@/lib/site-content";
 import { afterFirstInteraction } from "@/lib/defer-setup";
 
 gsap.registerPlugin(useGSAP);
@@ -30,7 +30,8 @@ export const CUBE_POSE = { rotationX: -18, rotationY: 24, rotationZ: -6 } as con
  *   [data-studio='cube-spin']  — 3D: tumble and resting pose (section scroll)
  *   [data-cube='turn']         — 3D: a quarter turn each time a clip ends
  */
-export default function StudioCube() {
+/** `projects`: the showreel clips — the same ones as the slider, which folds into this cube. */
+export default function StudioCube({ projects = builtInProjects }: { projects?: readonly Project[] }) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Only the face pointing at the camera plays; the rest hold their frame.
@@ -124,7 +125,7 @@ export default function StudioCube() {
         {/* Turn layer: steps the cube to the next face when a clip ends. */}
         <div data-cube="turn" className="absolute inset-0 [transform-style:preserve-3d]">
           {projects.map((project, i) => (
-            <VideoFace key={project.id} index={i} />
+            <VideoFace key={project.id} project={project} index={i} />
           ))}
         </div>
       </div>
@@ -138,8 +139,7 @@ export default function StudioCube() {
  * can't cover it. Both sides render, so the inner walls show through the gaps
  * — matching the slider's folded cube, which it replaces seamlessly.
  */
-function VideoFace({ index }: { index: number }) {
-  const project = projects[index];
+function VideoFace({ project, index }: { project: Project; index: number }) {
   const face = VIDEO_CUBE_FACES[index % VIDEO_CUBE_FACES.length];
   return (
     <div

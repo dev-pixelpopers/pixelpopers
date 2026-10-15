@@ -3,13 +3,17 @@
 import { useState } from "react";
 import type { Comment } from "@/lib/pages/blog";
 import { toneFill } from "./tones";
+import { submitForm } from "@/lib/forms";
 
 /**
  * Figma "COMMENTS (3)" + comment box. The comments are static; posting
  * shows a thank-you note (comments are moderated before they appear).
  */
-export default function Comments({ comments }: { comments: Comment[] }) {
+/** `slug`: the post new comments are sent to (they appear once approved in the CMS). */
+export default function Comments({ comments, slug }: { comments: Comment[]; slug: string }) {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <section aria-labelledby="comments-title" className="flex flex-col">
@@ -65,24 +69,54 @@ export default function Comments({ comments }: { comments: Comment[] }) {
         </p>
       ) : (
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            setSent(true);
+            const data = new FormData(e.currentTarget);
+            setSending(true);
+            setError(null);
+            const result = await submitForm("comment", {
+              slug,
+              name: data.get("name"),
+              email: data.get("email") || null,
+              text: data.get("text"),
+              _gotcha: data.get("_gotcha"),
+            });
+            setSending(false);
+            if (result.ok) setSent(true);
+            else setError(Object.values(result.errors ?? {})[0]?.[0] ?? result.message);
           }}
           className="mt-6 flex flex-col items-start gap-5"
         >
+          <div className="grid w-full gap-3 sm:grid-cols-2">
+            <label className="sr-only" htmlFor="comment-name">
+              Your name
+            </label>
+            <input id="comment-name" name="name" required maxLength={100} autoComplete="name" placeholder="Your name" className="w-full rounded-full border border-grape bg-white px-6 py-4 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] text-ink outline-none placeholder:text-ink/50 focus:ring-2 focus:ring-blush" />
+            <label className="sr-only" htmlFor="comment-email">
+              Email (optional, never shown)
+            </label>
+            <input id="comment-email" name="email" type="email" autoComplete="email" placeholder="Email (optional, never shown)" className="w-full rounded-full border border-grape bg-white px-6 py-4 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] text-ink outline-none placeholder:text-ink/50 focus:ring-2 focus:ring-blush" />
+          </div>
           <label htmlFor="comment-body" className="sr-only">
             Add a comment
           </label>
           <textarea
             id="comment-body"
+            name="text"
             required
+            maxLength={3000}
             rows={3}
             placeholder="Add a comment…"
             className="min-h-[7.5rem] w-full resize-y rounded-3xl border border-grape bg-white px-6 py-5 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] text-ink outline-none placeholder:text-ink/50 focus:ring-2 focus:ring-blush"
           />
           {/* Pop-button look (block + overhanging label) as a real submit button. */}
-          <button type="submit" className="group grid text-nav">
+          <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+          {error ? (
+            <p role="alert" className="font-copy text-[0.9375rem] text-blush-deep">
+              {error}
+            </p>
+          ) : null}
+          <button type="submit" disabled={sending} className="group grid text-nav disabled:opacity-60">
             <span
               aria-hidden
               className="col-start-1 row-start-1 h-[clamp(2.375rem,3.54vw,4.25rem)] w-[clamp(2.75rem,4.17vw,5rem)] bg-blush transition-all duration-300 group-hover:w-full group-hover:bg-sunbeam"

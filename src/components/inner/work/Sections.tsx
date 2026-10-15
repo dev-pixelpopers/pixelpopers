@@ -3,8 +3,9 @@ import { Burst, Chars } from "@/components/inner/motion/bits";
 import AgencySection from "@/components/sections/AgencySection";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
-import { impact, teasers, workCta, workIntro, workTestimonials } from "@/lib/pages/work";
+import { impact as defaultImpact, teasers as defaultTeasers, workCta as defaultWorkCta, workIntro as defaultWorkIntro, workTestimonials as defaultWorkTestimonials } from "@/lib/pages/work";
 import { wide } from "./tokens";
+import type { Client } from "@/lib/site-content";
 
 /*
   Markup only: the motion lives in WorkMotion (built on @/components/inner/motion/kit), which finds its pieces by
@@ -14,7 +15,7 @@ import { wide } from "./tokens";
 */
 
 /** Figma "Long-form · What we make": sticky heading beside real paragraphs, then three success cards. */
-export function Intro() {
+export function Intro({ workIntro = defaultWorkIntro }: { workIntro?: typeof defaultWorkIntro } = {}) {
   const [lead, ...rest] = workIntro.paragraphs;
   const s = workIntro.success;
   return (
@@ -67,21 +68,24 @@ export function Intro() {
  * client cards pop out of the folder into a loose scatter — with this page's
  * heading, and no copy, button or exit: once settled it simply scrolls on.
  */
-export function Clients() {
+export const workClients = { eyebrow: "The agency", heading: "Brands we’ve popped" };
+
+export function Clients({ content = workClients, clients }: { content?: typeof workClients; clients?: readonly Client[] } = {}) {
   return (
     <AgencySection
       id="clients"
-      eyebrow="The agency"
-      heading="Brands we’ve popped"
+      eyebrow={content.eyebrow}
+      heading={content.heading}
       copy={null}
       cta={null}
       exit={false}
+      clients={clients}
     />
   );
 }
 
 /** "Impact — The numbers behind the pop": grape band with a pink glow and four Modak stats. */
-export function Impact() {
+export function Impact({ impact = defaultImpact }: { impact?: typeof defaultImpact } = {}) {
   return (
     <section data-wm="impact" aria-labelledby="impact-title">
       <div data-wm="heading" className="shell">
@@ -115,7 +119,7 @@ export function Impact() {
 }
 
 /** "Kind words — Clients who popped": three tilted quote cards, the grape one dropped. */
-export function Testimonials() {
+export function Testimonials({ workTestimonials = defaultWorkTestimonials }: { workTestimonials?: typeof defaultWorkTestimonials } = {}) {
   const t = workTestimonials;
   return (
     <section data-wm="quotes" aria-labelledby="kind-words-title" className="shell">
@@ -157,7 +161,7 @@ export function Testimonials() {
 }
 
 /** "In the oven — Coming soon": blurred, dimmed teasers of unreleased work. */
-export function Teasers() {
+export function Teasers({ teasers = defaultTeasers }: { teasers?: typeof defaultTeasers } = {}) {
   return (
     <section data-wm="teasers" id="in-the-oven" aria-labelledby="oven-title" className="shell">
       <div data-wm="heading">
@@ -194,7 +198,7 @@ export function Teasers() {
 }
 
 /** Closing CTA "Let's build something extraordinary together". */
-export function Cta() {
+export function Cta({ workCta = defaultWorkCta }: { workCta?: typeof defaultWorkCta } = {}) {
   return (
     <section data-wm="cta" aria-labelledby="cta-title" className="shell">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,934fr)_minmax(0,560fr)] lg:px-[3.8%]">
@@ -208,7 +212,7 @@ export function Cta() {
             <span aria-hidden>
               <Chars text={workCta.heading[0]} />
               <br />
-              <Chars text={workCta.heading[1]} />
+              <Chars text={workCta.heading.slice(1).join(" ")} />
             </span>
           </h2>
         </div>

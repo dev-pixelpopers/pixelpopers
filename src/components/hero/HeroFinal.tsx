@@ -18,7 +18,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
  * squash-and-stretch bounce on hovered letters (see `hero-animations.ts`).
  * Under reduced motion the copy is simply shown.
  */
-export default function HeroFinal({ children }: { children?: ReactNode }) {
+export default function HeroFinal({ children, lines }: { children?: ReactNode; lines?: readonly string[] }) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -63,7 +63,7 @@ export default function HeroFinal({ children }: { children?: ReactNode }) {
   );
 
   return (
-    <HeroFrame ref={rootRef} chars>
+    <HeroFrame ref={rootRef} chars lines={lines}>
       {children}
     </HeroFrame>
   );

@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { owners } from "@/lib/site-content";
+import { owners as defaultOwners } from "@/lib/site-content";
 import {
-  categories,
+  categories as defaultCategories,
   formatDate,
   slugify,
   type Category,
@@ -23,7 +23,7 @@ const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
  * trending tags elsewhere on the page link to `#topic-<slug>` / `#tag-<tag>`,
  * which this component picks up to pre-filter the list.
  */
-export default function BlogExplorer({ posts }: { posts: Post[] }) {
+export default function BlogExplorer({ posts, owners = defaultOwners, categories = defaultCategories }: { posts: Post[] } & { owners?: typeof defaultOwners; categories?: typeof defaultCategories }) {
   const [active, setActive] = useState<Category | "All">("All");
   const [query, setQuery] = useState("");
   const root = useRef<HTMLElement>(null);
@@ -45,7 +45,7 @@ export default function BlogExplorer({ posts }: { posts: Post[] }) {
     const onHash = () => apply(true);
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+  }, [categories]);
 
   const featured = posts.find((p) => p.featured) ?? posts[0];
   const filtering = active !== "All" || query.trim() !== "";

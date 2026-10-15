@@ -11,6 +11,7 @@ import PostCover from "@/components/inner/blog/PostCover";
 import { toneFill } from "@/components/inner/blog/tones";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
+import { homeBlog, type HomeBlog } from "@/lib/home-content";
 import { categoryTone, formatDate, getPost, type Post } from "@/lib/pages/blog";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -20,12 +21,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
  * same data as /blog and each /blog/<slug> article), so the cards always
  * match the article they open.
  */
-const HOME_POSTS = [
-  "bold-brands-win-the-scroll",
-  "interfaces-people-enjoy",
-  "snack-bar-campaign-playbook",
-  "motion-that-means-something",
-]
+const HOME_POSTS = homeBlog.featured_slugs
   .map(getPost)
   .filter((post): post is Post => Boolean(post));
 
@@ -34,7 +30,15 @@ const HOME_POSTS = [
  * frame on large screens, an entrance that plays on enter and reverses only
  * when scrolled back above, and no exit animation.
  */
-export default function BlogSection() {
+type BlogSectionProps = {
+  content?: HomeBlog;
+  /** The posts to feature, already in order (the CMS's picks). */
+  posts?: readonly Post[];
+  /** Tag colour per category name. */
+  tones?: Record<string, keyof typeof toneFill>;
+};
+
+export default function BlogSection({ content = homeBlog, posts = HOME_POSTS, tones = categoryTone }: BlogSectionProps) {
   const rootRef = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -124,17 +128,17 @@ export default function BlogSection() {
           <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex flex-col gap-2">
               <p className="text-eyebrow leading-none font-bold text-blush-ink uppercase">
-                <SplitWords text="Fresh From The Studio" name="blog-kicker" />
+                <SplitWords text={content.eyebrow} name="blog-kicker" />
               </p>
               <h2 id="blog-heading" className="font-display text-section leading-[0.99] text-grape uppercase">
-                <SplitWords text="Ideas Worth Popping" name="blog-heading" />
+                <SplitWords text={content.heading} name="blog-heading" />
               </h2>
               <p data-blog="subtitle" className="mt-2 max-w-[36rem] text-body leading-[1.64] text-ink capitalize">
-                Notes on branding, design and growth from the people who build them every day.
+                {content.intro}
               </p>
             </div>
             <div data-blog="cta" className="origin-left">
-              <PopButton href="/blog" label="View All Posts" />
+              <PopButton href={content.cta.href} label={content.cta.label} />
             </div>
           </header>
 
@@ -144,7 +148,7 @@ export default function BlogSection() {
             every card tips in around the same vanishing point.
           */}
           <ul className="-mx-[clamp(1.25rem,8.65vw,10.375rem)] flex snap-x snap-mandatory scroll-px-[clamp(1.25rem,8.65vw,10.375rem)] gap-[clamp(1rem,1.8vw,2rem)] overflow-x-auto px-[clamp(1.25rem,8.65vw,10.375rem)] pb-6 [perspective:1400px] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
-            {HOME_POSTS.map((post) => (
+            {posts.map((post) => (
               <li
                 key={post.slug}
                 data-blog="card"
@@ -164,7 +168,7 @@ export default function BlogSection() {
                     </div>
                     <span
                       data-blog="tag"
-                      className={`absolute top-3 left-3 rounded-full px-3 py-1 text-[clamp(0.6875rem,0.75vw,0.875rem)] font-bold tracking-wide uppercase shadow-card ${toneFill[categoryTone[post.category]]}`}
+                      className={`absolute top-3 left-3 rounded-full px-3 py-1 text-[clamp(0.6875rem,0.75vw,0.875rem)] font-bold tracking-wide uppercase shadow-card ${toneFill[tones[post.category] ?? "blush"]}`}
                     >
                       {post.category}
                     </span>

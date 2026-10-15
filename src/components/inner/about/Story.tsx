@@ -2,8 +2,8 @@ import Image from "next/image";
 import { Burst } from "@/components/inner/motion/bits";
 import BrandLogo from "@/components/ui/BrandLogo";
 import SplitWords from "@/components/ui/SplitWords";
-import { owners, type Owner } from "@/lib/site-content";
-import { aboutStory } from "@/lib/pages/about";
+import { owners as defaultOwners, type Owner } from "@/lib/site-content";
+import { aboutStory as defaultAboutStory } from "@/lib/pages/about";
 
 const ring: Record<Owner["accent"], string> = {
   sunbeam: "bg-sunbeam",
@@ -18,7 +18,7 @@ const tilts = ["rotate-2", "-rotate-1", "rotate-1"];
  * "Our story": the founders on the left, the short story and stats on the
  * right. Motion hooks (`data-wm`) are picked up by AboutMotion.
  */
-export default function Story() {
+export default function Story({ owners = defaultOwners, aboutStory = defaultAboutStory }: { owners?: typeof defaultOwners; aboutStory?: typeof defaultAboutStory } = {}) {
   return (
     <section
       id="team"
@@ -63,7 +63,7 @@ export default function Story() {
           <h2 id="story-title" className="mt-[clamp(0.75rem,1vw,1.25rem)] font-display text-section leading-[1.12] text-grape uppercase">
             <SplitWords text={aboutStory.heading[0]} name="wm-words" />
             <br />
-            <SplitWords text={aboutStory.heading[1]} name="wm-words" />
+            <SplitWords text={aboutStory.heading.slice(1).join(" ")} name="wm-words" />
           </h2>
           <p data-wm="lead" className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[56.25rem] font-copy text-body leading-[1.64] font-light text-ink">
             {aboutStory.body}

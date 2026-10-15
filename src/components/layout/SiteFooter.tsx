@@ -5,6 +5,7 @@ import { useId, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 
 import BrandLogo from "@/components/ui/BrandLogo";
+import { submitForm } from "@/lib/forms";
 
 type FooterLink = { label: string; href: string; pill?: string };
 
@@ -141,14 +142,19 @@ function FooterGroup({ title, children }: { title: string; children: ReactNode }
 }
 
 function Newsletter() {
-  const [status, setStatus] = useState<"idle" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [message, setMessage] = useState("");
   const inputId = useId();
 
-  // No mailing-list backend yet: accept the address locally and confirm.
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setStatus("done");
-    event.currentTarget.reset();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setStatus("sending");
+    const result = await submitForm("newsletter", { email: data.get("email"), source: "footer", _gotcha: data.get("_gotcha") });
+    setStatus(result.ok ? "done" : "error");
+    setMessage(result.message);
+    if (result.ok) form.reset();
   };
 
   return (
@@ -171,11 +177,14 @@ function Newsletter() {
           required
           autoComplete="email"
           placeholder="you@brand.com"
-          onChange={() => status === "done" && setStatus("idle")}
+          onChange={() => status !== "idle" && status !== "sending" && setStatus("idle")}
           className="min-w-0 flex-1 rounded-full border border-white/15 bg-ink/40 px-5 py-3 text-cream placeholder:text-cream/40 transition-colors outline-none focus:border-sunbeam focus:ring-2 focus:ring-sunbeam/30"
         />
+        {/* Honeypot: hidden from people, filled in by bots (the CMS ignores those). */}
+        <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
         <button
           type="submit"
+          disabled={status === "sending"}
           className="group relative isolate overflow-hidden rounded-full bg-blush px-6 py-3 font-display text-[clamp(0.75rem,0.8vw,0.9375rem)] whitespace-nowrap text-white uppercase transition-colors duration-300 before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:bg-sunbeam before:transition-transform before:duration-300 before:ease-out hover:text-ink hover:before:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sunbeam motion-reduce:before:transition-none"
         >
           Subscribe
@@ -183,15 +192,25 @@ function Newsletter() {
       </form>
 
       <p aria-live="polite" className="mt-3 text-xs leading-relaxed text-cream/50">
-        {status === "done"
-          ? "You’re on the list — watch your inbox for the next drop."
+        {status === "done" || status === "error"
+          ? message
           : "No spam, ever. One popping email a month — unsubscribe anytime."}
       </p>
     </div>
   );
 }
 
-export default function SiteFooter() {
+type SiteFooterProps = {
+  /** From the CMS's Site settings; the built-in copy otherwise. */
+  tagline?: string;
+  /** The availability pill — `null` hides it. */
+  availability?: string | null;
+};
+
+export default function SiteFooter({
+  tagline = "A funky creative studio making brands impossible to scroll past — from strategy to the last pixel.",
+  availability = "Available for new projects",
+}: SiteFooterProps) {
   const scrollToTop = () => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
@@ -212,16 +231,17 @@ export default function SiteFooter() {
             <BrandLogo onDark className="w-[clamp(9rem,12vw,14rem)]" />
           </a>
           <p className="max-w-[24rem] text-body leading-[1.64] text-cream/70">
-            A funky creative studio making brands impossible to scroll past — from strategy to
-            the last pixel.
+            {tagline}
           </p>
+          {availability ? (
           <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-cream backdrop-blur-sm">
             <span aria-hidden className="relative flex size-2.5">
               <span className="absolute inline-flex size-full rounded-full bg-lagoon opacity-75 motion-safe:animate-ping" />
               <span className="relative inline-flex size-2.5 rounded-full bg-lagoon" />
             </span>
-            Available for new projects
+            {availability}
           </span>
+          ) : null}
         </div>
 
         {/* ── Link groups ───────────────────────────────────────────────── */}

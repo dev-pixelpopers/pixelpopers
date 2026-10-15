@@ -7,7 +7,7 @@ import { Burst } from "@/components/inner/motion/bits";
 import { burst } from "@/components/inner/motion/kit";
 import { usePopHero } from "@/components/inner/motion/usePopHero";
 import PopButton from "@/components/ui/PopButton";
-import { servicesHero } from "@/lib/pages/services";
+import { servicesHero as defaultServicesHero } from "@/lib/pages/services";
 
 /** Each letter in its own inline-block (words kept whole so lines wrap cleanly). */
 function Chars({ text }: { text: string }) {
@@ -34,8 +34,10 @@ function Chars({ text }: { text: string }) {
   words rise in and the quote button pops with a burst; on the way out the
   copy blurs down and the button spins away.
 */
-export default function Hero() {
-  const [l1, l2, l3] = servicesHero.lines;
+export default function Hero({ servicesHero = defaultServicesHero }: { servicesHero?: typeof defaultServicesHero } = {}) {
+  const [l1, l2, ...rest] = servicesHero.lines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
   const rootRef = useRef<HTMLElement>(null);
 
   usePopHero(rootRef, {

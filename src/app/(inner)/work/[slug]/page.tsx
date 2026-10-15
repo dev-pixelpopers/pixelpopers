@@ -14,34 +14,39 @@ import {
   Team,
   Timeline,
 } from "@/components/inner/work/CaseStudy";
-import { SITE } from "@/components/inner/work/tokens";
-import { getNextProject, getProject, projects } from "@/lib/pages/work";
+import { getProject, getProjects, getSite, getTeam } from "@/lib/content";
 
-export const dynamicParams = false;
+/** Case studies added in the CMS after a build render on first visit. */
+export const dynamicParams = true;
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/work/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const p = getProject(slug);
-  if (!p) return {};
-  const title = `${p.name} — ${p.discipline} Case Study | Pixel Popers`;
+  const found = await getProject(slug);
+  if (!found) return {};
+  const p = found.project;
+  const seo = (p as { seo?: { title?: string | null; description?: string | null; ogImage?: string | null } }).seo;
+  const title = seo?.title || `${p.name} — ${p.discipline} Case Study | Pixel Popers`;
+  const description = seo?.description || p.description;
   return {
     title,
-    description: p.description,
+    description,
     alternates: { canonical: `/work/${p.slug}` },
-    openGraph: { title, description: p.description, type: "article", url: `/work/${p.slug}`, images: [{ url: p.cover.src, alt: p.cover.alt }] },
+    openGraph: { title, description, type: "article", url: `/work/${p.slug}`, images: [{ url: seo?.ogImage || p.cover.src, alt: p.cover.alt }] },
   };
 }
 
 /** /work/[slug] — template from Figma frame 334:21 "05 — Case Study (Fifth Sip)". */
 export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]">) {
   const { slug } = await params;
-  const project = getProject(slug);
-  if (!project) notFound();
-  const next = getNextProject(slug);
+  const [found, site, team] = await Promise.all([getProject(slug), getSite(), getTeam()]);
+  if (!found) notFound();
+  const { project, next } = found;
+  const SITE = site.site_url;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -50,14 +55,14 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
     headline: `${project.name}: ${project.discipline}`,
     description: project.description,
     url: `${SITE}/work/${project.slug}`,
-    image: `${SITE}${project.cover.src}`,
+    image: project.cover.src.startsWith("http") ? project.cover.src : `${SITE}${project.cover.src}`,
     dateCreated: String(project.year),
     genre: project.discipline,
     keywords: project.services.join(", "),
     about: { "@type": "Organization", name: project.client },
     creator: {
       "@type": "Organization",
-      name: "Pixel Popers",
+      name: site.site_name,
       url: SITE,
       member: project.team.map((m) => ({ "@type": "Person", name: m.name, jobTitle: m.role })),
     },
@@ -96,7 +101,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
         <Timeline project={project} />
       </div>
       <div className="mt-[clamp(4rem,5.2vw,6.25rem)]">
-        <Team project={project} />
+        <Team project={project} owners={team.owners} />
       </div>
       <div className="mt-[clamp(4rem,16vw,19.375rem)]">
         <NextProject next={next} />

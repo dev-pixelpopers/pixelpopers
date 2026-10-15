@@ -11,7 +11,7 @@ import { AGENCY_EXIT_VH, AGENCY_UNWIND_VH } from "@/components/sections/agency-m
 import BrandLogo from "@/components/ui/BrandLogo";
 import ClientCard from "@/components/ui/ClientCard";
 import PopButton from "@/components/ui/PopButton";
-import { clients } from "@/lib/site-content";
+import { clients as builtInClients, type Client } from "@/lib/site-content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -307,6 +307,8 @@ type AgencySectionProps = {
   copy?: string | null;
   /** Button that pops out of the docked folder — `null` for none. */
   cta?: { href: string; label: string } | null;
+  /** The logos that pile into the folder (the CMS's Client logos). */
+  clients?: readonly Client[];
   /**
    * Stay pinned at the end, play everything back into the folder and pop it,
    * handing the screen to the next section (the home page's Contact, tucked
@@ -323,6 +325,7 @@ export default function AgencySection({
   copy = COPY,
   cta = { href: "/work", label: "View Our Case Studies" },
   exit = true,
+  clients = builtInClients,
 }: AgencySectionProps) {
   const words = copy ? copy.split(" ") : [];
   const trackRef = useRef<HTMLDivElement>(null);

@@ -59,6 +59,8 @@ const SPARK_TONES = ["bg-sunbeam", "bg-blush", "bg-grape", "bg-lagoon"];
 type HeroHeadlineProps = {
   /** Wrap every letter in its own span (`data-hero="char"`) for per-letter motion. */
   chars?: boolean;
+  /** The three lines' text (from the CMS); each line keeps its own styling. */
+  lines?: readonly string[];
 };
 
 /**
@@ -72,7 +74,13 @@ type HeroHeadlineProps = {
  *   data-hero="doodle"      the doodle artwork (entrance owns its transform)
  *   data-hero="spark"       burst particles by the flower (ship hidden)
  */
-export default function HeroHeadline({ chars = false }: HeroHeadlineProps) {
+export default function HeroHeadline({ chars = false, lines: text }: HeroHeadlineProps) {
+  // Each line keeps its styling; lines past the third join the third.
+  const lines = LINES.map((line, i) => ({
+    ...line,
+    text: (i === LINES.length - 1 ? text?.slice(i).join(" ") : text?.[i]) || line.text,
+  }));
+
   return (
     <>
       {/*
@@ -91,10 +99,10 @@ export default function HeroHeadline({ chars = false }: HeroHeadlineProps) {
 
       <h1
         data-hero="title"
-        aria-label={chars ? LINES.map((line) => line.text).join(" ") : undefined}
+        aria-label={chars ? lines.map((line) => line.text).join(" ") : undefined}
         className="flex flex-col items-start leading-none uppercase"
       >
-        {LINES.map((line) => (
+        {lines.map((line) => (
           <span
             key={line.id}
             data-hero="line"

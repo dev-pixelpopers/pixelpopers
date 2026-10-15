@@ -12,14 +12,14 @@ import {
   RelatedPosts,
   tocItems,
 } from "@/components/inner/blog/PostSections";
-import { owners } from "@/lib/site-content";
-import { getPost, posts, relatedPosts, wordCount } from "@/lib/pages/blog";
+import { getPost, getPosts, getSite, getTeam } from "@/lib/content";
+import { wordCount } from "@/lib/pages/blog";
 
-const SITE = "https://pixelpopers.vercel.app";
+/** Posts published in the CMS after a build render on first visit. */
+export const dynamicParams = true;
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const posts = await getPosts();
   return posts.map((p) => ({ slug: p.slug }));
 }
 
@@ -27,9 +27,11 @@ export async function generateMetadata({
   params,
 }: PageProps<"/blog/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
-  if (!post) return {};
-  const title = `${post.title} | Pixel Popers Blog`;
+  const found = await getPost(slug);
+  if (!found) return {};
+  const { post } = found;
+  const seo = (post as { seo?: { title?: string | null; ogImage?: string | null } }).seo;
+  const title = seo?.title || `${post.title} | Pixel Popers Blog`;
   const url = `/blog/${post.slug}`;
   return {
     title,
@@ -48,7 +50,7 @@ export async function generateMetadata({
       tags: post.tags,
       images: [
         {
-          url: post.cover.src,
+          url: seo?.ogImage || post.cover.src,
           width: post.cover.width,
           height: post.cover.height,
           alt: post.cover.alt,
@@ -63,19 +65,22 @@ export default async function BlogPostPage({
   params,
 }: PageProps<"/blog/[slug]">) {
   const { slug } = await params;
-  const post = getPost(slug);
-  if (!post) notFound();
+  const [found, team, site] = await Promise.all([getPost(slug), getTeam(), getSite()]);
+  if (!found) notFound();
+  const { post, related } = found;
+  const SITE = site.site_url;
+  const absolute = (src: string) => (src.startsWith("http") ? src : `${SITE}${src}`);
 
   const url = `${SITE}/blog/${post.slug}`;
   const toc = tocItems(post);
-  const author = owners.find((o) => o.name === post.author);
+  const author = team.owners.find((o) => o.name === post.author);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
-    image: `${SITE}${post.cover.src}`,
+    image: absolute(post.cover.src),
     datePublished: post.date,
     dateModified: post.date,
     articleSection: post.category,
@@ -92,7 +97,7 @@ export default async function BlogPostPage({
     },
     publisher: {
       "@type": "Organization",
-      name: "Pixel Popers",
+      name: site.site_name,
       url: SITE,
       logo: {
         "@type": "ImageObject",
@@ -103,7 +108,7 @@ export default async function BlogPostPage({
 
   return (
     <Reveal className="flex flex-col pb-[clamp(5rem,8.33vw,10rem)]">
-      <PostHero post={post} />
+      <PostHero post={post} owners={team.owners} />
 
       {/* TOC | article | share — Figma columns 340 / 880 / 56 with 140 / 120 gutters. */}
       <div className="mx-auto mt-[clamp(2.5rem,6.25vw,7.5rem)] grid w-full max-w-[1920px] gap-y-10 px-[clamp(1.25rem,6.25vw,7.5rem)] lg:grid-cols-[minmax(0,340fr)_minmax(0,140fr)_minmax(0,880fr)_minmax(0,120fr)_minmax(0,200fr)]">
@@ -143,10 +148,10 @@ export default async function BlogPostPage({
             <PostTags tags={post.tags} />
           </div>
           <div className="mt-[clamp(2rem,3.4vw,4rem)]">
-            <AuthorCard author={post.author} />
+            <AuthorCard author={post.author} authorBios={team.bios} owners={team.owners} />
           </div>
           <div className="mt-[clamp(3rem,5.6vw,6.75rem)]">
-            <Comments comments={post.comments} />
+            <Comments comments={post.comments} slug={post.slug} />
           </div>
         </article>
 
@@ -158,7 +163,7 @@ export default async function BlogPostPage({
       </div>
 
       <div className="mt-[clamp(4.5rem,8.3vw,10rem)]">
-        <RelatedPosts posts={relatedPosts(post)} />
+        <RelatedPosts posts={related} />
       </div>
       <script
         type="application/ld+json"

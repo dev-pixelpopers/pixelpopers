@@ -61,7 +61,9 @@ const noteTags = ["→ insights", "→ flows", "→ prototype", "→ handoff"];
 const showOnOpen = "group-hover:opacity-100 group-focus-visible:opacity-100 group-data-[open=true]:opacity-100";
 
 export default function Sections({ service }: { service: ServiceDetail }) {
-  const [l1, l2, l3] = service.heroLines;
+  const [l1, l2, ...rest] = service.heroLines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
 
   return (
     <UxMotion className="flex flex-col pb-[clamp(5rem,9.4vw,11.25rem)]">
@@ -333,6 +335,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       </section>
 
       {/* ── Four artboards (process) — hover / tap reveals the dev notes ── */}
+      {service.hidden?.includes("process") ? null : (
       <section aria-labelledby="artboards-title" className="shell mt-[clamp(4rem,9.4vw,11.25rem)]">
         <SectionTitle eyebrow="How we do it" title={<span id="artboards-title">Four artboards to launch</span>} />
         <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">
@@ -340,11 +343,11 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <span className="[@media(hover:hover)]:hidden">Tap</span> an artboard to read the dev notes&nbsp;&nbsp;↘
         </p>
         <ol data-reveal-stagger className="mt-[clamp(2rem,3vw,3.5rem)] grid gap-x-[clamp(0.75rem,1.15vw,1.375rem)] gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {artboards.map(({ name, Body }, i) => {
-            const step = service.process[i];
+          {service.process.map((step, i) => {
+            const { name, Body } = artboards[i % artboards.length];
             const n = String(i + 1).padStart(2, "0");
             return (
-              <li key={name} className="mx-auto w-full max-w-[24rem] sm:max-w-none">
+              <li key={i} className="mx-auto w-full max-w-[24rem] sm:max-w-none">
                 <RevealCard as="div" label={`Artboard ${n}: ${name} — show dev notes`} className="block">
                   <div className="flex items-end justify-between gap-3">
                     <p className="font-copy text-[clamp(0.75rem,0.78vw,0.9375rem)] font-medium text-ink/50">
@@ -385,6 +388,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           })}
         </ol>
       </section>
+      )}
     </UxMotion>
   );
 }

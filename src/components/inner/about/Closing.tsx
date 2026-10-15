@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { Burst, Chars } from "@/components/inner/motion/bits";
 import PopButton from "@/components/ui/PopButton";
-import { aboutCta } from "@/lib/pages/about";
+import { aboutCta as defaultAboutCta } from "@/lib/pages/about";
 
 /** Closing CTA "Let's build something extraordinary together", with the yellow loop doodle. */
-export default function Closing() {
+export default function Closing({ aboutCta = defaultAboutCta }: { aboutCta?: typeof defaultAboutCta } = {}) {
   return (
     <section data-wm="cta" aria-labelledby="cta-title" className="shell grid">
       <Image
@@ -27,7 +27,7 @@ export default function Closing() {
             <span aria-hidden>
               <Chars text={aboutCta.heading[0]} />
               <br />
-              <Chars text={aboutCta.heading[1]} />
+              <Chars text={aboutCta.heading.slice(1).join(" ")} />
             </span>
           </h2>
         </div>

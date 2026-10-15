@@ -7,6 +7,8 @@ import HeroBlob from "@/components/ui/HeroBlob";
 type HeroFrameProps = {
   ref?: Ref<HTMLDivElement>;
   chars?: boolean;
+  /** Headline text, one entry per line. */
+  lines?: readonly string[];
   /** The project carousel, which shares the blob backdrop with the headline. */
   children?: ReactNode;
 };
@@ -20,7 +22,7 @@ type HeroFrameProps = {
  *   data-hero-frame="blob"      blob wrapper (HeroBlob owns the SVG inside)
  *   data-hero-frame="headline"  the headline <section>
  */
-export default function HeroFrame({ ref, chars, children }: HeroFrameProps) {
+export default function HeroFrame({ ref, chars, lines, children }: HeroFrameProps) {
   return (
     // z-20: the slider folds into a cube that travels down over the Studio
     // section, so the whole hero block paints above what follows it.
@@ -55,7 +57,7 @@ export default function HeroFrame({ ref, chars, children }: HeroFrameProps) {
         className="relative z-10 w-full pb-8 max-lg:flex max-lg:min-h-[72svh] max-lg:items-center"
       >
         <div className="shell relative flex flex-col items-center pt-[clamp(2rem,6vw,7rem)]">
-          <HeroHeadline chars={chars} />
+          <HeroHeadline chars={chars} lines={lines} />
         </div>
       </section>
 

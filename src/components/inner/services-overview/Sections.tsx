@@ -3,16 +3,16 @@ import { Burst, Chars } from "@/components/inner/motion/bits";
 import SectionTitle from "@/components/inner/SectionTitle";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
-import { serviceDetails } from "@/lib/service-content";
+import { serviceDetails as defaultServiceDetails } from "@/lib/service-content";
 import {
-  comparison,
-  explained,
-  industries,
-  models,
-  serviceRows,
-  servicesCta,
-  servicesFaq,
-  servicesStats,
+  comparison as defaultComparison,
+  explained as defaultExplained,
+  industries as defaultIndustries,
+  models as defaultModels,
+  serviceRows as defaultServiceRows,
+  servicesCta as defaultServicesCta,
+  servicesFaq as defaultServicesFaq,
+  servicesStats as defaultServicesStats,
   type Tone,
 } from "@/lib/pages/services";
 
@@ -43,7 +43,7 @@ const toneBar: Record<Tone, string> = {
 
 /* ── Every service, explained ─────────────────────────────────────────── */
 
-export function Explained() {
+export function Explained({ serviceDetails = defaultServiceDetails, explained = defaultExplained, serviceRows = defaultServiceRows }: { serviceDetails?: typeof defaultServiceDetails; explained?: typeof defaultExplained; serviceRows?: typeof defaultServiceRows } = {}) {
   return (
     <section aria-labelledby="explained-title" className="shell">
       <div data-wm="heading">
@@ -83,7 +83,7 @@ export function Explained() {
 
 /* ── FAQ ───────────────────────────────────────────────────────────────── */
 
-export function Faq() {
+export function Faq({ servicesFaq = defaultServicesFaq }: { servicesFaq?: typeof defaultServicesFaq } = {}) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -104,7 +104,7 @@ export function Faq() {
         <h2 id="faq-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
           <SplitWords text={servicesFaq.heading[0]} name="wm-words" />
           <br />
-          <SplitWords text={servicesFaq.heading[1]} name="wm-words" />
+          <SplitWords text={servicesFaq.heading.slice(1).join(" ")} name="wm-words" />
         </h2>
         <p data-wm="lead" className="mt-[clamp(1.25rem,2.1vw,2.5rem)] max-w-[30rem] font-copy text-body leading-[1.64] font-light text-ink">
           {servicesFaq.body}
@@ -141,7 +141,7 @@ export function Faq() {
 
 /* ── Us vs a typical agency ───────────────────────────────────────────── */
 
-export function Comparison() {
+export function Comparison({ comparison = defaultComparison }: { comparison?: typeof defaultComparison } = {}) {
   const item = "flex items-center gap-[1.125rem] font-copy text-[clamp(1.0625rem,1.15vw,1.375rem)]";
   const dot = "grid size-[1.875rem] shrink-0 place-items-center rounded-full font-haas text-[0.9375rem] leading-none";
   return (
@@ -189,7 +189,7 @@ export function Comparison() {
 
 /* ── Industries ───────────────────────────────────────────────────────── */
 
-export function Industries() {
+export function Industries({ industries = defaultIndustries }: { industries?: typeof defaultIndustries } = {}) {
   return (
     <section aria-labelledby="industries-title" className="shell">
       <SectionTitle align="center" eyebrow={industries.eyebrow} title={<span id="industries-title">{industries.heading}</span>} />
@@ -219,7 +219,7 @@ export function Industries() {
 
 /* ── Ways to work ─────────────────────────────────────────────────────── */
 
-export function Models() {
+export function Models({ models = defaultModels }: { models?: typeof defaultModels } = {}) {
   return (
     <section aria-labelledby="models-title" className="shell">
       <SectionTitle eyebrow={models.eyebrow} title={<span id="models-title">{models.heading}</span>} />
@@ -252,7 +252,7 @@ export function Models() {
 
 /* ── Stats band ───────────────────────────────────────────────────────── */
 
-export function StatsBand() {
+export function StatsBand({ servicesStats = defaultServicesStats }: { servicesStats?: typeof defaultServicesStats } = {}) {
   return (
     <section aria-label="Pixel Popers in numbers" className="shell">
       <div data-wm="band" className="-mx-[clamp(0rem,2.4vw,2.875rem)] grid overflow-hidden rounded-[clamp(1.75rem,2.5vw,3rem)] bg-lagoon">
@@ -282,7 +282,7 @@ export function StatsBand() {
 
 /* ── Closing CTA ──────────────────────────────────────────────────────── */
 
-export function Closing() {
+export function Closing({ servicesCta = defaultServicesCta }: { servicesCta?: typeof defaultServicesCta } = {}) {
   return (
     <section data-wm="cta" aria-labelledby="cta-title" className="shell">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,934fr)_minmax(0,560fr)] lg:px-[3.8%]">
@@ -296,7 +296,7 @@ export function Closing() {
             <span aria-hidden>
               <Chars text={servicesCta.heading[0]} />
               <br />
-              <Chars text={servicesCta.heading[1]} />
+              <Chars text={servicesCta.heading.slice(1).join(" ")} />
             </span>
           </h2>
         </div>

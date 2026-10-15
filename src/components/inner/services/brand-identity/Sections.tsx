@@ -59,7 +59,9 @@ const pieceShadow = "shadow-[0_clamp(0.5rem,1.4cqw,1.375rem)_clamp(1rem,2.5cqw,2
 const headingGap = "mt-[clamp(2.5rem,3.96vw,4.75rem)]";
 
 export default function Sections({ service }: { service: ServiceDetail }) {
-  const [l1, l2, l3] = service.heroLines;
+  const [l1, l2, ...rest] = service.heroLines;
+  // Extra lines from the CMS join the last line rather than disappearing.
+  const l3 = rest.join(" ");
 
   return (
     <BrandMotion className="flex flex-col pb-[clamp(5rem,9.4vw,11.25rem)]">
@@ -287,6 +289,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       </section>
 
       {/* ── Four chapters (process) — hover / tap flips a chapter to its page ── */}
+      {service.hidden?.includes("process") ? null : (
       <section id="chapters" aria-labelledby="chapters-title" className="shell mt-[clamp(4.5rem,9.4vw,11.25rem)] scroll-mt-8">
         <SectionTitle eyebrow="How we do it" title={<span id="chapters-title">Four chapters to a brand</span>} />
         <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">
@@ -294,11 +297,11 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <span className="[@media(hover:hover)]:hidden">Tap</span> a chapter to flip it open&nbsp;&nbsp;↘
         </p>
         <ol data-fan className="mt-[clamp(2rem,4.2vw,5rem)] grid gap-x-[clamp(0.75rem,1.15vw,1.375rem)] gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
-          {service.process.slice(0, 4).map((step, i) => {
-            const c = chapters[i];
+          {service.process.map((step, i) => {
+            const c = chapters[i % chapters.length];
             const n = String(i + 1).padStart(2, "0");
             return (
-              <li key={step.title} className={`mx-auto w-full max-w-[24rem] sm:max-w-none ${c.tilt}`}>
+              <li key={i} className={`mx-auto w-full max-w-[24rem] sm:max-w-none ${c.tilt}`}>
                 <RevealCard as="div" label={`Chapter ${n}: ${step.title} — flip to read`} className="block rounded-[clamp(0.625rem,0.73vw,0.875rem)] [perspective:1800px]">
                   <div className={`grid transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)] [transform-style:preserve-3d] ${flipOpen}`}>
                     {/* Front: the book spine */}
@@ -320,7 +323,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                         <span aria-hidden className={`mt-[7.9cqw] h-[2.63cqw] w-full shrink-0 ${c.bg}`} />
                         <div className="flex min-h-0 flex-1 flex-col px-[8.4cqw] pt-[6.6cqw]">
                           <p className={`font-haas text-[max(0.6875rem,3.95cqw)] uppercase ${i === 3 ? "text-[#c9952b]" : c.text}`}>
-                            CH.{n} · Chapter {chapterWords[i]}
+                            CH.{n} · Chapter {chapterWords[i] ?? n}
                           </p>
                           <p aria-hidden className="mt-[2.6cqw] font-display text-[max(1.25rem,11.6cqw)] leading-[1.18] text-grape uppercase">{step.title}</p>
                           <p
@@ -344,6 +347,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           })}
         </ol>
       </section>
+      )}
     </BrandMotion>
   );
 }

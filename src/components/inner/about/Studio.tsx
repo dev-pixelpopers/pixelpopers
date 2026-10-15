@@ -1,15 +1,15 @@
 import { Burst } from "@/components/inner/motion/bits";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
-import { hiring, perks } from "@/lib/pages/about";
+import { hiring as defaultHiring, perks as defaultPerks } from "@/lib/pages/about";
 
 const layer = "col-start-1 row-start-1";
 
 /** "Life at the studio" perks and the pink "We're hiring" band. */
-export default function Studio() {
+export default function Studio({ hiring = defaultHiring, perks = defaultPerks, showPerks = true, showHiring = true }: { hiring?: typeof defaultHiring; perks?: typeof defaultPerks; showPerks?: boolean; showHiring?: boolean } = {}) {
   return (
     <>
-      <section id="studio" aria-labelledby="perks-title" className="shell scroll-mt-8">
+      {showPerks ? <section id="studio" aria-labelledby="perks-title" className="shell scroll-mt-8">
         <div data-wm="heading">
           <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{perks.eyebrow}</p>
           <h2 id="perks-title" className="mt-[0.3em] font-display text-h2 leading-[1.16] text-grape uppercase">
@@ -30,9 +30,9 @@ export default function Studio() {
             </li>
           ))}
         </ul>
-      </section>
+      </section> : null}
 
-      <div className="mx-auto mt-[clamp(4rem,5.2vw,6.25rem)] w-full max-w-[1920px] px-[clamp(1.25rem,6.25vw,7.5rem)]">
+      {showHiring ? <div className="mx-auto mt-[clamp(4rem,5.2vw,6.25rem)] w-full max-w-[1920px] px-[clamp(1.25rem,6.25vw,7.5rem)]">
         <section
           id="careers"
           aria-labelledby="hiring-title"
@@ -66,7 +66,7 @@ export default function Studio() {
             </div>
           </div>
         </section>
-      </div>
+      </div> : null}
     </>
   );
 }
