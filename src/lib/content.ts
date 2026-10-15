@@ -49,6 +49,18 @@ const ATTEMPTS = IS_BUILD ? 2 : 1;
 
 const API = process.env.CMS_API_URL?.trim().replace(/\/+$/, "") || null;
 
+/**
+ * Upload URLs are built from the CMS's own APP_URL, which may say http://
+ * while the CMS is served over https://. Browsers block http media on an
+ * https site and the image optimiser only accepts the CMS's https address,
+ * so links to the CMS are upgraded to match CMS_API_URL.
+ */
+const CMS_HOST = API?.startsWith("https://") ? API.slice("https://".length) : null;
+const secureCmsLinks = (json: string) =>
+  CMS_HOST
+    ? json.replaceAll(`http://${CMS_HOST}/`, `https://${CMS_HOST}/`).replaceAll(`"http://${CMS_HOST}"`, `"https://${CMS_HOST}"`)
+    : json;
+
 /** "unavailable": no CMS configured / unreachable → use static. "missing": the CMS answered 404. */
 type Fetched<T> = { ok: true; data: T } | { ok: false; reason: "unavailable" | "missing" };
 
@@ -66,7 +78,8 @@ async function fromCms<T>(path: string, attempt = 1): Promise<Fetched<T>> {
     });
     if (res.status === 404) return { ok: false, reason: "missing" };
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const body = (await res.json()) as { data: T };
+    const text = await res.text();
+    const body = JSON.parse(secureCmsLinks(text)) as { data: T };
     return { ok: true, data: body.data };
   } catch (error) {
     if (attempt < ATTEMPTS) return fromCms<T>(path, attempt + 1);
