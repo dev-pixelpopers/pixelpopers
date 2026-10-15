@@ -237,16 +237,19 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <div className="mt-[clamp(1.5rem,2.4vw,2.875rem)] overflow-hidden md:overflow-visible">
             <div aria-hidden className="@container -ml-[25%] grid w-[150%] md:ml-0 md:w-full">
               <span className={`${layer} mt-[29.17%] ml-[18.75%] h-[3.125cqw] w-[62.5%] rounded-full bg-black/45 blur-[2.08cqw]`} />
-              <div className={`${layer} ml-[27.08%] grid aspect-[880/550] w-[45.83%] rounded-[1.25cqw] border border-white/12 bg-[#120118] p-[0.83cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
-                <div className="overflow-hidden rounded-[0.625cqw]">
-                  <PhoneShot slot="devices-laptop" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="46vw" contain />
+              {/* Monitor + stand. An uploaded screenshot sets the screen's shape, so the stand follows the screen. */}
+              <div className={`${layer} ml-[27.08%] flex w-[45.83%] flex-col items-center`}>
+                <div className="grid aspect-[880/550] min-h-0 w-full grid-rows-[minmax(0,1fr)] rounded-[1.25cqw] border border-white/12 bg-[#120118] p-[0.83cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)] has-[img[data-natural]]:aspect-auto">
+                  <div className="overflow-hidden rounded-[0.625cqw]">
+                    <PhoneShot slot="devices-laptop" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="46vw" contain natural />
+                  </div>
                 </div>
+                <span className="h-[2.08cqw] w-[13.64%] bg-[#120118]" />
+                <span className="-mt-px h-[0.73cqw] w-[31.82%] rounded-full bg-[#120118]" />
               </div>
-              <span className={`${layer} mt-[28.65%] ml-[46.88%] h-[2.08cqw] w-[6.25%] bg-[#120118]`} />
-              <span className={`${layer} mt-[30.52%] ml-[42.71%] h-[0.73cqw] w-[14.58%] rounded-full bg-[#120118]`} />
-              <div className={`${layer} mt-[6.77%] ml-[17.19%] grid aspect-[340/460] w-[17.71%] rounded-[1.77cqw] border border-white/12 bg-[#120118] p-[0.73cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
+              <div className={`${layer} mt-[6.77%] ml-[17.19%] grid aspect-[340/460] has-[img[data-natural]]:aspect-auto w-[17.71%] rounded-[1.77cqw] border border-white/12 bg-[#120118] p-[0.73cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="overflow-hidden rounded-[1.15cqw]">
-                  <PhoneShot slot="devices-tablet" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="18vw" contain />
+                  <PhoneShot slot="devices-tablet" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="18vw" contain natural />
                 </div>
               </div>
               <div className={`${layer} mt-[7.81%] ml-[69.27%] grid aspect-[220/450] w-[11.46%] rounded-[1.98cqw] border border-white/12 bg-[#120118] p-[0.52cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>

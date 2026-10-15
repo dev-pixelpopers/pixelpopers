@@ -33,9 +33,13 @@ export function Phone({
   );
 }
 
-/** A screen inside a device frame; `contain` shows the whole picture instead of filling (and cropping to) the screen. */
-export function PhoneShot({ slot, src, w, h, alt, sizes, contain = false }: { slot: string; src: string; w: number; h: number; alt: string; sizes: string; contain?: boolean }) {
-  return <Image slot={slot} src={src} alt={alt} width={w} height={h} sizes={sizes} className={`h-full w-full ${contain ? "object-contain" : "object-cover"}`} />;
+/**
+ * A screen inside a device frame. `contain` shows the whole built-in picture
+ * instead of filling (and cropping to) the screen; `natural` lets an uploaded
+ * picture set the screen's shape (see ServiceImage).
+ */
+export function PhoneShot({ slot, src, w, h, alt, sizes, contain = false, natural = false }: { slot: string; src: string; w: number; h: number; alt: string; sizes: string; contain?: boolean; natural?: boolean }) {
+  return <Image slot={slot} natural={natural} src={src} alt={alt} width={w} height={h} sizes={sizes} className={`h-full w-full ${contain ? "object-contain" : "object-cover"}`} />;
 }
 
 /** Low-fi wireframe screen content. */
