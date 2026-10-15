@@ -40,7 +40,7 @@ export const services: Service[] = [
     fill: "photo",
     label: { x: 0.147, y: 0.561 },
     dot: { x: 0.084, y: 0.198 },
-    media: { type: "image", src: "/assets/service-photo.png" },
+    media: { type: "image", src: "/assets/services/brand-identity.webp" },
   },
   {
     id: "ui-ux-design",
@@ -48,7 +48,7 @@ export const services: Service[] = [
     title: "UI/UX Design",
     fill: "photo",
     label: { x: 0.339, y: 0.632 },
-    media: { type: "video", src: "/assets/videos/snackbar-video.mp4" },
+    media: { type: "image", src: "/assets/services/ui-ux-design.webp" },
   },
   {
     id: "digital-marketing",
@@ -57,7 +57,7 @@ export const services: Service[] = [
     fill: "photo",
     label: { x: 0.157, y: 0.534 },
     dot: { x: 0.071, y: 0.198 },
-    media: { type: "image", src: "/assets/featured-snackbar.webp" },
+    media: { type: "image", src: "/assets/services/digital-marketing.webp" },
   },
   {
     id: "web-development",
@@ -66,7 +66,7 @@ export const services: Service[] = [
     fill: "grape",
     label: { x: 0.147, y: 0.708 },
     dot: { x: 0.067, y: 0.316 },
-    media: { type: "image", src: "/assets/hero-band.png" },
+    media: { type: "image", src: "/assets/services/web-development.webp" },
   },
   {
     id: "motion-graphic",
@@ -75,7 +75,7 @@ export const services: Service[] = [
     fill: "photo",
     label: { x: 0.216, y: 0.51 },
     dot: { x: 0.06, y: 0.166 },
-    media: { type: "video", src: "/assets/videos/snackbar-video.mp4" },
+    media: { type: "image", src: "/assets/services/motion-graphic.webp" },
   },
   {
     id: "content-writing",
@@ -84,7 +84,7 @@ export const services: Service[] = [
     fill: "sunbeam",
     label: { x: 0.183, y: 0.773 },
     dot: { x: 0.525, y: 0.43 },
-    media: { type: "image", src: "/assets/brand-folder.png" },
+    media: { type: "image", src: "/assets/services/content-writing.webp" },
   },
 ];
 
