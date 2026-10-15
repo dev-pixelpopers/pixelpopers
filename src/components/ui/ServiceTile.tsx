@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useId, useRef, type CSSProperties, type RefObject } from "react";
 
 import type { Service, ServiceFill, ServiceMedia, TilePoint } from "@/lib/site-content";
@@ -173,6 +174,17 @@ export default function ServiceTile({ service, fxTone }: ServiceTileProps) {
         {title}
       </h3>
       {fxTone ? <BurstLayer tone={fxTone} /> : null}
+
+      {/*
+        The whole tile opens the service's page: a transparent link stretched
+        over the tile (the grid cell), above the letter and its burst layer, so
+        the hover reveal and the scroll animations stay exactly as they are.
+      */}
+      <Link
+        href={`/services/${service.id}`}
+        aria-label={`${title} — explore the service`}
+        className="absolute inset-0 z-30 size-full rounded-[6cqw] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-grape"
+      />
     </article>
   );
 }
