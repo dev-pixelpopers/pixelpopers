@@ -160,9 +160,8 @@ export default function ProjectBrowser({ projects, filters = defaultFilters }: {
                 type="button"
                 aria-pressed={active}
                 onClick={() => choose(f.id)}
-                className={`rounded-full border px-[clamp(1rem,1.35vw,1.625rem)] py-[clamp(0.55rem,0.73vw,0.875rem)] font-display text-[clamp(0.8125rem,0.94vw,1.125rem)] leading-tight uppercase transition-colors ${
-                  active ? "border-ink bg-ink text-white" : "border-ink/15 bg-white/60 text-ink hover:border-blush hover:text-blush-deep"
-                }`}
+                className={`rounded-full border px-[clamp(1rem,1.35vw,1.625rem)] py-[clamp(0.55rem,0.73vw,0.875rem)] font-display text-[clamp(0.8125rem,0.94vw,1.125rem)] leading-tight uppercase transition-colors ${active ? "border-ink bg-ink text-white" : "border-ink/15 bg-white/60 text-ink hover:border-blush hover:text-blush-deep"
+                  }`}
               >
                 {f.label}
               </button>
@@ -208,7 +207,7 @@ export default function ProjectBrowser({ projects, filters = defaultFilters }: {
             </div>
           </div>
         ) : (
-          <p className="mt-16 text-center font-copy text-copy font-light text-ink/80">No projects in this category yet — check back soon.</p>
+          <p className="mt-16 text-center font-copy text-copy font-light text-ink/80">Something new is coming up.. Stay Connected</p>
         )}
 
         <p aria-live="polite" className="sr-only">
