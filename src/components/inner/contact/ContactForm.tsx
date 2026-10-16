@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { Burst } from "@/components/inner/motion/bits";
 import { burst, squashPop } from "@/components/inner/motion/kit";
@@ -11,36 +11,247 @@ import { submitForm } from "@/lib/forms";
 
 gsap.registerPlugin(useGSAP);
 
-const serviceTone: Record<string, string> = {
-  Branding: "peer-checked:bg-blush peer-checked:text-white",
-  "UI/UX": "peer-checked:bg-grape peer-checked:text-white",
-  "Web Development": "peer-checked:bg-lagoon peer-checked:text-white",
-  Marketing: "peer-checked:bg-sunbeam peer-checked:text-ink",
-  Motion: "peer-checked:bg-blush peer-checked:text-white",
-  Content: "peer-checked:bg-lagoon peer-checked:text-white",
+/*
+  The project form as a chat with the studio: Pixel Popers asks one thing at a
+  time (after a beat of "typing…"), the visitor answers in their own bubble —
+  typing, or tapping options for services and budget — and each question picks
+  up the earlier answers ("Nice to meet you, Jane!"). Every answer can be
+  edited, the brief is read back before sending, and sending posts it to the
+  CMS inbox exactly as the old form did (with the mail-app fallback when the
+  CMS is unreachable). Copy for the options, button and fine print still comes
+  from the CMS (`contactForm`).
+*/
+
+type Answers = {
+  name: string;
+  services: string[];
+  company: string;
+  website: string;
+  budget: string;
+  details: string;
+  email: string;
 };
 
-const chip =
-  "inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-ink/15 bg-cream/60 px-[clamp(1rem,1.2vw,1.4375rem)] py-[clamp(0.6rem,0.68vw,0.8125rem)] font-copy text-[clamp(0.9375rem,0.94vw,1.125rem)] leading-tight font-medium text-ink transition-colors peer-checked:border-transparent peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-grape hover:border-ink/40";
-const field =
-  "w-full rounded-[18px] border border-ink/12 bg-cream/60 px-6 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] text-ink placeholder:text-ink/45 focus:border-grape focus:outline-2 focus:outline-grape";
-const label = "font-haas text-[0.9375rem] leading-none text-ink/70";
-const step = "font-display text-micro tracking-wide text-blush-deep uppercase";
+type StepKey = keyof Answers;
 
-/**
- * Figma "Project form": service + budget chips and the "about you" fields.
- * Submitting sends the brief to the CMS inbox (via /api/forms/contact) and
- * swaps the form for an inline thank-you — which squash-pops in with a burst
- * of confetti (unless reduced motion is on). If the CMS can't be reached, it
- * falls back to opening the visitor's mail app with everything pre-filled.
- */
+type Step = {
+  key: StepKey;
+  kind: "text" | "email" | "url" | "textarea" | "multi" | "single";
+  ask: (a: Answers, first: string) => ReactNode;
+  placeholder?: string;
+  optional?: boolean;
+  autoComplete?: string;
+};
+
+const NOT_SURE = "Not sure yet";
+
+const first = (name: string) => name.trim().split(/\s+/)[0] || "friend";
+const list = (items: string[]) =>
+  items.length <= 1 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+
+const steps: Step[] = [
+  {
+    key: "name",
+    kind: "text",
+    autoComplete: "name",
+    placeholder: "Type your name…",
+    ask: () => (
+      <>
+        Hey there 👋 We’re Pixel Popers — the crew that makes brands impossible to scroll past. <b>What should we call you?</b>
+      </>
+    ),
+  },
+  {
+    key: "services",
+    kind: "multi",
+    ask: (_a, f) => (
+      <>
+        Nice to meet you, {f}! <b>What can we make pop for you?</b> Pick as many as you like.
+      </>
+    ),
+  },
+  {
+    key: "company",
+    kind: "text",
+    autoComplete: "organization",
+    placeholder: "Your brand or company…",
+    ask: (a) =>
+      a.services.length ? (
+        <>
+          {list(a.services)}? Ooh, we love that. <b>Which brand are we doing this for?</b>
+        </>
+      ) : (
+        <>
+          Not sure yet? No stress — that’s exactly what our first chat is for. <b>Which brand are we talking about?</b>
+        </>
+      ),
+  },
+  {
+    key: "website",
+    kind: "url",
+    optional: true,
+    autoComplete: "url",
+    placeholder: "brand.com",
+    ask: (a) => (
+      <>
+        {a.company} — great name. <b>Got a website we can peek at?</b> Totally fine if not.
+      </>
+    ),
+  },
+  {
+    key: "budget",
+    kind: "single",
+    ask: (a) => (
+      <>
+        <b>What budget are you thinking for {a.company || "this"}?</b> A ballpark is perfect — there’s no wrong answer.
+      </>
+    ),
+  },
+  {
+    key: "details",
+    kind: "textarea",
+    placeholder: "Goals, timeline, links, the dream… anything goes.",
+    ask: () => (
+      <>
+        Now the fun part. <b>Tell us about the project</b> — your goals, the timeline, and anything that gets you excited.
+      </>
+    ),
+  },
+  {
+    key: "email",
+    kind: "email",
+    autoComplete: "email",
+    placeholder: "you@brand.com",
+    ask: (_a, f) => (
+      <>
+        Love it. Last one, {f} — <b>where should we send our reply?</b>
+      </>
+    ),
+  },
+];
+
+const REVIEW = steps.length;
+
+/** What the visitor's bubble shows for an answer. */
+function shown(step: Step, a: Answers): string {
+  switch (step.key) {
+    case "services":
+      return a.services.length ? a.services.join(" · ") : NOT_SURE;
+    case "website":
+      return a.website || "No website yet";
+    case "budget":
+      return a.budget || NOT_SURE;
+    default:
+      return a[step.key] as string;
+  }
+}
+
+const empty: Answers = { name: "", services: [], company: "", website: "", budget: "", details: "", email: "" };
+
+const chipTone = ["bg-blush text-white", "bg-grape text-white", "bg-lagoon text-white", "bg-sunbeam text-ink"];
+const chip =
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-[clamp(0.9rem,1.1vw,1.3rem)] py-[clamp(0.55rem,0.6vw,0.75rem)] font-copy text-[clamp(0.875rem,0.9vw,1.0625rem)] leading-tight font-medium transition-[background-color,color,border-color,translate] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape active:translate-y-px";
+const pop = "motion-safe:animate-[chat-pop_0.38s_cubic-bezier(0.2,0.9,0.3,1.35)_both]";
+
+function Avatar() {
+  return (
+    <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-blush font-pop text-[1.35rem] leading-none text-white shadow-[0_4px_12px_rgb(242_119_147/0.35)]">
+      P
+    </span>
+  );
+}
+
+function Bot({ children, id }: { children: ReactNode; id?: string }) {
+  return (
+    <li className={`flex max-w-[92%] items-end gap-2.5 self-start ${pop}`}>
+      <Avatar />
+      <p id={id} className="rounded-[22px] rounded-bl-md bg-cream px-[clamp(1rem,1.25vw,1.4rem)] py-[clamp(0.7rem,0.85vw,0.95rem)] font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] leading-[1.5] text-ink [&_b]:font-semibold [&_b]:text-grape">
+        <span className="sr-only">Pixel Popers: </span>
+        {children}
+      </p>
+    </li>
+  );
+}
+
+function Typing() {
+  return (
+    <li className={`flex items-end gap-2.5 self-start ${pop}`} aria-label="Pixel Popers is typing">
+      <Avatar />
+      <span className="flex gap-1.5 rounded-[22px] rounded-bl-md bg-cream px-5 py-4">
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="size-2 rounded-full bg-grape/60 motion-safe:animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+        ))}
+      </span>
+    </li>
+  );
+}
+
+function Mine({ children, onEdit }: { children: ReactNode; onEdit?: () => void }) {
+  return (
+    <li className={`flex max-w-[88%] flex-col items-end gap-1 self-end ${pop}`}>
+      <p className="rounded-[22px] rounded-br-md bg-grape px-[clamp(1rem,1.25vw,1.4rem)] py-[clamp(0.7rem,0.85vw,0.95rem)] font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] leading-[1.5] whitespace-pre-line break-words text-white">
+        <span className="sr-only">You: </span>
+        {children}
+      </p>
+      {onEdit ? (
+        <button type="button" onClick={onEdit} className="px-2 font-copy text-[0.8125rem] text-ink/50 underline-offset-2 hover:text-grape hover:underline">
+          Edit
+        </button>
+      ) : null}
+    </li>
+  );
+}
+
 export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactForm = defaultContactForm }: { CONTACT_EMAIL?: string; contactForm?: typeof defaultContactForm } = {}) {
-  const [sent, setSent] = useState<string | null>(null);
-  /** How the brief went out: straight to the inbox, or through the visitor's mail app. */
-  const [via, setVia] = useState<"inbox" | "mail">("inbox");
+  const [answers, setAnswers] = useState<Answers>(empty);
+  const [step, setStep] = useState(0);
+  /** The bot is "typing" the current question. The first one is on screen from the start. */
+  const [typing, setTyping] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [picked, setPicked] = useState<string[]>([]);
+  const [hint, setHint] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const thanksRef = useRef<HTMLDivElement>(null);
+  const [sent, setSent] = useState<"inbox" | "mail" | null>(null);
+  /** Whether to jump straight back to the review after an edit. */
+  const [returnToReview, setReturnToReview] = useState(false);
+
+  const uid = useId();
+  const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
+  const endRef = useRef<HTMLLIElement>(null);
+  const honeypot = useRef<HTMLInputElement>(null);
+  const started = useRef(false);
+  const thanksRef = useRef<HTMLLIElement>(null);
+
+  const f = first(answers.name);
+  const current = step < REVIEW ? steps[step] : null;
+
+  // The reply box starts from any earlier answer to that question (after an edit).
+  const prefill = (index: number, a: Answers) => {
+    const value = index < REVIEW ? a[steps[index].key] : "";
+    setPicked(Array.isArray(value) ? value : []);
+    setDraft(Array.isArray(value) ? "" : value);
+  };
+
+  // A beat of "typing…" before each new question (none under reduced motion).
+  const go = (next: number, a: Answers = answers) => {
+    started.current = true;
+    setHint(null);
+    setError(null);
+    prefill(next, a);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setStep(next);
+    if (reduce) return;
+    setTyping(true);
+    window.setTimeout(() => setTyping(false), next === REVIEW ? 900 : 650);
+  };
+
+  useEffect(() => {
+    if (!started.current || typing) return;
+    endRef.current?.scrollIntoView({ block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    inputRef.current?.focus({ preventScroll: true });
+  }, [step, typing, sent]);
 
   useGSAP(
     () => {
@@ -48,203 +259,323 @@ export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, con
       if (!sent || !panel) return;
       const media = gsap.matchMedia();
       media.add("(prefers-reduced-motion: no-preference)", () => {
-        const title = panel.querySelector("[data-thanks='title']");
-        gsap.set(title, { scale: 0, autoAlpha: 0, transformOrigin: "0% 80%" });
         const tl = gsap.timeline();
-        tl.fromTo(panel, { y: 30, scale: 0.94, autoAlpha: 0 }, { y: 0, scale: 1, autoAlpha: 1, duration: 0.5, ease: "back.out(1.8)" }, 0).to(title, squashPop(0.7), 0.2);
-        burst(tl, panel.querySelector("[data-wm='burst']"), 0.35, 160);
+        tl.to(panel.querySelector("[data-thanks='title']"), squashPop(0.7), 0.1);
+        burst(tl, panel.querySelector("[data-wm='burst']"), 0.2, 160);
       });
     },
-    { dependencies: [sent], scope: thanksRef },
+    { dependencies: [sent] },
   );
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const name = String(data.get("name") ?? "").trim();
-    const services = data.getAll("services").map(String);
-    const firstName = name.split(" ")[0] || "friend";
+  function answer(value: string | string[]) {
+    if (!current) return;
+    const next = { ...answers, [current.key]: value } as Answers;
+    setAnswers(next);
+    if (returnToReview) {
+      setReturnToReview(false);
+      go(REVIEW, next);
+    } else go(step + 1, next);
+  }
 
+  function sendText() {
+    if (!current) return;
+    const value = draft.trim();
+    if (!value && !current.optional) {
+      setHint(current.key === "details" ? "Even a sentence or two helps us prepare." : "Just need a quick answer here 🙂");
+      return;
+    }
+    if (current.kind === "email" && !emailOk(value)) {
+      setHint("Hmm, that email doesn’t look quite right — mind checking it?");
+      return;
+    }
+    answer(value);
+  }
+
+  function onKey(e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const textarea = current?.kind === "textarea";
+    if (e.key === "Enter" && (!textarea || e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      sendText();
+    }
+  }
+
+  function edit(index: number) {
+    started.current = true;
+    setReturnToReview(step === REVIEW);
+    setHint(null);
+    setError(null);
+    prefill(index, answers);
+    setStep(index);
+  }
+
+  async function send() {
     setSending(true);
     setError(null);
     const result = await submitForm("contact", {
-      name,
-      email: data.get("email"),
-      company: data.get("company"),
-      website: data.get("website") || null,
-      services,
-      budget: data.get("budget"),
-      details: data.get("details"),
-      _gotcha: data.get("_gotcha"),
+      name: answers.name,
+      email: answers.email,
+      company: answers.company,
+      website: answers.website || null,
+      services: answers.services,
+      budget: answers.budget || NOT_SURE,
+      details: answers.details,
+      _gotcha: honeypot.current?.value ?? "",
     });
     setSending(false);
 
     if (result.ok) {
-      setVia("inbox");
-      setSent(firstName);
+      setSent("inbox");
       return;
     }
     if (!result.offline) {
-      // Validation: show the first problem the CMS reported.
       setError(Object.values(result.errors ?? {})[0]?.[0] ?? result.message);
       return;
     }
 
     // The CMS is unreachable: hand the brief to the visitor's mail app instead.
     const lines = [
-      `Name: ${name}`,
-      `Email: ${data.get("email")}`,
-      `Company / brand: ${data.get("company")}`,
-      `Website: ${data.get("website") || "—"}`,
-      `Services: ${services.length ? services.join(", ") : "Not sure yet"}`,
-      `Budget: ${data.get("budget") ?? "Not sure yet"}`,
+      `Name: ${answers.name}`,
+      `Email: ${answers.email}`,
+      `Company / brand: ${answers.company}`,
+      `Website: ${answers.website || "—"}`,
+      `Services: ${answers.services.length ? answers.services.join(", ") : NOT_SURE}`,
+      `Budget: ${answers.budget || NOT_SURE}`,
       "",
-      String(data.get("details") ?? ""),
+      answers.details,
     ];
-    const subject = `New project enquiry from ${name || "the website"}`;
+    const subject = `New project enquiry from ${answers.name || "the website"}`;
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
-    setVia("mail");
-    setSent(firstName);
+    setSent("mail");
   }
+
+  function restart() {
+    setAnswers(empty);
+    setSent(null);
+    setReturnToReview(false);
+    go(0, empty);
+  }
+
+  const questionId = `${uid}-q`;
+  const field =
+    "min-w-0 flex-1 rounded-[18px] border border-ink/12 bg-cream/60 px-5 font-copy text-[clamp(1rem,0.99vw,1.1875rem)] text-ink placeholder:text-ink/45 focus:border-grape focus:outline-2 focus:outline-grape";
+  const sendButton =
+    "inline-flex shrink-0 items-center justify-center gap-2 rounded-[18px] bg-blush px-5 font-display text-nav text-white uppercase transition-colors hover:bg-grape disabled:opacity-60";
 
   return (
     <div className="rounded-[clamp(1.75rem,2.08vw,2.5rem)] bg-white p-[clamp(1.25rem,2.9vw,3.5rem)] shadow-[0_24px_60px_rgb(34_1_40/0.15)]">
-      <h2 id="form-title" className="font-display text-[clamp(1.75rem,2.08vw,2.5rem)] leading-tight text-grape uppercase">
-        {contactForm.title}
-      </h2>
-
-      {sent ? (
-        <div ref={thanksRef} role="status" className="relative mt-8 flex flex-col items-start gap-5 rounded-3xl bg-cream/60 p-[clamp(1.5rem,2.5vw,3rem)]">
-          <p data-thanks="title" className="font-display text-[clamp(1.5rem,2.08vw,2.5rem)] leading-tight text-blush-ink uppercase">Thanks, {sent}!</p>
-          <Burst pieces={18} ring="border-blush" className="top-[clamp(2.5rem,3.5vw,4rem)] left-[clamp(4rem,8vw,9rem)] size-0" />
-          <p className="max-w-[40rem] font-copy text-body leading-[1.64] font-light text-ink">
-            {via === "inbox"
-              ? "Your brief is in our inbox. One of the founders will reply within one working day — keep an eye on your email. Anything to add? Write to us at "
-              : "Your mail app should have opened with your brief ready to go — just hit send there. If nothing popped up, email us directly at "}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-grape underline">
-              {CONTACT_EMAIL}
-            </a>{" "}
-            and one of the founders will reply within one working day.
-          </p>
-          <button
-            type="button"
-            onClick={() => setSent(null)}
-            className="font-display text-micro text-grape uppercase underline-offset-4 hover:underline"
-          >
-            ← Edit my message
-          </button>
+      {/* Chat header */}
+      <div className="flex items-center gap-3 border-b border-ink/10 pb-[clamp(1rem,1.25vw,1.5rem)]">
+        <span aria-hidden className="relative grid size-12 shrink-0 place-items-center rounded-full bg-blush font-pop text-[1.75rem] leading-none text-white">
+          P
+          <span className="absolute right-0 bottom-0 size-3.5 rounded-full border-2 border-white bg-[#3ccf7a]" />
+        </span>
+        <div className="min-w-0">
+          <h2 id="form-title" className="font-display text-[clamp(1.5rem,1.88vw,2.25rem)] leading-tight text-grape uppercase">
+            {contactForm.title}
+          </h2>
+          <p className="font-copy text-[0.875rem] text-ink/55">Pixel Popers · online — a real human reads every message</p>
         </div>
-      ) : (
-        <form onSubmit={onSubmit} className="mt-[clamp(1.5rem,1.5vw,1.8rem)] flex flex-col gap-[clamp(2rem,2.6vw,3.125rem)]">
-          <fieldset>
-            <legend className={step}>01&nbsp;&nbsp;What do you need?</legend>
-            <div className="mt-4 flex flex-wrap gap-x-2.5 gap-y-[clamp(0.625rem,1.04vw,1.25rem)]">
-              {contactForm.services.map((s) => (
-                <label key={s} className="relative">
-                  <input
-                    type="checkbox"
-                    name="services"
-                    value={s}
-                    defaultChecked={contactForm.defaults.services.includes(s)}
-                    className="peer sr-only"
-                  />
-                  <span className={`${chip} ${serviceTone[s]}`}>
-                    <span aria-hidden className="hidden [input:checked+span>&]:inline">
-                      ✓
-                    </span>
-                    {s}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+      </div>
 
-          <fieldset>
-            <legend className={step}>02&nbsp;&nbsp;Budget</legend>
-            <div className="mt-4 flex flex-wrap gap-2.5">
-              {contactForm.budgets.map((b) => (
-                <label key={b} className="relative">
-                  <input
-                    type="radio"
-                    name="budget"
-                    value={b}
-                    defaultChecked={contactForm.defaults.budget === b}
-                    className="peer sr-only"
-                  />
-                  <span className={`${chip} peer-checked:bg-sunbeam peer-checked:text-ink`}>
-                    <span aria-hidden className="hidden [input:checked+span>&]:inline">
-                      ✓
-                    </span>
-                    {b}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+      <ol role="log" aria-live="polite" aria-label="Chat with Pixel Popers" className="mt-[clamp(1.25rem,1.5vw,1.75rem)] flex flex-col gap-3.5">
+        {/* Answered questions */}
+        {steps.slice(0, Math.min(step, REVIEW)).map((s, i) => (
+          <QuestionAndAnswer key={s.key} ask={s.ask(answers, f)} answer={shown(s, answers)} onEdit={sent || sending ? undefined : () => edit(i)} />
+        ))}
 
-          <fieldset>
-            <legend className={step}>03&nbsp;&nbsp;About you</legend>
-            <div className="mt-5 grid gap-x-5 gap-y-[1.875rem] sm:grid-cols-2">
-              <label className="flex flex-col gap-3">
-                <span className={label}>
-                  Your name <span aria-hidden className="text-blush-ink">*</span>
-                </span>
-                <input name="name" required autoComplete="name" placeholder="Jane Doe" className={`${field} h-[clamp(3.5rem,3.75vw,4.5rem)]`} />
-              </label>
-              <label className="flex flex-col gap-3">
-                <span className={label}>
-                  Email <span aria-hidden className="text-blush-ink">*</span>
-                </span>
-                <input name="email" type="email" required autoComplete="email" placeholder="jane@brand.com" className={`${field} h-[clamp(3.5rem,3.75vw,4.5rem)]`} />
-              </label>
-              <label className="flex flex-col gap-3">
-                <span className={label}>
-                  Company / brand <span aria-hidden className="text-blush-ink">*</span>
-                </span>
-                <input name="company" required autoComplete="organization" placeholder="Brand name" className={`${field} h-[clamp(3.5rem,3.75vw,4.5rem)]`} />
-              </label>
-              <label className="flex flex-col gap-3">
-                <span className={label}>Website (optional)</span>
-                <input name="website" type="text" inputMode="url" autoComplete="url" placeholder="brand.com" className={`${field} h-[clamp(3.5rem,3.75vw,4.5rem)]`} />
-              </label>
-              <label className="flex flex-col gap-3 sm:col-span-2">
-                <span className={label}>
-                  Project details <span aria-hidden className="text-blush-ink">*</span>
-                </span>
-                <textarea
-                  name="details"
-                  required
-                  rows={6}
-                  placeholder="A few lines about your goals, timeline and anything that makes you excited…"
-                  className={`${field} h-[clamp(10rem,10.4vw,12.5rem)] resize-y py-5`}
-                />
-              </label>
-            </div>
-          </fieldset>
+        {/* The current question */}
+        {!sent && typing ? <Typing /> : null}
+        {!sent && !typing && current ? <Bot id={questionId}>{current.ask(answers, f)}</Bot> : null}
+        {!sent && !typing && step === REVIEW ? (
+          <>
+            <Bot id={questionId}>
+              Here’s your brief, {f} — <b>all good?</b> Hit send and it lands straight in the founders’ inbox.
+            </Bot>
+            <li className={`self-stretch ${pop}`}>
+              <dl className="grid gap-x-6 gap-y-2.5 rounded-[22px] border border-ink/10 bg-cream/40 p-[clamp(1rem,1.4vw,1.5rem)] font-copy text-[0.9375rem] sm:grid-cols-[auto_1fr]">
+                {steps.map((s, i) => (
+                  <div key={s.key} className="contents">
+                    <dt className="font-haas text-ink/55">{{ name: "Name", services: "Services", company: "Brand", website: "Website", budget: "Budget", details: "Project", email: "Email" }[s.key]}</dt>
+                    <dd className="flex min-w-0 items-start justify-between gap-3 text-ink max-sm:mb-1.5">
+                      <span className="line-clamp-3 break-words whitespace-pre-line">{shown(s, answers)}</span>
+                      <button type="button" onClick={() => edit(i)} className="shrink-0 text-[0.8125rem] text-grape underline-offset-2 hover:underline">
+                        Edit
+                      </button>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </li>
+          </>
+        ) : null}
 
-          {/* Honeypot: hidden from people, filled in by bots (the CMS ignores those). */}
-          <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
-          <div className="flex flex-col items-start gap-5">
+        {error ? (
+          <Bot>
+            Hmm, something didn’t go through: {error} Mind checking that and sending again?
+          </Bot>
+        ) : null}
+
+        {sent ? (
+          <>
+            <Mine>Send it! 🚀</Mine>
+            <li ref={thanksRef} role="status" className={`relative flex max-w-[92%] items-end gap-2.5 self-start ${pop}`}>
+              <Avatar />
+              <div className="rounded-[22px] rounded-bl-md bg-cream px-[clamp(1rem,1.25vw,1.4rem)] py-[clamp(0.8rem,1vw,1.1rem)] font-copy text-[clamp(0.9375rem,0.99vw,1.1875rem)] leading-[1.55] text-ink">
+                <p data-thanks="title" className="inline-block font-display text-[clamp(1.25rem,1.56vw,1.875rem)] leading-tight text-blush-ink uppercase">
+                  Got it, {f}! 🎉
+                </p>
+                <p className="mt-2">
+                  {sent === "inbox" ? (
+                    <>
+                      Your brief is with the founders. Expect a reply within one working day at <b className="font-semibold text-grape">{answers.email}</b> — we’re already a little excited.
+                    </>
+                  ) : (
+                    <>
+                      Your mail app should have opened with everything filled in — just hit send there. If nothing popped up, write to us at{" "}
+                      <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-grape underline">
+                        {CONTACT_EMAIL}
+                      </a>
+                      .
+                    </>
+                  )}
+                </p>
+              </div>
+              <Burst pieces={18} ring="border-blush" className="top-6 left-24 size-0" />
+            </li>
+          </>
+        ) : null}
+        <li ref={endRef} aria-hidden className="h-px" />
+      </ol>
+
+      {/* Honeypot: hidden from people, filled in by bots (the CMS ignores those). */}
+      <input ref={honeypot} type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+
+      {/* Reply area */}
+      <div className="mt-[clamp(1.25rem,1.5vw,1.75rem)] border-t border-ink/10 pt-[clamp(1rem,1.25vw,1.5rem)]">
+        {sent ? (
+          <button type="button" onClick={restart} className="font-display text-micro text-grape uppercase underline-offset-4 hover:underline">
+            ↺ Start a new conversation
+          </button>
+        ) : typing ? (
+          <p className="font-copy text-[0.9375rem] text-ink/45">Pixel Popers is typing…</p>
+        ) : step === REVIEW ? (
+          <div className="flex flex-col items-start gap-4">
             <button
-              type="submit"
+              type="button"
+              onClick={send}
               disabled={sending}
               aria-busy={sending}
-              className="group inline-flex disabled:opacity-60 h-[clamp(3.25rem,3.54vw,4.25rem)] items-center bg-blush px-[clamp(1.25rem,1.25vw,1.5rem)] font-display text-nav text-white uppercase transition-colors hover:bg-grape"
+              className="group inline-flex h-[clamp(3.25rem,3.54vw,4.25rem)] items-center bg-blush px-[clamp(1.25rem,1.25vw,1.5rem)] font-display text-nav text-white uppercase transition-colors hover:bg-grape disabled:opacity-60"
             >
-              {contactForm.submit}
+              {sending ? "Sending…" : contactForm.submit}
               <span aria-hidden className="ml-3 transition-transform group-hover:translate-x-1">
                 →
               </span>
             </button>
-            {error ? (
-              <p role="alert" className="font-copy text-[0.9375rem] text-blush-deep">
-                {error}
-              </p>
-            ) : null}
             <p className="font-copy text-[0.9375rem] text-ink/55">{contactForm.fine}</p>
           </div>
-        </form>
-      )}
+        ) : current?.kind === "multi" ? (
+          <fieldset aria-labelledby={questionId}>
+            <div className="flex flex-wrap gap-2.5">
+              {contactForm.services.map((s, i) => {
+                const on = picked.includes(s);
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => setPicked(on ? picked.filter((p) => p !== s) : [...picked, s])}
+                    className={`${chip} ${on ? `border-transparent ${chipTone[i % chipTone.length]}` : "border-ink/15 bg-cream/60 text-ink hover:border-ink/40"}`}
+                  >
+                    {on ? <span aria-hidden>✓</span> : null}
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+            <button type="button" onClick={() => answer(picked)} className={`${sendButton} mt-4 h-12`}>
+              {picked.length ? "That’s the lot" : NOT_SURE} <span aria-hidden>→</span>
+            </button>
+          </fieldset>
+        ) : current?.kind === "single" ? (
+          <fieldset aria-labelledby={questionId}>
+            <div className="flex flex-wrap gap-2.5">
+              {[...contactForm.budgets, NOT_SURE].map((b) => (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => answer(b === NOT_SURE ? "" : b)}
+                  className={`${chip} border-ink/15 bg-cream/60 text-ink hover:border-transparent hover:bg-sunbeam`}
+                >
+                  {b}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+        ) : current ? (
+          <div>
+            <div className="flex items-end gap-2.5">
+              {current.kind === "textarea" ? (
+                <textarea
+                  ref={inputRef}
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={onKey}
+                  aria-labelledby={questionId}
+                  aria-invalid={hint ? true : undefined}
+                  rows={4}
+                  maxLength={10000}
+                  placeholder={current.placeholder}
+                  className={`${field} min-h-32 resize-y py-4`}
+                />
+              ) : (
+                <input
+                  ref={inputRef}
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={onKey}
+                  aria-labelledby={questionId}
+                  aria-invalid={hint ? true : undefined}
+                  type={current.kind === "email" ? "email" : "text"}
+                  inputMode={current.kind === "url" ? "url" : current.kind === "email" ? "email" : undefined}
+                  autoComplete={current.autoComplete}
+                  maxLength={255}
+                  placeholder={current.placeholder}
+                  className={`${field} h-14`}
+                />
+              )}
+              <button type="button" onClick={sendText} aria-label="Send reply" className={`${sendButton} size-14 px-0`}>
+                <svg viewBox="0 0 24 24" aria-hidden className="size-6 fill-none stroke-current" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h13M13 6l6 6-6 6" />
+                </svg>
+              </button>
+            </div>
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 font-copy text-[0.8125rem]">
+              {hint ? (
+                <p role="alert" className="text-blush-deep">
+                  {hint}
+                </p>
+              ) : (
+                <p className="text-ink/45">{current.kind === "textarea" ? "Ctrl + Enter to send" : "Press Enter to send"}</p>
+              )}
+              {current.optional ? (
+                <button type="button" onClick={() => answer("")} className="text-grape underline-offset-2 hover:underline">
+                  No website yet →
+                </button>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+      </div>
     </div>
+  );
+}
+
+function QuestionAndAnswer({ ask, answer, onEdit }: { ask: ReactNode; answer: string; onEdit?: () => void }) {
+  return (
+    <>
+      <Bot>{ask}</Bot>
+      <Mine onEdit={onEdit}>{answer}</Mine>
+    </>
   );
 }
