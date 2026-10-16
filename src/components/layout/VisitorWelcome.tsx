@@ -438,7 +438,10 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
     };
   }, [phase, grid]);
 
+  const left = useRef(false);
   const leave = () => {
+    if (left.current) return;
+    left.current = true;
     setPhase("leaving");
     markGreeted(pathname); // they've just been greeted — no toast on this page too
     if (reduceMotion()) finishIntro();
@@ -460,7 +463,8 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
         burst(tl, helloRef.current?.querySelector("[data-wm='burst']") ?? null, 0, 150);
       }, 450);
     }
-    window.setTimeout(leave, reduceMotion() ? 1400 : 2300);
+    // Five seconds with the thumbs-up (and its sound) before the pixels sweep away.
+    window.setTimeout(leave, reduceMotion() ? 1400 : 5000);
   };
 
   const skip = () => {
