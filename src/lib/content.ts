@@ -400,11 +400,16 @@ export async function postToCms(path: string, payload: unknown, clientIp?: strin
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        ...(clientIp ? { "X-Forwarded-For": clientIp } : {}),
+        // The CMS only trusts the visitor's address when it comes with the
+        // shared secret — otherwise every visitor would share one spam limit.
+        ...(clientIp ? { "X-Visitor-Ip": clientIp } : {}),
+        ...(process.env.REVALIDATE_SECRET ? { "X-Site-Key": process.env.REVALIDATE_SECRET } : {}),
       },
       body: JSON.stringify(payload),
       cache: "no-store",
-      signal: AbortSignal.timeout(TIMEOUT_MS * 2),
+      // A visitor waits on this, but giving up early is worse: the CMS may
+      // still save it while the page says it failed (and offers email instead).
+      signal: AbortSignal.timeout(25000),
     });
     return { status: res.status, body: (await res.json().catch(() => ({}))) as { message?: string; errors?: Record<string, string[]> } };
   } catch {

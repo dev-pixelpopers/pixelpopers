@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\ContactSubmission;
 use App\Models\NewsletterSubscriber;
 use App\Models\Post;
+use App\Support\Visitor;
 use App\Models\Setting;
 use App\Support\Mailer;
 use Illuminate\Http\JsonResponse;
@@ -44,7 +45,7 @@ class FormController extends Controller
         ]);
 
         $submission = ContactSubmission::create($data + [
-            'ip_address' => $request->ip(),
+            'ip_address' => Visitor::ip($request),
             'user_agent' => Str::limit((string) $request->userAgent(), 250, ''),
         ]);
 
@@ -84,7 +85,7 @@ class FormController extends Controller
         // Signing up again re-subscribes, and never reveals whether an address was already on the list.
         NewsletterSubscriber::updateOrCreate(
             ['email' => Str::lower($data['email'])],
-            ['source' => $data['source'] ?? 'footer', 'unsubscribed_at' => null, 'ip_address' => $request->ip()],
+            ['source' => $data['source'] ?? 'footer', 'unsubscribed_at' => null, 'ip_address' => Visitor::ip($request)],
         );
 
         return response()->json(['message' => $message], 201);
@@ -110,7 +111,7 @@ class FormController extends Controller
             'body' => $data['text'],
             'tone' => collect(['blush', 'lagoon', 'sunbeam', 'grape'])->random(),
             'is_approved' => false,
-            'ip_address' => $request->ip(),
+            'ip_address' => Visitor::ip($request),
         ]);
 
         if (Setting::get('notify_on_comment', true)) {

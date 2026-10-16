@@ -28,5 +28,8 @@ export async function POST(request: NextRequest, ctx: RouteContext<"/api/forms/[
     return NextResponse.json({ message: "We couldn’t send that right now — please email us instead." }, { status: 503 });
   }
 
+  if (result.status === 429) {
+    return NextResponse.json({ message: "You’ve sent a few of these in a row — give it a minute and try again." }, { status: 429 });
+  }
   return NextResponse.json(result.body, { status: result.status });
 }
