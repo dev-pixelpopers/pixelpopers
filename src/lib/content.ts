@@ -155,6 +155,12 @@ export type SiteSettings = Awaited<ReturnType<typeof getSite>>;
 
 export const getServiceDetails = cache(() => collection<ServiceDetail[]>("/services?full=1", staticServiceDetails));
 
+/** Name + page of every published service, in the CMS's order (the footer's Services menu). */
+export const getServiceLinks = cache(async (): Promise<{ label: string; href: string }[]> => {
+  const list = await collection<{ slug: string; name: string }[]>("/services", staticServiceDetails);
+  return list.map((s) => ({ label: s.name, href: `/services/${s.slug}` }));
+});
+
 export const getServiceDetail = cache(async (slug: string): Promise<ServiceDetail | null> => {
   const res = await fromCms<ServiceDetail>(`/services/${slug}`);
   if (res.ok) return res.data;

@@ -9,30 +9,27 @@ import { submitForm } from "@/lib/forms";
 
 type FooterLink = { label: string; href: string; pill?: string };
 
-/** Footer destinations — the inner pages and each service page. */
-const navGroups: { title: string; links: FooterLink[] }[] = [
-  {
-    title: "Navigation",
-    links: [
+/** Footer destinations: the inner pages, then each service page (passed in from the CMS). */
+const navigation: { title: string; links: FooterLink[] } = {
+  title: "Navigation",
+  links: [
       { label: "Work", href: "/work" },
       { label: "Services", href: "/services" },
       { label: "About", href: "/about" },
       { label: "Studio", href: "/about#studio" },
       { label: "Careers", href: "/about#careers", pill: "We’re hiring" },
       { label: "Blog", href: "/blog" },
-    ],
-  },
-  {
-    title: "Services",
-    links: [
-      { label: "Web Development", href: "/services/web-development" },
-      { label: "Mobile App", href: "/services/ui-ux-design" },
-      { label: "Branding", href: "/services/brand-identity" },
-      { label: "Social Media Marketing", href: "/services/digital-marketing" },
-      { label: "Search Engine Optimization", href: "/services/content-writing" },
-      { label: "Performance Optimization", href: "/services/web-development" },
-    ],
-  },
+  ],
+};
+
+/** Used only when no list is passed in: the six built-in service pages. */
+const defaultServiceLinks: FooterLink[] = [
+  { label: "Brand Identity", href: "/services/brand-identity" },
+  { label: "UI/UX Design", href: "/services/ui-ux-design" },
+  { label: "Digital Marketing", href: "/services/digital-marketing" },
+  { label: "Web Development", href: "/services/web-development" },
+  { label: "Motion Graphic", href: "/services/motion-graphic" },
+  { label: "Content Writing", href: "/services/content-writing" },
 ];
 
 const socials: { label: string; href: string; icon: ReactNode }[] = [
@@ -205,12 +202,16 @@ type SiteFooterProps = {
   tagline?: string;
   /** The availability pill — `null` hides it. */
   availability?: string | null;
+  /** The Services menu: one link per published service page. */
+  services?: FooterLink[];
 };
 
 export default function SiteFooter({
   tagline = "A funky creative studio making brands impossible to scroll past — from strategy to the last pixel.",
   availability = "Available for new projects",
+  services = defaultServiceLinks,
 }: SiteFooterProps) {
+  const navGroups = [navigation, { title: "Services", links: services }];
   const scrollToTop = () => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
@@ -255,7 +256,7 @@ export default function SiteFooter({
             <FooterGroup key={group.title} title={group.title}>
               <ul className="flex flex-col gap-3 pb-5 lg:pb-0">
                 {group.links.map((link) => (
-                  <li key={link.label} className="flex flex-wrap items-center gap-2">
+                  <li key={link.href} className="flex flex-wrap items-center gap-2">
                     <Link href={link.href} className={`text-cream/80 hover:text-cream ${underline}`}>
                       {link.label}
                     </Link>

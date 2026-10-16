@@ -11,7 +11,7 @@ import ServicesSection from "@/components/sections/ServicesSection";
 // import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import StudioSection from "@/components/sections/StudioSection";
 import ProjectSlider from "@/components/slider/ProjectSlider";
-import { getClients, getHome, getPosts, getServiceTiles, getShowreel, getSite, getTeam, getCategories } from "@/lib/content";
+import { getClients, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories } from "@/lib/content";
 import { homeAgency, homeBlog, homeContact, homeHero, homeLeadership, homeStudio } from "@/lib/home-content";
 import { SITE_URL } from "@/lib/site";
 
@@ -91,7 +91,7 @@ export default async function Home() {
         <LeadershipSection content={sections.leadership ?? homeLeadership} owners={team.owners} />
         {blog ? <BlogSection content={blog} posts={featured} tones={categoryTone} /> : null}
       </main>
-      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} />
+      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={await getServiceLinks()} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(site, team.owners)) }}
