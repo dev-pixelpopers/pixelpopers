@@ -286,6 +286,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               className={`w-full ${lgAt} lg:ml-[10.53%] lg:w-[86.32%]`}
             />
             <PostPhone
+              social={service.social}
               className={`-mt-16 w-[62%] max-w-[20rem] self-start rotate-[5deg] sm:ml-[8%] ${lgAt} lg:mt-[40.29%] lg:ml-[0.16%] lg:w-[33.68%] lg:max-w-none`}
             />
             <div className="flex flex-wrap justify-center gap-3 lg:contents">
@@ -417,7 +418,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           data-reveal
           className="order-2 mx-auto w-[78%] max-w-[22rem] lg:order-none lg:-mt-[1.04vw] lg:-ml-[1.67vw] lg:w-full lg:max-w-none"
         >
-          <ProfilePhone className="rotate-[4deg]" />
+          <ProfilePhone social={service.social} className="rotate-[4deg]" />
         </div>
         <div>
           <SectionTitle

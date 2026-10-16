@@ -53,6 +53,20 @@ export type ServiceDetail = {
   hidden?: string[];
   /** Images uploaded in the CMS, keyed by the built-in file each replaces. */
   images?: Record<string, string>;
+  /** Digital marketing: the social account shown on the phone mock-ups (any field may be left out). */
+  social?: SocialAccount;
+};
+
+export type SocialAccount = {
+  handle?: string;
+  bio?: string;
+  posts?: string;
+  followers?: string;
+  following?: string;
+  followLabel?: string;
+  likes?: string;
+  caption?: string;
+  ctaLabel?: string;
 };
 
 export const serviceDetails: ServiceDetail[] = [

@@ -168,6 +168,28 @@ class ServiceResource extends Resource
                             ]),
                         ]),
                 ]),
+                SchemaComponents\Tabs\Tab::make('Social account')->icon('heroicon-o-at-symbol')
+                    ->visible(fn (?Service $record) => $record?->slug === 'digital-marketing')
+                    ->schema([
+                        SchemaComponents\Text::make('The account shown on the phone mock-ups (the sponsored post in the hero and the profile in “Social media”). Leave a field empty to keep the design’s text. The profile picture and grid photos are in the Images tab.'),
+                        SchemaComponents\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('social.handle')->label('Account name')->placeholder('fifthsip.cafe'),
+                            Forms\Components\TextInput::make('social.followLabel')->label('Profile button')->placeholder('Follow'),
+                            Forms\Components\Textarea::make('social.bio')->label('Bio')->rows(3)->placeholder('Coffee that tastes like Saturday ☕️')->columnSpanFull(),
+                        ]),
+                        SchemaComponents\Grid::make(3)->schema([
+                            Forms\Components\TextInput::make('social.posts')->label('Posts')->placeholder('248'),
+                            Forms\Components\TextInput::make('social.followers')->label('Followers')->placeholder('32.1K'),
+                            Forms\Components\TextInput::make('social.following')->label('Following')->placeholder('180'),
+                        ]),
+                        SchemaComponents\Section::make('Sponsored post (hero)')->schema([
+                            SchemaComponents\Grid::make(2)->schema([
+                                Forms\Components\TextInput::make('social.likes')->label('Likes line')->placeholder('12,480 likes'),
+                                Forms\Components\TextInput::make('social.ctaLabel')->label('Post button')->placeholder('Shop now'),
+                                Forms\Components\TextInput::make('social.caption')->label('Caption (after the account name)')->placeholder('the 5th sip hits different ☕️ #newdrop')->columnSpanFull(),
+                            ]),
+                        ]),
+                    ]),
                 SchemaComponents\Tabs\Tab::make('Images')->icon('heroicon-o-photo')->schema(fn (?Service $record) => self::imageSlots($record)),
                 SchemaComponents\Tabs\Tab::make('SEO')->icon('heroicon-o-magnifying-glass')->schema([
                     Fields::seo('meta_title', 'meta_description'),

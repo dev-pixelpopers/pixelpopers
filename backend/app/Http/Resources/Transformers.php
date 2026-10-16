@@ -78,6 +78,8 @@ class Transformers
             'hidden' => $s->hiddenSections(),
             // Uploaded replacements for the design's images, keyed by slot (Service::IMAGE_SLOTS).
             'images' => (object) $s->imageOverrides(),
+            // Digital marketing: the social account on the phone mock-ups.
+            'social' => $s->social ? (object) $s->social : null,
             'updatedAt' => $s->updated_at?->toIso8601String(),
         ];
     }

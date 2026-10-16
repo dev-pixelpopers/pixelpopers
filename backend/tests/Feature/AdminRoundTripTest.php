@@ -118,6 +118,19 @@ class AdminRoundTripTest extends TestCase
         );
     }
 
+    public function test_the_digital_marketing_social_account_is_editable(): void
+    {
+        $service = Service::where('slug', 'digital-marketing')->first();
+        Livewire::test(EditService::class, ['record' => $service->getRouteKey()])
+            ->assertSee('Account name')->assertSee('Grid tile 2')
+            ->fillForm(['social.handle' => 'pixel_popers', 'social.followers' => '12K', 'images.avatar' => 'https://cms.test/a.webp'])
+            ->call('save')->assertHasNoFormErrors();
+
+        $api = $this->getJson('/api/v1/services/digital-marketing')->json('data');
+        $this->assertSame(['handle' => 'pixel_popers', 'followers' => '12K'], $api['social']);
+        $this->assertSame(['avatar' => 'https://cms.test/a.webp'], $api['images']);
+    }
+
     public function test_every_case_study_survives_an_unchanged_save(): void
     {
         $fields = ['cover', 'services', 'categories', 'intro', 'brand', 'results', 'quote', 'story', 'gallery', 'delivered', 'phases', 'team'];

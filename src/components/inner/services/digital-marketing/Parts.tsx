@@ -1,4 +1,6 @@
 import Image from "@/components/inner/services/ServiceImage";
+import { Avatar, TextTile } from "./SocialMedia";
+import type { SocialAccount } from "@/lib/service-content";
 
 /*
   UI mock-ups for the growth-dashboard page (Figma 371:21). Every mock-up is
@@ -139,9 +141,30 @@ export function Dashboard({ className = "" }: { className?: string }) {
   );
 }
 
+/* ── The social account on both phones (editable in the CMS) ──────────── */
+
+const defaultAccount: Required<SocialAccount> = {
+  handle: "fifthsip.cafe",
+  bio: "Coffee that tastes like Saturday ☕️",
+  posts: "248",
+  followers: "32.1K",
+  following: "180",
+  followLabel: "Follow",
+  likes: "12,480 likes",
+  caption: "the 5th sip hits different ☕️ #newdrop",
+  ctaLabel: "Shop now",
+};
+
+function account(social?: SocialAccount): Required<SocialAccount> {
+  const out = { ...defaultAccount };
+  for (const [k, v] of Object.entries(social ?? {})) if (typeof v === "string" && v.trim()) out[k as keyof SocialAccount] = v;
+  return out;
+}
+
 /* ── Phone: sponsored social post (320 × 640) ─────────────────────────── */
 
-export function PostPhone({ className = "" }: { className?: string }) {
+export function PostPhone({ className = "", social }: { className?: string; social?: SocialAccount }) {
+  const a = account(social);
   return (
     <div className={`@container ${className}`}>
       <div
@@ -149,12 +172,10 @@ export function PostPhone({ className = "" }: { className?: string }) {
       >
         <div className="flex h-full flex-col overflow-hidden rounded-[11.25cqw] bg-white text-ink">
           <div className="flex items-center gap-[3.13cqw] px-[5.63cqw] pt-[17.5cqw]">
-            <span className="grid size-[12.5cqw] shrink-0 place-items-center rounded-full bg-blush font-pop text-[9.4cqw] leading-none text-white">
-              P
-            </span>
+            <Avatar className="size-[12.5cqw] shrink-0" letterClass="text-[9.4cqw]" sizes="48px" />
             <span className="font-copy leading-tight">
               <span className="block text-[max(0.625rem,4.69cqw)] font-bold">
-                fifthsip.cafe
+                {a.handle}
               </span>
               <span className="block text-[max(0.5rem,3.75cqw)] text-ink/50">
                 Sponsored
@@ -176,13 +197,13 @@ export function PostPhone({ className = "" }: { className?: string }) {
             <span className="text-[#e0245e]">♥</span>&nbsp;&nbsp;💬&nbsp;&nbsp;↗
           </p>
           <p className="mt-[5cqw] px-[5.63cqw] font-copy text-[max(0.625rem,5cqw)] font-bold">
-            12,480 likes
+            {a.likes}
           </p>
           <p className="mt-[2.8cqw] px-[5.63cqw] font-copy text-[max(0.5625rem,4.38cqw)] leading-[1.43]">
-            <b>fifthsip.cafe</b>&nbsp; the 5th sip hits different ☕️ #newdrop
+            <b>{a.handle}</b>&nbsp; {a.caption}
           </p>
           <span className="mx-[5.63cqw] mt-[4.38cqw] grid h-[13.75cqw] place-items-center rounded-[3.75cqw] bg-grape font-copy text-[max(0.625rem,5cqw)] font-bold text-white">
-            Shop now
+            {a.ctaLabel}
           </span>
         </div>
       </div>
@@ -207,7 +228,8 @@ const tiles: (
   { img: "marketing.webp", w: 1600, h: 1067 },
 ];
 
-export function ProfilePhone({ className = "" }: { className?: string }) {
+export function ProfilePhone({ className = "", social }: { className?: string; social?: SocialAccount }) {
+  const a = account(social);
   return (
     <div className={`@container ${className}`}>
       <div
@@ -215,14 +237,12 @@ export function ProfilePhone({ className = "" }: { className?: string }) {
       >
         <div className="h-full overflow-hidden rounded-[10.9cqw] bg-white text-ink">
           <div className="flex items-start gap-[4.55cqw] px-[5.45cqw] pt-[15.9cqw]">
-            <span className="grid size-[19.5cqw] shrink-0 place-items-center rounded-full bg-blush font-pop text-[15.9cqw] leading-none text-white">
-              P
-            </span>
+            <Avatar className="size-[19.5cqw] shrink-0" letterClass="text-[15.9cqw]" sizes="80px" />
             <dl className="mt-[3.18cqw] grid grow grid-cols-3 font-copy">
               {[
-                ["248", "posts"],
-                ["32.1K", "followers"],
-                ["180", "following"],
+                [a.posts, "posts"],
+                [a.followers, "followers"],
+                [a.following, "following"],
               ].map(([n, l]) => (
                 <div key={l} className="flex flex-col-reverse">
                   <dt className="mt-[0.9cqw] text-[max(0.5rem,2.95cqw)] text-ink/60">
@@ -236,13 +256,13 @@ export function ProfilePhone({ className = "" }: { className?: string }) {
             </dl>
           </div>
           <p className="mt-[3.18cqw] px-[5.45cqw] font-copy text-[max(0.625rem,3.64cqw)] font-bold">
-            fifthsip.cafe
+            {a.handle}
           </p>
-          <p className="mt-[1.6cqw] px-[5.45cqw] font-copy text-[max(0.5625rem,3.18cqw)] text-ink/70">
-            Coffee that tastes like Saturday ☕️
+          <p className="mt-[1.6cqw] px-[5.45cqw] font-copy text-[max(0.5625rem,3.18cqw)] whitespace-pre-line text-ink/70">
+            {a.bio}
           </p>
           <span className="mx-[5.45cqw] mt-[4.77cqw] grid h-[9.09cqw] place-items-center rounded-[2.27cqw] bg-grape font-copy text-[max(0.5625rem,3.41cqw)] font-bold text-white">
-            Follow
+            {a.followLabel}
           </span>
           <div className="mt-[4.55cqw] grid grid-cols-3 gap-[0.45cqw]">
             {tiles.map((t, i) =>
@@ -258,12 +278,7 @@ export function ProfilePhone({ className = "" }: { className?: string }) {
                   className="aspect-square w-full object-cover"
                 />
               ) : (
-                <span
-                  key={i}
-                  className={`grid aspect-square place-items-center text-center font-pop text-[8.64cqw] leading-[1.05] whitespace-pre-line ${t.bg} ${t.tone}`}
-                >
-                  {t.text}
-                </span>
+                <TextTile key={i} tile={t} slot={`grid-text-${tiles.slice(0, i + 1).filter((x) => !("img" in x)).length}`} />
               ),
             )}
           </div>
