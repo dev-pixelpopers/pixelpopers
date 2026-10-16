@@ -27,6 +27,8 @@ type PageKey = "home" | "work" | "caseStudy" | "services" | "service" | "about" 
  * once they've said their name and on every page's greeting card.
  */
 export type GreetingGifs = {
+  /** Play the clips' sound (Site settings → Greetings). */
+  sound: boolean;
   greeting: string | null;
   thumbs: string | null;
   pages: Record<PageKey, string | null>;
@@ -65,17 +67,108 @@ const PAGE_CLIPS: Record<PageKey, string> = {
 const helloOf = (g: GreetingGifs) => g.greeting || HELLO;
 const thumbsOf = (g: GreetingGifs) => g.thumbs || THUMBS;
 
-/**
- * A greeting animation: a short muted, looping clip (MP4/WebM) or a GIF —
- * served as-is (the image optimiser would freeze a GIF). Under reduced motion
- * a clip shows its first frame.
- */
-function Gif({ src, className }: { src: string; className: string }) {
-  if (/\.(mp4|webm)(\?|$)/i.test(src)) {
-    const still = reduceMotion();
-    return <video src={src} autoPlay={!still} loop={!still} muted playsInline preload="auto" aria-hidden className={className} />;
+/** A visitor who muted the clips stays muted (this browser only). */
+const SOUND_PREF = "pp-sound";
+const soundMuted = () => {
+  try {
+    return window.localStorage.getItem(SOUND_PREF) === "off";
+  } catch {
+    return false;
   }
-  return <Image src={src} alt="" width={320} height={320} unoptimized className={className} />;
+};
+const rememberSound = (on: boolean) => {
+  try {
+    window.localStorage.setItem(SOUND_PREF, on ? "on" : "off");
+  } catch {
+    /* ignore */
+  }
+};
+
+/**
+ * A greeting animation: a short clip (MP4/WebM) or a GIF — served as-is (the
+ * image optimiser would freeze a GIF). Under reduced motion a clip shows its
+ * first frame.
+ *
+ * With `sound`, a clip plays its soundtrack once, then keeps looping muted.
+ * Browsers only allow sound after the visitor has interacted with the page;
+ * when it's blocked the clip plays muted with a "Tap for sound" button. A
+ * small speaker button mutes / unmutes, and a mute is remembered.
+ */
+function Gif({ src, className, sound = false, frame = "relative block" }: { src: string; className: string; sound?: boolean; frame?: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [audio, setAudio] = useState<"off" | "playing" | "blocked" | "muted">("off");
+  const isVideo = /\.(mp4|webm)(\?|$)/i.test(src);
+
+  // After the sound's first run, loop on silently.
+  const loopQuietly = () => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = true;
+    v.loop = true;
+    void v.play().catch(() => {});
+  };
+
+  const playWithSound = (v: HTMLVideoElement) => {
+    v.currentTime = 0;
+    v.muted = false;
+    v.loop = false;
+    return v.play();
+  };
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || !isVideo || reduceMotion()) return;
+    if (!sound || soundMuted()) {
+      v.muted = true;
+      v.loop = true;
+      void v.play().catch(() => {});
+      if (sound) window.setTimeout(() => setAudio("muted"), 0);
+      return;
+    }
+    playWithSound(v)
+      .then(() => setAudio("playing"))
+      .catch(() => {
+        // Sound not allowed yet: play muted and offer a tap.
+        loopQuietly();
+        setAudio("blocked");
+      });
+  }, [src, sound, isVideo]);
+
+  if (!isVideo) return <Image src={src} alt="" width={320} height={320} unoptimized className={className} />;
+
+  const turnOn = () => {
+    const v = ref.current;
+    if (!v) return;
+    rememberSound(true);
+    playWithSound(v)
+      .then(() => setAudio("playing"))
+      .catch(() => setAudio("blocked"));
+  };
+  const turnOff = () => {
+    rememberSound(false);
+    loopQuietly();
+    setAudio("muted");
+  };
+
+  const button = "absolute right-1.5 bottom-1.5 z-10 grid place-items-center rounded-full bg-ink/75 text-cream shadow-md backdrop-blur-sm transition-transform hover:scale-110";
+  return (
+    <span className={frame}>
+      <video ref={ref} src={src} muted playsInline preload="auto" aria-hidden onEnded={loopQuietly} className={className} />
+      {audio === "blocked" ? (
+        <button type="button" onClick={turnOn} className={`${button} gap-1 px-2.5 py-1 font-copy text-[0.6875rem] font-semibold whitespace-nowrap`}>
+          🔊 Tap for sound
+        </button>
+      ) : audio === "playing" ? (
+        <button type="button" onClick={turnOff} aria-label="Mute" className={`${button} size-7 text-[0.8125rem]`}>
+          🔊
+        </button>
+      ) : audio === "muted" ? (
+        <button type="button" onClick={turnOn} aria-label="Play with sound" className={`${button} size-7 text-[0.8125rem]`}>
+          🔇
+        </button>
+      ) : null}
+    </span>
+  );
 }
 
 /* ── First-visit intro ────────────────────────────────────────────────── */
@@ -353,7 +446,7 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
               const src = said ? thumbsOf(gifs) : helloOf(gifs);
               return (
                 <div key={src} aria-hidden className={`mt-8 self-center ${pop}`}>
-                  <Gif src={src} className="size-[clamp(8rem,13vw,10.5rem)] rounded-[28px] bg-white object-cover shadow-[0_18px_40px_rgb(0_0_0/0.35)]" />
+                  <Gif src={src} sound={gifs.sound} className="size-[clamp(8rem,13vw,10.5rem)] rounded-[28px] bg-white object-cover shadow-[0_18px_40px_rgb(0_0_0/0.35)]" />
                 </div>
               );
             })()}
@@ -537,7 +630,7 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
           }`}
         >
           {gif ? (
-            <Gif src={gif} className="size-full rounded-2xl bg-white object-cover" />
+            <Gif src={gif} sound={gifs.sound} frame="relative block size-full" className="size-full rounded-2xl bg-white object-cover" />
           ) : (
             <span className="inline-block origin-[70%_80%] motion-safe:animate-[pp-wave_1.6s_ease-in-out_0.8s_2]">{g.emoji}</span>
           )}

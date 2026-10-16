@@ -46,7 +46,7 @@ class SiteSettings extends Page implements HasForms
         'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_encryption',
         'mail_from_address', 'mail_from_name', 'mail_to_address', 'notify_on_contact', 'notify_on_comment',
         'frontend_revalidate_url', 'frontend_revalidate_secret',
-        'greeting_gif', 'thumbs_gif', 'greeting_gif_home', 'greeting_gif_work', 'greeting_gif_case_study', 'greeting_gif_services', 'greeting_gif_service', 'greeting_gif_about', 'greeting_gif_blog', 'greeting_gif_post', 'greeting_gif_contact',
+        'greeting_sound', 'greeting_gif', 'thumbs_gif', 'greeting_gif_home', 'greeting_gif_work', 'greeting_gif_case_study', 'greeting_gif_services', 'greeting_gif_service', 'greeting_gif_about', 'greeting_gif_blog', 'greeting_gif_post', 'greeting_gif_contact',
     ];
 
     /** @var array<string, mixed> */
@@ -57,6 +57,8 @@ class SiteSettings extends Page implements HasForms
         $values = collect(self::KEYS)->mapWithKeys(fn ($key) => [$key => Setting::get($key)])->all();
         // The saved password is never sent back to the browser; leaving the field empty keeps it.
         $values['smtp_password'] = null;
+        // Clip sound is on unless it has been switched off.
+        $values['greeting_sound'] = Setting::get('greeting_sound', true);
         $this->form->fill($values);
     }
 
@@ -129,6 +131,8 @@ class SiteSettings extends Page implements HasForms
                         SchemaComponents\Section::make('Welcome intro & greeting cards')
                             ->description('A GIF or a short MP4 for the first-visit welcome and the “Hey Sara!” card on every page. Square, or a centred subject (it’s cropped to a square), under ~2 MB. Empty slots use the built-in waving and thumbs-up clips.')
                             ->schema([
+                                Forms\Components\Toggle::make('greeting_sound')->label('Play the clips’ sound')
+                                    ->helperText('Each clip plays its sound once, then loops silently. Browsers only allow sound after the visitor has clicked something — until then the clip plays muted with a “Tap for sound” button. Visitors can always mute it.'),
                                 SchemaComponents\Grid::make(2)->schema([
                                     Fields::media('greeting_gif', 'Greeting (hello)', 'animation')->helperText('Waves hello in the welcome intro while it asks the visitor’s name.'),
                                     Fields::media('thumbs_gif', 'Thumbs-up', 'animation')->helperText('After the visitor tells us their name in the welcome intro.'),

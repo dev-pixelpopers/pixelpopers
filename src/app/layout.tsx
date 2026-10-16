@@ -99,6 +99,7 @@ const INTRO_COVER_SCRIPT = `try{if(!localStorage.getItem("pp-visitor")&&!navigat
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const site = await getSite();
   const gifs = {
+    sound: site.greeting_sound,
     greeting: site.greeting_gif,
     thumbs: site.thumbs_gif,
     pages: {

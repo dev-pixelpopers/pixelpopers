@@ -143,6 +143,8 @@ export const getSite = cache(async () => {
     social_linkedin: "https://linkedin.com/" as string | null,
     social_dribbble: "https://dribbble.com/" as string | null,
     // Visitor greetings: GIFs uploaded in Site settings → Greetings (emoji badges until then).
+    /** Greeting clips play their sound (Site settings → Greetings); on unless switched off. */
+    greeting_sound: true as boolean,
     greeting_gif: null as string | null,
     thumbs_gif: null as string | null,
     greeting_gif_home: null as string | null,
@@ -160,6 +162,10 @@ export const getSite = cache(async () => {
   // Empty settings keep the built-in value, except the availability badge, which can be cleared to hide it.
   const merged = { ...fallback };
   for (const [key, value] of Object.entries(res.data)) {
+    if (key === "greeting_sound") {
+      if (value !== null && value !== undefined) merged.greeting_sound = value !== false && String(value) !== "0";
+      continue;
+    }
     if (key in merged && (value || key === "availability_label")) (merged as Record<string, unknown>)[key] = value || null;
   }
   return merged;
