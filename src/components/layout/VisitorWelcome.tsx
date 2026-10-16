@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import { Burst } from "@/components/inner/motion/bits";
 import { burst } from "@/components/inner/motion/kit";
 import BrandLogo from "@/components/ui/BrandLogo";
-import { finishIntro, firstName, introPending, liftIntroCover, markGreeted, reopenIntro, saveVisitorName, shouldGreet, useIntroOpen, useVisitorName } from "@/lib/visitor";
+import { finishIntro, firstName, introPending, liftIntroCover, markGreeted, reopenIntro, saveVisitorName, shouldGreet, useIntroOpen, useVisitor, useVisitorName } from "@/lib/visitor";
 
 /*
   The welcome: on a first visit, a full-screen intro warms up ("warming up
@@ -46,8 +46,22 @@ export default function VisitorWelcome({ gifs }: { gifs: GreetingGifs }) {
   );
 }
 
-const HELLO = "/assets/badge-video/person-wave-hello.mp4";
-const THUMBS = "/assets/badge-video/person-thumb-up.mp4";
+const CLIPS = "/assets/badge-video";
+const HELLO = `${CLIPS}/person-wave-hello.mp4`;
+const THUMBS = `${CLIPS}/person-thumb-up.mp4`;
+
+/** Each page's built-in greeting-card clip (an upload for that page in the CMS replaces it). */
+const PAGE_CLIPS: Record<PageKey, string> = {
+  home: `${CLIPS}/home-welcome.mp4`,
+  work: `${CLIPS}/work-pointing.mp4`,
+  caseStudy: `${CLIPS}/case-study-clapping.mp4`,
+  services: `${CLIPS}/services-lightbulb.mp4`,
+  service: `${CLIPS}/service-ok.mp4`,
+  about: `${CLIPS}/about-heart-hands.mp4`,
+  blog: `${CLIPS}/blog-glasses.mp4`,
+  post: `${CLIPS}/post-coffee.mp4`,
+  contact: `${CLIPS}/contact-call-me.mp4`,
+};
 const helloOf = (g: GreetingGifs) => g.greeting || HELLO;
 const thumbsOf = (g: GreetingGifs) => g.thumbs || THUMBS;
 
@@ -461,7 +475,11 @@ function greetingFor(path: string): Greet {
 const GREETING_MS = 7000;
 
 function Greeting({ gifs }: { gifs: GreetingGifs }) {
-  const name = useVisitorName();
+  // Visitors who skipped the intro are greeted too — as "Stranger".
+  const known = useVisitorName();
+  const record = useVisitor();
+  const stranger = !known && record?.name === "";
+  const name = known || (stranger ? "Stranger" : "");
   const introOpen = useIntroOpen();
   const pathname = usePathname();
   const [toast, setToast] = useState<{ path: string; leaving: boolean } | null>(null);
@@ -498,8 +516,8 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
 
   if (!toast || toast.path !== pathname || !name) return null;
   const g = greetingFor(pathname);
-  // Every page's card gives a thumbs-up (unless that page has its own animation).
-  const gif = gifs.pages[g.key] || thumbsOf(gifs);
+  // The page's own clip: uploaded in the CMS, else the built-in one for that page.
+  const gif = gifs.pages[g.key] || PAGE_CLIPS[g.key] || thumbsOf(gifs);
 
   return (
     <div
@@ -529,7 +547,7 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
           <p className="font-display text-[clamp(1.0625rem,1.3vw,1.375rem)] leading-tight uppercase">{g.title(name)}</p>
           <p className="mt-1.5 font-copy text-[0.9375rem] leading-snug text-cream/75">{g.line}</p>
           <button type="button" onClick={reopenIntro} className="mt-2.5 font-copy text-[0.8125rem] text-cream/50 underline-offset-2 hover:text-cream hover:underline">
-            Not {name}?
+            {stranger ? "Tell us your name →" : `Not ${name}?`}
           </button>
         </div>
       </div>

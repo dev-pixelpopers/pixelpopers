@@ -131,23 +131,22 @@ class SiteSettings extends Page implements HasForms
                             ->schema([
                                 SchemaComponents\Grid::make(2)->schema([
                                     Fields::media('greeting_gif', 'Greeting (hello)', 'animation')->helperText('Waves hello in the welcome intro while it asks the visitor’s name.'),
-                                    Fields::media('thumbs_gif', 'Thumbs-up', 'animation')->helperText('After they tell us their name, and on every page’s greeting card.'),
+                                    Fields::media('thumbs_gif', 'Thumbs-up', 'animation')->helperText('After the visitor tells us their name in the welcome intro.'),
                                 ]),
                             ]),
-                        SchemaComponents\Section::make('Per-page greeting cards (optional)')
-                            ->description('Only if a page’s greeting card should have its own animation — empty ones use the thumbs-up.')
-                            ->collapsed()
+                        SchemaComponents\Section::make('Per-page greeting cards')
+                            ->description('Every page’s greeting card already plays its own built-in clip. Upload a GIF or MP4 here only to replace one — leave it empty to keep the built-in clip.')
                             ->schema([
                                 SchemaComponents\Grid::make(2)->schema([
-                                    Fields::media('greeting_gif_home', 'Home', 'animation')->helperText('Idea: arms open wide — “welcome back!”, or an excited little jump.'),
-                                    Fields::media('greeting_gif_work', 'Work', 'animation')->helperText('Idea: a chef’s kiss, or proudly pointing at a screen — “look what we made”.'),
-                                    Fields::media('greeting_gif_case_study', 'A case study', 'animation')->helperText('Idea: clapping / applause, or a “mind blown” gesture.'),
-                                    Fields::media('greeting_gif_services', 'Services', 'animation')->helperText('Idea: hand on chin thinking, then a lightbulb moment — or a magic-wand flick.'),
-                                    Fields::media('greeting_gif_service', 'A service page', 'animation')->helperText('Idea: finger guns or an “OK” sign — “good choice!”.'),
-                                    Fields::media('greeting_gif_about', 'About', 'animation')->helperText('Idea: heart hands, or a high-five to the camera.'),
-                                    Fields::media('greeting_gif_blog', 'Blog', 'animation')->helperText('Idea: pushing up glasses and flipping through a notebook.'),
-                                    Fields::media('greeting_gif_post', 'A blog post', 'animation')->helperText('Idea: sipping a coffee and nodding along.'),
-                                    Fields::media('greeting_gif_contact', 'Contact', 'animation')->helperText('Idea: the “call me” hand by the ear, or a beckoning “come here” wave.'),
+                                    Fields::media('greeting_gif_home', 'Home', 'animation')->helperText('Built-in clip: arms open wide, “welcome back!”. Upload to replace it.'),
+                                    Fields::media('greeting_gif_work', 'Work', 'animation')->helperText('Built-in clip: pointing at the work. Upload to replace it.'),
+                                    Fields::media('greeting_gif_case_study', 'A case study', 'animation')->helperText('Built-in clip: clapping. Upload to replace it.'),
+                                    Fields::media('greeting_gif_services', 'Services', 'animation')->helperText('Built-in clip: thinking, then a lightbulb moment. Upload to replace it.'),
+                                    Fields::media('greeting_gif_service', 'A service page', 'animation')->helperText('Built-in clip: an OK sign and finger guns. Upload to replace it.'),
+                                    Fields::media('greeting_gif_about', 'About', 'animation')->helperText('Built-in clip: heart hands. Upload to replace it.'),
+                                    Fields::media('greeting_gif_blog', 'Blog', 'animation')->helperText('Built-in clip: flipping through a notebook. Upload to replace it.'),
+                                    Fields::media('greeting_gif_post', 'A blog post', 'animation')->helperText('Built-in clip: sipping a coffee. Upload to replace it.'),
+                                    Fields::media('greeting_gif_contact', 'Contact', 'animation')->helperText('Built-in clip: the “call me” hand. Upload to replace it.'),
                                 ]),
                             ]),
                     ]),
