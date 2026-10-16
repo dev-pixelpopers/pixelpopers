@@ -17,9 +17,9 @@ export const aboutHero = {
     "A full-service crew of strategists, designers and developers obsessing over the details that make people stop scrolling — and keep coming back.",
   cta: { label: "Meet the team", href: "#team" },
   images: [
-    { src: "/assets/inner/about/studio-laptop.webp", w: 600, h: 640, alt: "A Pixel Popers designer reviewing a client website on a laptop in the studio" },
-    { src: "/assets/inner/about/team-cube.webp", w: 440, h: 760, alt: "A playful 3D cube of team portraits on a grape background" },
-    { src: "/assets/inner/about/social-buzz.webp", w: 600, h: 640, alt: "Hands typing on a laptop as social media reactions burst from the screen" },
+    { src: "/assets/inner/about/adan.png", w: 600, h: 640, alt: "A Pixel Popers designer reviewing a client website on a laptop in the studio" },
+    { src: "/assets/inner/about/james.png", w: 440, h: 760, alt: "A playful 3D cube of team portraits on a grape background" },
+    { src: "/assets/inner/about/barry.png", w: 600, h: 640, alt: "Hands typing on a laptop as social media reactions burst from the screen" },
   ],
   stickers: ["Est. kitchen table", "Never boring ✦"],
 };
