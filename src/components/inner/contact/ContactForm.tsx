@@ -210,7 +210,20 @@ function Mine({ children, onEdit }: { children: ReactNode; onEdit?: () => void }
   );
 }
 
-export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactForm = defaultContactForm }: { CONTACT_EMAIL?: string; contactForm?: typeof defaultContactForm } = {}) {
+export default function ContactForm({
+  CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL,
+  contactForm = defaultContactForm,
+  variant = "page",
+  titleId = "form-title",
+}: {
+  CONTACT_EMAIL?: string;
+  contactForm?: typeof defaultContactForm;
+  /** "widget": inside the pop-up chat (no card of its own, a smaller header). */
+  variant?: "page" | "widget";
+  /** The title's id (the pop-up chat can be on the same page as the contact form). */
+  titleId?: string;
+} = {}) {
+  const widget = variant === "widget";
   const [rawAnswers, setAnswers] = useState<Answers>(empty);
   const [rawStep, setStep] = useState(0);
   /** They edited the name the welcome intro gave us (so ask it like anyone else). */
@@ -381,7 +394,7 @@ export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, con
     "inline-flex shrink-0 items-center justify-center gap-2 rounded-[18px] bg-blush px-5 font-display text-nav text-white uppercase transition-colors hover:bg-grape disabled:opacity-60";
 
   return (
-    <div className="rounded-[clamp(1.75rem,2.08vw,2.5rem)] bg-white p-[clamp(1.25rem,2.9vw,3.5rem)] shadow-[0_24px_60px_rgb(34_1_40/0.15)]">
+    <div className={widget ? "px-5 pt-1 pb-5" : "rounded-[clamp(1.75rem,2.08vw,2.5rem)] bg-white p-[clamp(1.25rem,2.9vw,3.5rem)] shadow-[0_24px_60px_rgb(34_1_40/0.15)]"}>
       {/* Chat header */}
       <div className="flex items-center gap-3 border-b border-ink/10 pb-[clamp(1rem,1.25vw,1.5rem)]">
         <span aria-hidden className="relative grid size-12 shrink-0 place-items-center rounded-full bg-blush font-pop text-[1.75rem] leading-none text-white">
@@ -389,7 +402,7 @@ export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, con
           <span className="absolute right-0 bottom-0 size-3.5 rounded-full border-2 border-white bg-[#3ccf7a]" />
         </span>
         <div className="min-w-0">
-          <h2 id="form-title" className="font-display text-[clamp(1.5rem,1.88vw,2.25rem)] leading-tight text-grape uppercase">
+          <h2 id={titleId} className={`font-display leading-tight text-grape uppercase ${widget ? "text-[1.375rem]" : "text-[clamp(1.5rem,1.88vw,2.25rem)]"}`}>
             {contactForm.title}
           </h2>
           <p className="font-copy text-[0.875rem] text-ink/55">Pixel Popers · online — a real human reads every message</p>

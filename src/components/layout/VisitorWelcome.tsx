@@ -1,6 +1,7 @@
 "use client";
 
 import gsap from "gsap";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
@@ -9,6 +10,7 @@ import { createPortal } from "react-dom";
 import { Burst } from "@/components/inner/motion/bits";
 import { burst } from "@/components/inner/motion/kit";
 import BrandLogo from "@/components/ui/BrandLogo";
+import type { contactForm as defaultContactForm } from "@/lib/pages/contact";
 import { finishIntro, firstName, introPending, liftIntroCover, markGreeted, reopenIntro, saveVisitorName, shouldGreet, useIntroOpen, useVisitor, useVisitorName } from "@/lib/visitor";
 
 /*
@@ -34,16 +36,108 @@ export type GreetingGifs = {
   pages: Record<PageKey, string | null>;
 };
 
-export default function VisitorWelcome({ gifs }: { gifs: GreetingGifs }) {
+/** What the pop-up chat needs: the contact form's copy (from the CMS) and the studio email. */
+export type ChatCopy = { email: string; form?: typeof defaultContactForm };
+
+export default function VisitorWelcome({ gifs, chat }: { gifs: GreetingGifs; chat: ChatCopy }) {
   const open = useIntroOpen();
+  // The pop-up chat: opened from a greeting card or any "#contact" link; once
+  // opened it stays mounted (the conversation survives closing it) behind a
+  // launcher bubble.
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatUsed, setChatUsed] = useState(false);
   // No intro after all (e.g. storage blocked): lift the first-paint cover.
   useEffect(() => {
     if (!introPending()) liftIntroCover();
   }, [open]);
+
+  // Every "#contact" link or button (the home header's "Lets Talk", "Start a
+  // Project", anything added in the CMS) opens the chat instead of scrolling.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const link = (e.target as Element | null)?.closest?.("a[href]");
+      const href = link?.getAttribute("href") ?? "";
+      if (href !== "#contact" && !href.endsWith("/#contact")) return;
+      e.preventDefault();
+      setChatUsed(true);
+      setChatOpen(true);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
+  const openChat = () => {
+    setChatUsed(true);
+    setChatOpen(true);
+  };
   return (
     <>
       {open ? <Intro gifs={gifs} /> : null}
-      <Greeting gifs={gifs} />
+      <Greeting gifs={gifs} onChat={openChat} paused={chatOpen} raised={chatUsed && !chatOpen} />
+      {chatUsed ? <ChatWidget open={chatOpen} onOpen={() => setChatOpen(true)} onClose={() => setChatOpen(false)} chat={chat} /> : null}
+    </>
+  );
+}
+
+/* ── Pop-up chat ──────────────────────────────────────────────────────── */
+
+// Loaded on first open only, so no page pays for the chat up front.
+const ContactForm = dynamic(() => import("@/components/inner/contact/ContactForm"), {
+  loading: () => <p className="p-6 font-copy text-[0.9375rem] text-ink/55">Pixel Popers is joining the chat…</p>,
+});
+
+function ChatWidget({ open, onOpen, onClose, chat }: { open: boolean; onOpen: () => void; onClose: () => void; chat: ChatCopy }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    panelRef.current?.focus({ preventScroll: true });
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        window.setTimeout(() => launcherRef.current?.focus(), 0);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  return (
+    <>
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-labelledby="chat-widget-title"
+        tabIndex={-1}
+        className={`fixed z-[160] flex-col overflow-hidden rounded-[28px] bg-white text-ink shadow-[0_30px_80px_rgb(34_1_40/0.4)] ring-1 ring-ink/10 outline-none max-sm:inset-x-2 max-sm:top-[5vh] max-sm:bottom-2 sm:right-[clamp(0.75rem,2vw,2rem)] sm:bottom-[clamp(0.75rem,2vw,2rem)] sm:h-[min(84vh,46rem)] sm:w-[27rem] ${
+          open ? `flex ${pop}` : "hidden"
+        }`}
+      >
+        <div className="flex shrink-0 items-center justify-between gap-3 bg-ink px-5 py-3 text-cream">
+          <span className="font-display text-micro tracking-wide uppercase">Chat with Pixel Popers</span>
+          <button type="button" onClick={onClose} aria-label="Close chat" className="grid size-8 place-items-center rounded-full text-xl text-cream/70 transition-colors hover:bg-cream/10 hover:text-cream">
+            ×
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <ContactForm variant="widget" titleId="chat-widget-title" CONTACT_EMAIL={chat.email} contactForm={chat.form} />
+        </div>
+      </div>
+
+      {open ? null : (
+        <button
+          ref={launcherRef}
+          type="button"
+          onClick={onOpen}
+          aria-label="Open the chat with Pixel Popers"
+          className={`fixed right-[clamp(0.75rem,2vw,2rem)] bottom-[clamp(0.75rem,2vw,2rem)] z-[160] grid size-16 place-items-center rounded-full bg-blush font-pop text-[2rem] leading-none text-white shadow-[0_16px_40px_rgb(242_119_147/0.45)] transition-transform hover:scale-105 ${pop}`}
+        >
+          P
+          <span aria-hidden className="absolute top-1 right-1 size-3.5 rounded-full border-2 border-white bg-[#3ccf7a]" />
+        </button>
+      )}
     </>
   );
 }
@@ -142,7 +236,10 @@ function Gif({ src, className, sound = false, frame = "relative block" }: { src:
     rememberSound(true);
     playWithSound(v)
       .then(() => setAudio("playing"))
-      .catch(() => setAudio("blocked"));
+      .catch(() => {
+        loopQuietly();
+        setAudio("blocked");
+      });
   };
   const turnOff = () => {
     rememberSound(false);
@@ -567,7 +664,7 @@ function greetingFor(path: string): Greet {
 /** How long a greeting stays (the countdown bar; hovering pauses it). */
 const GREETING_MS = 7000;
 
-function Greeting({ gifs }: { gifs: GreetingGifs }) {
+function Greeting({ gifs, onChat, paused, raised }: { gifs: GreetingGifs; onChat: () => void; paused: boolean; raised: boolean }) {
   // Visitors who skipped the intro are greeted too — as "Stranger".
   const known = useVisitorName();
   const record = useVisitor();
@@ -579,7 +676,7 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!name || introOpen) return;
+    if (!name || introOpen || paused) return;
     const t = window.setTimeout(() => {
       if (shouldGreet(pathname)) setToast({ path: pathname, leaving: false });
     }, 1100);
@@ -587,7 +684,7 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
       window.clearTimeout(t);
       setToast(null);
     };
-  }, [name, introOpen, pathname]);
+  }, [name, introOpen, paused, pathname]);
 
   // Bouncy entrance with a confetti burst from the badge.
   useEffect(() => {
@@ -609,6 +706,14 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
 
   if (!toast || toast.path !== pathname || !name) return null;
   const g = greetingFor(pathname);
+
+  // Tapping the card opens the chat (on Contact, it scrolls to the chat already on the page).
+  const chat = () => {
+    if (pathname === "/contact") {
+      document.getElementById("form-title")?.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "center" });
+    } else onChat();
+    setToast(null);
+  };
   // The page's own clip: uploaded in the CMS, else the built-in one for that page.
   const gif = gifs.pages[g.key] || PAGE_CLIPS[g.key] || thumbsOf(gifs);
 
@@ -616,7 +721,12 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
     <div
       ref={cardRef}
       role="status"
-      className={`group fixed right-[clamp(0.75rem,2vw,2rem)] bottom-[clamp(0.75rem,2vw,2rem)] left-[clamp(0.75rem,2vw,2rem)] z-[150] overflow-hidden rounded-[28px] bg-ink text-cream shadow-[0_28px_70px_rgb(34_1_40/0.45)] ring-1 ring-cream/10 transition-[opacity,translate] duration-300 sm:left-auto sm:w-[27rem] ${
+      onClick={(e) => {
+        if (!(e.target as Element).closest("button")) chat();
+      }}
+      className={`group fixed right-[clamp(0.75rem,2vw,2rem)] left-[clamp(0.75rem,2vw,2rem)] z-[150] cursor-pointer overflow-hidden rounded-[28px] bg-ink text-cream shadow-[0_28px_70px_rgb(34_1_40/0.45)] ring-1 ring-cream/10 transition-[opacity,translate] duration-300 sm:left-auto sm:w-[27rem] ${
+        raised ? "bottom-[calc(clamp(0.75rem,2vw,2rem)+5rem)]" : "bottom-[clamp(0.75rem,2vw,2rem)]"
+      } ${
         toast.leaving ? "translate-y-6 opacity-0" : ""
       }`}
     >
@@ -639,9 +749,14 @@ function Greeting({ gifs }: { gifs: GreetingGifs }) {
         <div className="min-w-0">
           <p className="font-display text-[clamp(1.0625rem,1.3vw,1.375rem)] leading-tight uppercase">{g.title(name)}</p>
           <p className="mt-1.5 font-copy text-[0.9375rem] leading-snug text-cream/75">{g.line}</p>
-          <button type="button" onClick={reopenIntro} className="mt-2.5 font-copy text-[0.8125rem] text-cream/50 underline-offset-2 hover:text-cream hover:underline">
-            {stranger ? "Tell us your name →" : `Not ${name}?`}
-          </button>
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <button type="button" onClick={chat} className="inline-flex items-center gap-1.5 rounded-full bg-blush px-3.5 py-1.5 font-display text-[0.75rem] tracking-wide text-white uppercase transition-colors hover:bg-lagoon">
+              💬 Chat with us <span aria-hidden>→</span>
+            </button>
+            <button type="button" onClick={reopenIntro} className="font-copy text-[0.8125rem] text-cream/50 underline-offset-2 hover:text-cream hover:underline">
+              {stranger ? "Tell us your name →" : `Not ${name}?`}
+            </button>
+          </div>
         </div>
       </div>
       <button type="button" onClick={leave} aria-label="Dismiss" className="absolute top-3 right-3 grid size-8 place-items-center rounded-full text-lg text-cream/60 transition-colors hover:bg-cream/10 hover:text-cream">

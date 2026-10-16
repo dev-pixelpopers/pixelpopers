@@ -5,7 +5,7 @@ import localFont from "next/font/local";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 
 import VisitorWelcome from "@/components/layout/VisitorWelcome";
-import { getSite } from "@/lib/content";
+import { getContactPage, getSite } from "@/lib/content";
 
 import "./globals.css";
 
@@ -97,7 +97,9 @@ export const viewport: Viewport = {
 const INTRO_COVER_SCRIPT = `try{if(!localStorage.getItem("pp-visitor")&&!navigator.webdriver&&!/bot|crawl|spider|slurp|lighthouse|headlesschrome|pagespeed|gtmetrix|preview/i.test(navigator.userAgent))document.documentElement.setAttribute("data-intro","")}catch(e){}`;
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const site = await getSite();
+  const [site, contactPage] = await Promise.all([getSite(), getContactPage()]);
+  // The pop-up chat uses the contact form's CMS copy.
+  const chat = { email: site.company_email, form: contactPage.sections.form ?? undefined };
   const gifs = {
     sound: site.greeting_sound,
     greeting: site.greeting_gif,
@@ -130,7 +132,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="flex min-h-full flex-col bg-cream text-ink">
         {children}
-        <VisitorWelcome gifs={gifs} />
+        <VisitorWelcome gifs={gifs} chat={chat} />
       </body>
     </html>
   );
