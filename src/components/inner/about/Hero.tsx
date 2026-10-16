@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Fragment, useRef } from "react";
+import gsap from "gsap";
 
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import { Burst } from "@/components/inner/motion/bits";
@@ -21,9 +22,16 @@ import { aboutHero as defaultAboutHero } from "@/lib/pages/about";
   and the button pops with a burst; the three photos are dealt in (left and
   right swing in from the sides, the middle rises), and the stickers stamp
   down spinning. On the way out the photos fan apart and both stickers burst.
+  The photo band sits low in the hero (mostly below the fold), so its stamp
+  and its exit are tied to the band's own position, not the hero's: the
+  stickers stamp as the band comes into view, and the photos only fan apart
+  once the band is on its way off the top of the screen.
 */
 
 const layer = "col-start-1 row-start-1";
+
+/** A brand-colour card behind each hero photo (left, middle, right) — shows through transparent images. */
+const photoBg = ["bg-lagoon", "bg-grape", "bg-blush"];
 
 /** Each letter in its own inline-block (words kept whole so lines wrap cleanly). */
 function Chars({ text }: { text: string }) {
@@ -51,11 +59,11 @@ export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typ
   usePopHero(rootRef, {
     entrance: (tl, q) => {
       tl.fromTo(
-          q("[data-whero='cta']"),
-          { scale: 0, rotation: -25, autoAlpha: 0 },
-          { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.55, ease: "back.out(2.4)" },
-          1.7,
-        )
+        q("[data-whero='cta']"),
+        { scale: 0, rotation: -25, autoAlpha: 0 },
+        { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.55, ease: "back.out(2.4)" },
+        1.7,
+      )
         // The photos are on screen from the first paint (one of them can be
         // the LCP); they just settle into place, transform-only.
         .fromTo(
@@ -63,19 +71,30 @@ export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typ
           { y: (i) => (i === 1 ? 40 : 20), rotation: (i) => [-4, 0, 4][i], scale: 0.95 },
           { y: 0, rotation: 0, scale: 1, duration: 0.9, stagger: 0.1, ease: "back.out(1.4)" },
           0.6,
-        )
+        );
+      burst(tl, q("[data-whero='cta-burst'] [data-wm='burst']")[0] ?? null, 1.85, 110);
+
+      // Stickers stamp down when the band scrolls into view (not on load, below the fold).
+      gsap
+        .timeline({ scrollTrigger: { trigger: q("[data-whero='band']")[0], start: "top 80%", toggleActions: "play none none none" } })
         .fromTo(
           q("[data-whero='sticker']"),
           { scale: 0, rotation: (i) => (i ? 200 : -200), autoAlpha: 0 },
-          { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.6, stagger: 0.2, ease: "back.out(2.2)" },
-          1.9,
+          { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.6, stagger: 0.2, ease: "back.out(2.2)", delay: 0.3 },
         );
-      burst(tl, q("[data-whero='cta-burst'] [data-wm='burst']")[0] ?? null, 1.85, 110);
     },
     exit: (out, q) => {
       out
         .to(q("[data-whero='intro-out']"), { y: 60, opacity: 0, duration: 0.5 }, 0.05)
-        .to(q("[data-whero='cta-out']"), { scale: 0, rotation: 30, opacity: 0, duration: 0.35, ease: "back.in(2)" }, 0.1)
+        .to(q("[data-whero='cta-out']"), { scale: 0, rotation: 30, opacity: 0, duration: 0.35, ease: "back.in(2)" }, 0.1);
+
+      // The photos fan apart and the stickers burst only as the band itself leaves:
+      // from when its middle passes the upper third of the screen until it's gone.
+      const bandOut = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: { trigger: q("[data-whero='band']")[0], start: "center 35%", end: "bottom top", scrub: 1, invalidateOnRefresh: true },
+      });
+      bandOut
         .to(
           q("[data-whero='photo-out']"),
           {
@@ -90,9 +109,10 @@ export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typ
       stickers.forEach((sticker, i) => {
         const at = 0.3 + i * 0.12;
         // Swells, then pops.
-        out.to(sticker, { keyframes: [{ scale: 1.25, duration: 0.12 }, { scale: 0, opacity: 0, duration: 0.05 }] }, at - 0.12);
-        burst(out, sticker.parentElement?.querySelector("[data-wm='burst']") ?? null, at + 0.05, 100);
+        bandOut.to(sticker, { keyframes: [{ scale: 1.25, duration: 0.12 }, { scale: 0, opacity: 0, duration: 0.05 }] }, at - 0.12);
+        burst(bandOut, sticker.parentElement?.querySelector("[data-wm='burst']") ?? null, at + 0.05, 100);
       });
+      bandOut.to({}, { duration: 0.01 }, 1);
     },
   });
 
@@ -154,12 +174,13 @@ export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typ
       </div>
 
       <div
+        data-whero="band"
         className="mx-auto mt-[clamp(2.5rem,4.8vw,5.75rem)] grid max-w-[1920px] px-[clamp(1.25rem,6.25vw,7.5rem)]"
       >
         <div className={`${layer} grid grid-cols-[600fr_440fr_600fr] items-center gap-[clamp(0.5rem,1.04vw,1.25rem)]`}>
           {[left, middle, right].map((img, i) => (
             <div key={img.src} data-whero="photo-out">
-              <div data-whero="photo">
+              <div data-whero="photo" className={`overflow-hidden rounded-[clamp(0.875rem,2.08vw,2.5rem)] ${photoBg[i]}`}>
                 <Image
                   src={img.src}
                   alt={img.alt}
@@ -168,7 +189,7 @@ export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typ
                   loading={i === 1 ? "eager" : undefined}
                   fetchPriority={i === 1 ? "high" : undefined}
                   sizes="(min-width: 1920px) 600px, 33vw"
-                  className="h-auto w-full rounded-[clamp(0.875rem,2.08vw,2.5rem)] object-cover"
+                  className="block h-auto w-full object-cover"
                 />
               </div>
             </div>
