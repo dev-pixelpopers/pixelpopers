@@ -112,8 +112,14 @@ export function introPending(): boolean {
 /** The intro has gone: page entrances that were waiting can play. */
 export function finishIntro() {
   introOpen = false;
+  liftIntroCover();
   introListeners.forEach((l) => l());
   window.dispatchEvent(new Event(DONE_EVENT));
+}
+
+/** Removes the first-paint cover (set by the script in the root layout). */
+export function liftIntroCover() {
+  document.documentElement.removeAttribute("data-intro");
 }
 
 /** "Not Sara?": forget the name and ask again. */

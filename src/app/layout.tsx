@@ -94,6 +94,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const INTRO_COVER_SCRIPT = `try{if(!localStorage.getItem("pp-visitor")&&!navigator.webdriver&&!/bot|crawl|spider|slurp|lighthouse|headlesschrome|pagespeed|gtmetrix|preview/i.test(navigator.userAgent))document.documentElement.setAttribute("data-intro","")}catch(e){}`;
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const site = await getSite();
   const gifs = {
@@ -116,7 +118,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${nevera.variable} ${haasGrot.variable} ${archivo.variable} ${michroma.variable} ${modak.variable} h-full antialiased`}
+      // The intro cover script below may add `data-intro` before React loads.
+      suppressHydrationWarning
     >
+      <head>
+        {/* Before the first paint: on a first visit by a person, cover the page
+            in the intro's colour so the hero never flashes up before the welcome
+            intro (see VisitorWelcome / lib/visitor — same checks). */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_COVER_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col bg-cream text-ink">
         {children}
         <VisitorWelcome gifs={gifs} />

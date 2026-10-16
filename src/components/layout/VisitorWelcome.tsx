@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import { Burst } from "@/components/inner/motion/bits";
 import { burst } from "@/components/inner/motion/kit";
 import BrandLogo from "@/components/ui/BrandLogo";
-import { finishIntro, firstName, markGreeted, reopenIntro, saveVisitorName, shouldGreet, useIntroOpen, useVisitorName } from "@/lib/visitor";
+import { finishIntro, firstName, introPending, liftIntroCover, markGreeted, reopenIntro, saveVisitorName, shouldGreet, useIntroOpen, useVisitorName } from "@/lib/visitor";
 
 /*
   The welcome: on a first visit, a full-screen intro warms up ("warming up
@@ -34,8 +34,14 @@ export type GreetingGifs = {
 
 export default function VisitorWelcome({ gifs }: { gifs: GreetingGifs }) {
   const open = useIntroOpen();
+  // No intro after all (e.g. storage blocked): lift the first-paint cover.
+  useEffect(() => {
+    if (!introPending()) liftIntroCover();
+  }, [open]);
   return (
     <>
+      {open ? <Intro gifs={gifs} /> : null}
+      <Greeting gifs={gifs} />
     </>
   );
 }
@@ -65,16 +71,38 @@ type Phase = "loading" | "ask" | "hello" | "leaving";
 const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const pop = "motion-safe:animate-[chat-pop_0.38s_cubic-bezier(0.2,0.9,0.3,1.35)_both]";
 
+/** The intro's pixel mosaic: square tiles filling the screen in brand colours. */
+const TILE_TONES = ["bg-blush", "bg-grape", "bg-lagoon", "bg-sunbeam", "bg-lav", "bg-blush-deep"];
+const LOADING_WORDS = ["Warming up the pixels", "Mixing the colours", "Sharpening the edges", "Adding the pop"];
+
+function useTileGrid() {
+  // Client-only (the intro never renders on the server), so the window is there.
+  const [grid] = useState(() => {
+    const cols = window.innerWidth < 640 ? 7 : window.innerWidth < 1100 ? 11 : 14;
+    const rows = Math.ceil(window.innerHeight / (window.innerWidth / cols));
+    const tones = Array.from({ length: cols * rows }, (_, i) => TILE_TONES[(i * 7 + Math.floor(i / cols) * 3) % TILE_TONES.length]);
+    return { cols, rows, tones };
+  });
+  return grid;
+}
+
 function Intro({ gifs }: { gifs: GreetingGifs }) {
   const [phase, setPhase] = useState<Phase>("loading");
-  const [progress, setProgress] = useState(0);
   const [askTyped, setAskTyped] = useState(false);
   const [name, setName] = useState("");
   const [hint, setHint] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const helloRef = useRef<HTMLLIElement>(null);
+  const tilesRef = useRef<HTMLDivElement>(null);
+  const countRef = useRef<HTMLParagraphElement>(null);
+  const wordRef = useRef<HTMLSpanElement>(null);
+  const barRef = useRef<HTMLSpanElement>(null);
+  const ringRef = useRef<HTMLSpanElement>(null);
+  const confettiRef = useRef<HTMLSpanElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const grid = useTileGrid();
 
   // Lock the page behind and keep focus inside the intro while it's up.
   useEffect(() => {
@@ -89,41 +117,127 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
     };
   }, []);
 
-  // "Warming up the pixels…": a quick count to 100 (none under reduced motion), then the question.
+  /*
+    The show (≈3s): a pixel storm pops in from the centre and settles into a
+    twinkling dot field while a giant counter races to 100 under a ticker of
+    "warming up…" lines; at 100 the number squashes into POP!, a shockwave
+    rings out and every pixel explodes off screen in a burst of confetti —
+    then the chat. Reduced motion skips straight to the question.
+  */
   useEffect(() => {
     if (reduceMotion()) {
       const t = window.setTimeout(() => {
-        setProgress(100);
         setPhase("ask");
         setAskTyped(true);
       }, 0);
       return () => window.clearTimeout(t);
     }
-    const start = performance.now();
-    const duration = 1500;
-    let raf = 0;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      setProgress(Math.round(100 * (1 - Math.pow(1 - t, 3))));
-      if (t < 1) raf = requestAnimationFrame(tick);
-      else
-        window.setTimeout(() => {
-          setPhase("ask");
-          window.setTimeout(() => setAskTyped(true), 750);
-        }, 250);
+    const tiles = tilesRef.current ? [...tilesRef.current.children] : [];
+    const count = countRef.current;
+    const word = wordRef.current;
+    const timers: number[] = [];
+    const counter = { v: 0 };
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        setPhase("ask");
+        timers.push(window.setTimeout(() => setAskTyped(true), 700));
+      },
+    });
+    tl.fromTo(
+      tiles,
+      { scale: 0, rotation: -90, autoAlpha: 0 },
+      { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.55, ease: "back.out(2.2)", stagger: { grid: [grid.rows, grid.cols], from: "center", amount: 0.75 } },
+      0,
+    )
+      // The mosaic settles into a field of small twinkling dots.
+      .to(tiles, { scale: 0.16, autoAlpha: 0.55, duration: 0.55, ease: "power3.inOut", stagger: { grid: [grid.rows, grid.cols], from: "edges", amount: 0.45 } }, 0.95)
+      .fromTo(count, { scale: 0.4, autoAlpha: 0, yPercent: 30 }, { scale: 1, autoAlpha: 1, yPercent: 0, duration: 0.6, ease: "back.out(2)" }, 0.55)
+      .to(
+        counter,
+        {
+          v: 100,
+          duration: 1.75,
+          ease: "power2.inOut",
+          onUpdate: () => {
+            if (count) count.textContent = String(Math.round(counter.v));
+            if (barRef.current) barRef.current.style.transform = `scaleX(${counter.v / 100})`;
+          },
+        },
+        0.6,
+      );
+
+    // The ticker: each line slides up as the last one leaves.
+    LOADING_WORDS.forEach((w, i) => {
+      tl.call(() => {
+        if (word) word.textContent = `${w}…`;
+      }, [], 0.6 + i * 0.45).fromTo(word, { yPercent: 110, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.3, ease: "power3.out" }, 0.6 + i * 0.45);
+    });
+
+    // 100 → POP! A squash, a shockwave and the pixels explode outwards.
+    const at = 2.45;
+    tl.call(() => {
+      if (count) count.textContent = "POP!";
+      if (word) word.textContent = "Here we go!";
+    }, [], at)
+      .to(count, { keyframes: [{ scaleX: 1.35, scaleY: 0.7, duration: 0.1 }, { scaleX: 0.85, scaleY: 1.25, duration: 0.12 }, { scaleX: 1, scaleY: 1, duration: 0.4, ease: "elastic.out(1, 0.45)" }] }, at)
+      .fromTo(ringRef.current, { scale: 0, autoAlpha: 0.9 }, { scale: 9, autoAlpha: 0, duration: 0.8, ease: "power2.out" }, at)
+      .to(
+        tiles,
+        {
+          x: (_i, el: Element) => {
+            const r = el.getBoundingClientRect();
+            return (r.left + r.width / 2 - cx) * gsap.utils.random(1.4, 2.4);
+          },
+          y: (_i, el: Element) => {
+            const r = el.getBoundingClientRect();
+            return (r.top + r.height / 2 - cy) * gsap.utils.random(1.4, 2.4);
+          },
+          rotation: () => gsap.utils.random(-260, 260),
+          scale: () => gsap.utils.random(0.4, 1.1),
+          autoAlpha: 0,
+          duration: 0.95,
+          ease: "power3.out",
+        },
+        at + 0.02,
+      )
+      .to([count, word?.parentElement ?? null, barRef.current?.parentElement ?? null], { autoAlpha: 0, scale: 1.15, duration: 0.35, ease: "power2.in" }, at + 0.65);
+    burst(tl, confettiRef.current, at + 0.02, 260);
+
+    return () => {
+      tl.kill();
+      timers.forEach(window.clearTimeout);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [grid]);
 
   useEffect(() => {
     if (askTyped && phase === "ask") inputRef.current?.focus();
   }, [askTyped, phase]);
 
+  // The exit: the intro breaks into pixels that spin away from the centre.
+  useEffect(() => {
+    if (phase !== "leaving" || reduceMotion() || !coverRef.current) return;
+    // The pixel cover is painted now, so the first-paint cover can go.
+    liftIntroCover();
+    const tl = gsap.timeline({ onComplete: finishIntro });
+    tl.to([...coverRef.current.children], {
+      scale: 0,
+      rotation: 90,
+      duration: 0.45,
+      ease: "power2.in",
+      stagger: { grid: [grid.rows, grid.cols], from: "center", amount: 0.55 },
+    });
+    return () => {
+      tl.kill();
+    };
+  }, [phase, grid]);
+
   const leave = () => {
     setPhase("leaving");
     markGreeted(pathname); // they've just been greeted — no toast on this page too
-    window.setTimeout(finishIntro, reduceMotion() ? 0 : 750);
+    if (reduceMotion()) finishIntro();
   };
 
   const submit = (e: FormEvent) => {
@@ -142,7 +256,7 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
         burst(tl, helloRef.current?.querySelector("[data-wm='burst']") ?? null, 0, 150);
       }, 450);
     }
-    window.setTimeout(leave, reduceMotion() ? 1400 : 2100);
+    window.setTimeout(leave, reduceMotion() ? 1400 : 2300);
   };
 
   const skip = () => {
@@ -151,6 +265,8 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
   };
 
   const first = firstName(name);
+  const leaving = phase === "leaving";
+  const gridStyle = { gridTemplateColumns: `repeat(${grid.cols}, 1fr)`, gridTemplateRows: `repeat(${grid.rows}, 1fr)` };
 
   return createPortal(
     <div
@@ -162,29 +278,58 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
       onKeyDown={(e) => {
         if (e.key === "Escape" && phase === "ask") skip();
       }}
-      className={`fixed inset-0 z-[200] flex flex-col overflow-y-auto bg-ink text-cream transition-[clip-path] duration-700 ease-[cubic-bezier(0.7,0,0.2,1)] ${
-        phase === "leaving" ? "[clip-path:inset(0_0_100%_0)]" : "[clip-path:inset(0_0_0_0)]"
-      }`}
+      className={`fixed inset-0 z-[200] flex flex-col overflow-x-hidden overflow-y-auto text-cream ${leaving ? "pointer-events-none" : "bg-ink"}`}
     >
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_45%_35%_at_15%_10%,rgb(106_75_151/0.55),transparent_70%),radial-gradient(ellipse_40%_35%_at_90%_90%,rgb(242_119_147/0.35),transparent_70%),radial-gradient(ellipse_30%_25%_at_60%_45%,rgb(63_183_199/0.15),transparent_70%)]" />
+      {/* Leaving: a full cover of ink pixels (painted the same frame the backdrop goes), which then spin away. */}
+      {leaving && !reduceMotion() ? (
+        <div ref={coverRef} aria-hidden className="pointer-events-none fixed inset-0 z-10 grid" style={gridStyle}>
+          {grid.tones.map((_, i) => (
+            <span key={i} className="scale-[1.04] bg-ink" />
+          ))}
+        </div>
+      ) : null}
 
-      <div className="relative m-auto flex w-full max-w-[34rem] flex-col px-5 py-10">
-        <div className={`self-center ${phase === "loading" ? "motion-safe:animate-[chat-pop_0.6s_cubic-bezier(0.2,0.9,0.3,1.35)_both]" : ""}`}>
+      {leaving ? null : (
+        <div aria-hidden className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_45%_35%_at_15%_10%,rgb(106_75_151/0.55),transparent_70%),radial-gradient(ellipse_40%_35%_at_90%_90%,rgb(242_119_147/0.35),transparent_70%),radial-gradient(ellipse_30%_25%_at_60%_45%,rgb(63_183_199/0.15),transparent_70%)]" />
+      )}
+
+      {phase === "loading" ? (
+        <>
+          {/* The pixel storm */}
+          <div ref={tilesRef} aria-hidden className="pointer-events-none fixed inset-0 grid" style={gridStyle}>
+            {grid.tones.map((tone, i) => (
+              <span key={i} className={`invisible m-[14%] rounded-[24%] ${tone}`} />
+            ))}
+          </div>
+
+          <div className="relative m-auto flex flex-col items-center px-5 text-center" role="status" aria-live="polite">
+            <span className="sr-only">Loading Pixel Popers</span>
+            <span ref={ringRef} aria-hidden className="pointer-events-none absolute top-1/2 left-1/2 -mt-16 -ml-16 size-32 rounded-full border-[6px] border-sunbeam opacity-0" />
+            <span ref={confettiRef} aria-hidden className="pointer-events-none absolute top-1/2 left-1/2 size-0">
+              <Burst pieces={28} ring="border-blush" className="top-0 left-0 size-0" />
+            </span>
+            <p
+              ref={countRef}
+              aria-hidden
+              className="invisible bg-gradient-to-br from-blush via-sunbeam to-lagoon bg-clip-text font-pop text-[clamp(7rem,22vw,17rem)] leading-[0.9] text-transparent tabular-nums drop-shadow-[0_10px_40px_rgb(242_119_147/0.35)]"
+            >
+              0
+            </p>
+            <p aria-hidden className="mt-4 h-[1.4em] overflow-hidden font-display text-[clamp(0.875rem,1.2vw,1.125rem)] tracking-[0.12em] text-cream/80 uppercase">
+              <span ref={wordRef} className="inline-block" />
+            </p>
+            <span aria-hidden className="mt-5 block h-1.5 w-[min(70vw,22rem)] overflow-hidden rounded-full bg-cream/15">
+              <span ref={barRef} className="block h-full origin-left rounded-full bg-gradient-to-r from-blush via-sunbeam to-lagoon" style={{ transform: "scaleX(0)" }} />
+            </span>
+          </div>
+        </>
+      ) : (
+      <div className={`relative m-auto flex w-full max-w-[34rem] flex-col px-5 py-10 ${leaving ? "invisible" : ""}`}>
+        <div className={`self-center ${pop}`}>
           <BrandLogo onDark priority className="w-[clamp(9rem,14vw,13rem)]" />
         </div>
 
-        {phase === "loading" ? (
-          <div className="mt-10" role="status" aria-live="polite">
-            <p className="flex justify-between font-display text-micro tracking-wide text-cream/70 uppercase">
-              <span>Warming up the pixels…</span>
-              <span className="tabular-nums">{progress}%</span>
-            </p>
-            <span className="mt-3 block h-1.5 overflow-hidden rounded-full bg-cream/15">
-              <span className="block h-full rounded-full bg-gradient-to-r from-blush via-sunbeam to-lagoon" style={{ width: `${progress}%` }} />
-            </span>
-          </div>
-        ) : (
-          <>
+        <>
             <h2 id="pp-intro-title" className="sr-only">
               Welcome to Pixel Popers
             </h2>
@@ -254,9 +399,9 @@ function Intro({ gifs }: { gifs: GreetingGifs }) {
                 </div>
               </form>
             ) : null}
-          </>
-        )}
+        </>
       </div>
+      )}
     </div>,
     document.body,
   );

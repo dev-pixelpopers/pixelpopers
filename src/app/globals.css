@@ -177,3 +177,24 @@ body {
   from { transform: scaleX(1); }
   to { transform: scaleX(0); }
 }
+
+/* First visit: the page stays covered (intro colour) from the first paint
+   until the welcome intro takes over (data-intro is set by a head script).
+   If scripts never load, the cover gives up after a few seconds. */
+html[data-intro] {
+  overflow: hidden;
+}
+html[data-intro]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  background: var(--ink);
+  animation: pp-cover-safety 0.3s 8s forwards;
+}
+@keyframes pp-cover-safety {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
