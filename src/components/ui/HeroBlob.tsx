@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { useRef } from "react";
 
 import { ambient } from "@/lib/ambient";
+import { safeIn } from "@/lib/gsap-safe";
 import { HERO_MOTION } from "@/lib/hero-motion";
 
 gsap.registerPlugin(useGSAP);
@@ -20,7 +21,7 @@ export default function HeroBlob() {
   const rootRef = useRef<SVGSVGElement>(null);
 
   useGSAP(
-    (_context, contextSafe) => {
+    () => {
       const svg = rootRef.current;
       if (!svg) return;
 
@@ -36,7 +37,7 @@ export default function HeroBlob() {
         gsap.set("[data-hero-blob='group']", { autoAlpha: HERO_MOTION.blobOpacity });
       });
 
-      media.add("(prefers-reduced-motion: no-preference)", () => {
+      media.add("(prefers-reduced-motion: no-preference)", (branch) => {
         // The reveal moves the whole SVG — opacity and scale on its own
         // composited layer — so the ribbon (a 100px stroke cut into thousands
         // of 4px dashes) is rasterised once. It used to be traced on through
@@ -56,7 +57,7 @@ export default function HeroBlob() {
         // the reveal it transforms the whole SVG, never the ribbon inside it.
         let stopIdle: (() => void) | undefined;
         tl.call(
-          contextSafe!(() => {
+          safeIn(branch)(() => {
             const float = gsap.to(svg, {
               rotation: HERO_MOTION.blobRotation + 1.5,
               scale: 1.03,

@@ -9,6 +9,7 @@ import HeroFrame from "@/components/hero/HeroFrame";
 import { doodleIdle, letterBounce, POP_LANDED, popEntrance, scrollHandOff } from "@/components/hero/hero-animations";
 import { revealStatic } from "@/components/hero/hero-shared";
 import { ambient } from "@/lib/ambient";
+import { safeIn } from "@/lib/gsap-safe";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -22,9 +23,9 @@ export default function HeroFinal({ children, lines }: { children?: ReactNode; l
   const rootRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
-    (_context, contextSafe) => {
+    () => {
       const root = rootRef.current;
-      if (!root || !contextSafe) return;
+      if (!root) return;
       const q = gsap.utils.selector(root);
       const media = gsap.matchMedia();
 
@@ -38,6 +39,9 @@ export default function HeroFinal({ children, lines }: { children?: ReactNode; l
         (mm) => {
           const { motion, hover } = mm.conditions as { motion: boolean; hover: boolean };
           if (!motion) return;
+
+          // Callbacks that run later belong to this branch (see safeIn).
+          const contextSafe = safeIn(mm) as Parameters<typeof letterBounce>[1];
 
           const entrance = popEntrance(q);
           scrollHandOff(q);
