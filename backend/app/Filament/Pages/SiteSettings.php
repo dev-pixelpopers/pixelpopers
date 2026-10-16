@@ -46,6 +46,7 @@ class SiteSettings extends Page implements HasForms
         'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_encryption',
         'mail_from_address', 'mail_from_name', 'mail_to_address', 'notify_on_contact', 'notify_on_comment',
         'frontend_revalidate_url', 'frontend_revalidate_secret',
+        'greeting_gif', 'thumbs_gif', 'greeting_gif_home', 'greeting_gif_work', 'greeting_gif_case_study', 'greeting_gif_services', 'greeting_gif_service', 'greeting_gif_about', 'greeting_gif_blog', 'greeting_gif_post', 'greeting_gif_contact',
     ];
 
     /** @var array<string, mixed> */
@@ -123,6 +124,32 @@ class SiteSettings extends Page implements HasForms
                                 Forms\Components\TextInput::make('mail_from_address')->label('From address')->email()->columnSpanFull(),
                             ]),
                         ]),
+                    ]),
+                    SchemaComponents\Tabs\Tab::make('Greetings')->icon('heroicon-o-face-smile')->schema([
+                        SchemaComponents\Section::make('Welcome intro & greeting cards')
+                            ->description('A GIF or a short MP4 for the first-visit welcome and the “Hey Sara!” card on every page. Square, or a centred subject (it’s cropped to a square), under ~2 MB. Empty slots use the built-in waving and thumbs-up clips.')
+                            ->schema([
+                                SchemaComponents\Grid::make(2)->schema([
+                                    Fields::media('greeting_gif', 'Greeting (hello)', 'animation')->helperText('Waves hello in the welcome intro while it asks the visitor’s name.'),
+                                    Fields::media('thumbs_gif', 'Thumbs-up', 'animation')->helperText('After they tell us their name, and on every page’s greeting card.'),
+                                ]),
+                            ]),
+                        SchemaComponents\Section::make('Per-page greeting cards (optional)')
+                            ->description('Only if a page’s greeting card should have its own animation — empty ones use the thumbs-up.')
+                            ->collapsed()
+                            ->schema([
+                                SchemaComponents\Grid::make(2)->schema([
+                                    Fields::media('greeting_gif_home', 'Home', 'animation')->helperText('Idea: arms open wide — “welcome back!”, or an excited little jump.'),
+                                    Fields::media('greeting_gif_work', 'Work', 'animation')->helperText('Idea: a chef’s kiss, or proudly pointing at a screen — “look what we made”.'),
+                                    Fields::media('greeting_gif_case_study', 'A case study', 'animation')->helperText('Idea: clapping / applause, or a “mind blown” gesture.'),
+                                    Fields::media('greeting_gif_services', 'Services', 'animation')->helperText('Idea: hand on chin thinking, then a lightbulb moment — or a magic-wand flick.'),
+                                    Fields::media('greeting_gif_service', 'A service page', 'animation')->helperText('Idea: finger guns or an “OK” sign — “good choice!”.'),
+                                    Fields::media('greeting_gif_about', 'About', 'animation')->helperText('Idea: heart hands, or a high-five to the camera.'),
+                                    Fields::media('greeting_gif_blog', 'Blog', 'animation')->helperText('Idea: pushing up glasses and flipping through a notebook.'),
+                                    Fields::media('greeting_gif_post', 'A blog post', 'animation')->helperText('Idea: sipping a coffee and nodding along.'),
+                                    Fields::media('greeting_gif_contact', 'Contact', 'animation')->helperText('Idea: the “call me” hand by the ear, or a beckoning “come here” wave.'),
+                                ]),
+                            ]),
                     ]),
                     SchemaComponents\Tabs\Tab::make('Frontend')->icon('heroicon-o-globe-alt')->schema([
                         SchemaComponents\Section::make('Instant updates')

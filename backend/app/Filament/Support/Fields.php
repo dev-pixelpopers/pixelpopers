@@ -31,9 +31,16 @@ class Fields
      * or a full URL — the Upload button stores a new file on this server and
      * fills in its public URL.
      */
+    /** `$kind`: 'image', 'video', or 'animation' (a GIF or a short MP4/WebM clip). */
     public static function media(string $name, string $label = 'Image', string $kind = 'image'): TextInput
     {
         $isVideo = $kind === 'video';
+        $isAnimation = $kind === 'animation';
+        [$fileLabel, $folder, $types, $maxKb] = match (true) {
+            $isVideo => ['Video (MP4, keep it under ~3 MB)', 'uploads/videos', ['video/mp4', 'video/webm'], 20480],
+            $isAnimation => ['Animation (GIF or a short MP4 — keep it under ~2 MB)', 'uploads/animations', ['image/gif', 'video/mp4', 'video/webm', 'image/webp', 'image/png'], 10240],
+            default => ['Image (WebP, AVIF, PNG, JPG or GIF)', 'uploads/images', ['image/webp', 'image/avif', 'image/png', 'image/jpeg', 'image/svg+xml', 'image/gif'], 8192],
+        };
 
         return TextInput::make($name)
             ->label($label)
@@ -47,12 +54,12 @@ class Fields
                     ->modalSubmitActionLabel('Use this file')
                     ->schema([
                         FileUpload::make('file')
-                            ->label($isVideo ? 'Video (MP4, keep it under ~3 MB)' : 'Image (WebP, AVIF, PNG or JPG)')
+                            ->label($fileLabel)
                             ->disk('public')
-                            ->directory($isVideo ? 'uploads/videos' : 'uploads/images')
+                            ->directory($folder)
                             ->visibility('public')
-                            ->acceptedFileTypes($isVideo ? ['video/mp4', 'video/webm'] : ['image/webp', 'image/avif', 'image/png', 'image/jpeg', 'image/svg+xml'])
-                            ->maxSize($isVideo ? 20480 : 5120)
+                            ->acceptedFileTypes($types)
+                            ->maxSize($maxKb)
                             ->required(),
                     ])
                     ->action(function (array $data, TextInput $component): void {

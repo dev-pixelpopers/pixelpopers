@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { RefObject } from "react";
 
 import { POP_WAVE } from "@/components/inner/motion/kit";
+import { holdForIntro } from "@/lib/visitor";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -58,6 +59,8 @@ export function usePopHero(rootRef: RefObject<HTMLElement | null>, { entrance, e
         // the three lines, transform-only.
         [1, 2, 3].forEach((n, k) => tl.to(line(n), { keyframes: POP_WAVE, stagger: 0.035 }, 0.25 + k * 0.3));
         const cleanEntrance = entrance?.(tl, q);
+        // On a first visit the welcome intro is up: the entrance plays as it leaves.
+        const release = holdForIntro(tl);
 
         // Every letter bounces with a squash and stretch when hovered (only
         // where there is a real hover, and only once it has landed).
@@ -102,6 +105,7 @@ export function usePopHero(rootRef: RefObject<HTMLElement | null>, { entrance, e
 
         return () => {
           if (armed) chars.forEach((char) => char.removeEventListener("pointerenter", bounce));
+          release();
           cleanEntrance?.();
           cleanExit?.();
         };

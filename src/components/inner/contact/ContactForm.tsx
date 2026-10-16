@@ -8,6 +8,7 @@ import { Burst } from "@/components/inner/motion/bits";
 import { burst, squashPop } from "@/components/inner/motion/kit";
 import { CONTACT_EMAIL as DEFAULT_CONTACT_EMAIL, contactForm as defaultContactForm } from "@/lib/pages/contact";
 import { submitForm } from "@/lib/forms";
+import { saveVisitorName, useVisitor } from "@/lib/visitor";
 
 gsap.registerPlugin(useGSAP);
 
@@ -37,7 +38,8 @@ type StepKey = keyof Answers;
 type Step = {
   key: StepKey;
   kind: "text" | "email" | "url" | "textarea" | "multi" | "single";
-  ask: (a: Answers, first: string) => ReactNode;
+  /** `returning`: the welcome intro already told us their name. */
+  ask: (a: Answers, first: string, returning?: boolean) => ReactNode;
   placeholder?: string;
   optional?: boolean;
   autoComplete?: string;
@@ -65,11 +67,16 @@ const steps: Step[] = [
   {
     key: "services",
     kind: "multi",
-    ask: (_a, f) => (
-      <>
-        Nice to meet you, {f}! <b>What can we make pop for you?</b> Pick as many as you like.
-      </>
-    ),
+    ask: (_a, f, returning) =>
+      returning ? (
+        <>
+          Hey {f}, good to see you again! 👋 <b>What can we make pop for you?</b> Pick as many as you like.
+        </>
+      ) : (
+        <>
+          Nice to meet you, {f}! <b>What can we make pop for you?</b> Pick as many as you like.
+        </>
+      ),
   },
   {
     key: "company",
@@ -204,8 +211,16 @@ function Mine({ children, onEdit }: { children: ReactNode; onEdit?: () => void }
 }
 
 export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactForm = defaultContactForm }: { CONTACT_EMAIL?: string; contactForm?: typeof defaultContactForm } = {}) {
-  const [answers, setAnswers] = useState<Answers>(empty);
-  const [step, setStep] = useState(0);
+  const [rawAnswers, setAnswers] = useState<Answers>(empty);
+  const [rawStep, setStep] = useState(0);
+  /** They edited the name the welcome intro gave us (so ask it like anyone else). */
+  const [nameTouched, setNameTouched] = useState(false);
+
+  // A visitor who told the welcome intro their name skips that question.
+  const knownName = useVisitor()?.name ?? "";
+  const returning = Boolean(knownName) && !nameTouched && (rawAnswers.name === "" || rawAnswers.name === knownName);
+  const answers = returning && !rawAnswers.name ? { ...rawAnswers, name: knownName } : rawAnswers;
+  const step = returning && rawStep === 0 ? 1 : rawStep;
   /** The bot is "typing" the current question. The first one is on screen from the start. */
   const [typing, setTyping] = useState(false);
   const [draft, setDraft] = useState("");
@@ -271,6 +286,8 @@ export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, con
     if (!current) return;
     const next = { ...answers, [current.key]: value } as Answers;
     setAnswers(next);
+    // Remember the name for greetings around the site.
+    if (current.key === "name" && typeof value === "string" && value) saveVisitorName(value);
     if (returnToReview) {
       setReturnToReview(false);
       go(REVIEW, next);
@@ -304,6 +321,7 @@ export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, con
     setReturnToReview(step === REVIEW);
     setHint(null);
     setError(null);
+    if (index === 0) setNameTouched(true);
     prefill(index, answers);
     setStep(index);
   }
@@ -352,6 +370,7 @@ export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, con
     setAnswers(empty);
     setSent(null);
     setReturnToReview(false);
+    setNameTouched(false);
     go(0, empty);
   }
 
@@ -379,13 +398,15 @@ export default function ContactForm({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, con
 
       <ol role="log" aria-live="polite" aria-label="Chat with Pixel Popers" className="mt-[clamp(1.25rem,1.5vw,1.75rem)] flex flex-col gap-3.5">
         {/* Answered questions */}
-        {steps.slice(0, Math.min(step, REVIEW)).map((s, i) => (
-          <QuestionAndAnswer key={s.key} ask={s.ask(answers, f)} answer={shown(s, answers)} onEdit={sent || sending ? undefined : () => edit(i)} />
-        ))}
+        {steps.slice(0, Math.min(step, REVIEW)).map((s, i) =>
+          returning && i === 0 ? null : (
+            <QuestionAndAnswer key={s.key} ask={s.ask(answers, f, returning)} answer={shown(s, answers)} onEdit={sent || sending ? undefined : () => edit(i)} />
+          ),
+        )}
 
         {/* The current question */}
         {!sent && typing ? <Typing /> : null}
-        {!sent && !typing && current ? <Bot id={questionId}>{current.ask(answers, f)}</Bot> : null}
+        {!sent && !typing && current ? <Bot id={questionId}>{current.ask(answers, f, returning)}</Bot> : null}
         {!sent && !typing && step === REVIEW ? (
           <>
             <Bot id={questionId}>

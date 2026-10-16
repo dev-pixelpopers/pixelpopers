@@ -24,6 +24,8 @@ class Setting extends Model
         'social_instagram', 'social_behance', 'social_linkedin', 'social_dribbble', 'social_x', 'social_facebook',
         'google_analytics_id', 'google_tag_manager_id', 'meta_pixel_id',
         'footer_tagline', 'availability_label',
+        // Visitor greetings (Site settings → Greetings).
+        'greeting_gif', 'thumbs_gif', 'greeting_gif_home', 'greeting_gif_work', 'greeting_gif_case_study', 'greeting_gif_services', 'greeting_gif_service', 'greeting_gif_about', 'greeting_gif_blog', 'greeting_gif_post', 'greeting_gif_contact',
     ];
 
     protected static function booted(): void

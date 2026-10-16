@@ -142,6 +142,18 @@ export const getSite = cache(async () => {
     social_behance: "https://behance.net/" as string | null,
     social_linkedin: "https://linkedin.com/" as string | null,
     social_dribbble: "https://dribbble.com/" as string | null,
+    // Visitor greetings: GIFs uploaded in Site settings → Greetings (emoji badges until then).
+    greeting_gif: null as string | null,
+    thumbs_gif: null as string | null,
+    greeting_gif_home: null as string | null,
+    greeting_gif_work: null as string | null,
+    greeting_gif_case_study: null as string | null,
+    greeting_gif_services: null as string | null,
+    greeting_gif_service: null as string | null,
+    greeting_gif_about: null as string | null,
+    greeting_gif_blog: null as string | null,
+    greeting_gif_post: null as string | null,
+    greeting_gif_contact: null as string | null,
   };
   const res = await fromCms<Partial<typeof fallback>>("/site");
   if (!res.ok) return fallback;

@@ -4,6 +4,9 @@ import localFont from "next/font/local";
 
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 
+import VisitorWelcome from "@/components/layout/VisitorWelcome";
+import { getSite } from "@/lib/content";
+
 import "./globals.css";
 
 // Only the faces in the home hero headline are preloaded: Nevera ("We make",
@@ -91,7 +94,24 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const site = await getSite();
+  const gifs = {
+    greeting: site.greeting_gif,
+    thumbs: site.thumbs_gif,
+    pages: {
+      home: site.greeting_gif_home,
+      work: site.greeting_gif_work,
+      caseStudy: site.greeting_gif_case_study,
+      services: site.greeting_gif_services,
+      service: site.greeting_gif_service,
+      about: site.greeting_gif_about,
+      blog: site.greeting_gif_blog,
+      post: site.greeting_gif_post,
+      contact: site.greeting_gif_contact,
+    },
+  };
+
   return (
     <html
       lang="en"
@@ -99,6 +119,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-cream text-ink">
         {children}
+        <VisitorWelcome gifs={gifs} />
       </body>
     </html>
   );

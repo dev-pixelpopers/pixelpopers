@@ -9,6 +9,7 @@ import HeroFrame from "@/components/hero/HeroFrame";
 import { doodleIdle, letterBounce, POP_LANDED, popEntrance, scrollHandOff } from "@/components/hero/hero-animations";
 import { revealStatic } from "@/components/hero/hero-shared";
 import { ambient } from "@/lib/ambient";
+import { holdForIntro } from "@/lib/visitor";
 import { safeIn } from "@/lib/gsap-safe";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -44,6 +45,8 @@ export default function HeroFinal({ children, lines }: { children?: ReactNode; l
           const contextSafe = safeIn(mm) as Parameters<typeof letterBounce>[1];
 
           const entrance = popEntrance(q);
+          // On a first visit the welcome intro is up: the entrance plays as it leaves.
+          const release = holdForIntro(entrance);
           scrollHandOff(q);
 
           // Once everything has landed: the doodles' idle wobble (only while
@@ -57,6 +60,7 @@ export default function HeroFinal({ children, lines }: { children?: ReactNode; l
           entrance.call(contextSafe(() => (stopIdle = ambient(doodleIdle(q), q("[data-hero-frame='headline']")[0] ?? root))), [], 2.6);
 
           return () => {
+            release();
             stopIdle?.();
             stopBounce?.();
           };
