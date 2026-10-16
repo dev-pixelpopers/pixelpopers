@@ -9,9 +9,11 @@ import MenuOverlay from "@/components/layout/MenuOverlay";
 type SiteHeaderProps = {
   /** Target of the "Lets Talk" button — the home page scrolls to its own contact section. */
   ctaHref?: string;
+  /** Pages switched off in the CMS; the menu leaves their links out. */
+  hiddenPages?: readonly string[];
 };
 
-export default function SiteHeader({ ctaHref = "#contact" }: SiteHeaderProps) {
+export default function SiteHeader({ ctaHref = "#contact", hiddenPages }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -33,7 +35,7 @@ export default function SiteHeader({ ctaHref = "#contact" }: SiteHeaderProps) {
 
       <PopButton href={ctaHref} label="Lets Talk" size="sm" />
 
-      <MenuOverlay open={menuOpen} onClose={closeMenu} />
+      <MenuOverlay open={menuOpen} onClose={closeMenu} hiddenPages={hiddenPages} />
     </header>
   );
 }

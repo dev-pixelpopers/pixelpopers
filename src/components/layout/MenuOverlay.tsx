@@ -26,6 +26,8 @@ const socials = ["Instagram", "Behance", "LinkedIn", "Dribbble"];
 type MenuOverlayProps = {
   open: boolean;
   onClose: () => void;
+  /** Pages switched off in the CMS (e.g. "work"); their links are left out. */
+  hiddenPages?: readonly string[];
 };
 
 /**
@@ -33,7 +35,8 @@ type MenuOverlayProps = {
  * The overlay itself is `fixed` — the one place positioning is unavoidable —
  * everything inside it is plain flex/grid flow.
  */
-export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
+export default function MenuOverlay({ open, onClose, hiddenPages = [] }: MenuOverlayProps) {
+  const visibleLinks = links.filter((l) => !hiddenPages.includes(l.href.slice(1)));
   const root = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
@@ -106,7 +109,7 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
         <div className="mt-10 grid flex-1 items-center gap-12 md:mt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-20">
           <nav aria-label="Main">
             <ul>
-              {links.map((link, i) => {
+              {visibleLinks.map((link, i) => {
                 const active =
                   link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
                 return (

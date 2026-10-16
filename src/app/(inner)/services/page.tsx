@@ -15,7 +15,7 @@ import {
   Models,
   StatsBand,
 } from "@/components/inner/services-overview/Sections";
-import { getQuotes, getServiceDetails, getServicesPage, getSite } from "@/lib/content";
+import { getQuotes, getServiceDetails, getServicesPage, getSite, assertPagePublished } from "@/lib/content";
 import { servicesTestimonials } from "@/lib/pages/services";
 import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
@@ -34,6 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   service names/links from Services; sections switched off there are left out.
 */
 export default async function ServicesPage() {
+  await assertPagePublished("services");
   const [{ seo, sections: s }, details, site, quotes] = await Promise.all([
     getServicesPage(),
     getServiceDetails(),

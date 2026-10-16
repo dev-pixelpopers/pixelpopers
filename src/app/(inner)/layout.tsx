@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
-import { getServiceLinks, getSite } from "@/lib/content";
+import { getHiddenPages, getServiceLinks, getSite } from "@/lib/content";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pixelpopers.vercel.app"),
@@ -12,15 +12,15 @@ export const metadata: Metadata = {
  * hand-assembled layout in app/page.tsx and is not wrapped by this group.
  */
 export default async function InnerLayout({ children }: LayoutProps<"/">) {
-  const [site, services] = await Promise.all([getSite(), getServiceLinks()]);
+  const [site, services, hiddenPages] = await Promise.all([getSite(), getServiceLinks(), getHiddenPages()]);
 
   return (
     <>
-      <SiteHeader ctaHref="/contact" />
+      <SiteHeader ctaHref="/contact" hiddenPages={hiddenPages} />
       <main id="main" className="flex-1">
         {children}
       </main>
-      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={services} />
+      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={services} hiddenPages={hiddenPages} />
     </>
   );
 }

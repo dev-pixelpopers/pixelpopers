@@ -11,7 +11,7 @@ import {
   StartHere,
   TrendingTags,
 } from "@/components/inner/blog/Sections";
-import { getBlogPage, getCategories, getPosts, getSite, getTeam } from "@/lib/content";
+import { getBlogPage, getCategories, getPosts, getSite, getTeam, assertPagePublished } from "@/lib/content";
 import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** /blog — Figma frame 335:21 "06 — Blog". */
 export default async function BlogPage() {
+  await assertPagePublished("blog");
   const [{ seo, sections: s }, posts, team, { categories }, site] = await Promise.all([
     getBlogPage(),
     getPosts(),

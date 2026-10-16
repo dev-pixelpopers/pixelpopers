@@ -11,7 +11,7 @@ import ServicesSection from "@/components/sections/ServicesSection";
 // import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import StudioSection from "@/components/sections/StudioSection";
 import ProjectSlider from "@/components/slider/ProjectSlider";
-import { getClients, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories } from "@/lib/content";
+import { getClients, getHiddenPages, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories } from "@/lib/content";
 import { homeAgency, homeBlog, homeContact, homeHero, homeLeadership, homeStudio } from "@/lib/home-content";
 import { SITE_URL } from "@/lib/site";
 
@@ -55,6 +55,7 @@ function structuredData(site: Awaited<ReturnType<typeof getSite>>, owners: Await
 }
 
 export default async function Home() {
+  const hiddenPages = await getHiddenPages();
   const [home, site, team, tiles, showreel, clients, posts, { categoryTone }] = await Promise.all([
     getHome(),
     getSite(),
@@ -78,7 +79,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cream">
-      <SiteHeader />
+      <SiteHeader hiddenPages={hiddenPages} />
       <main className="flex flex-1 flex-col">
         <HeroFinal lines={(sections.hero ?? homeHero).lines}>
           <ProjectSlider projects={showreel} />
@@ -86,12 +87,12 @@ export default async function Home() {
         <StudioSection content={sections.studio ?? homeStudio} projects={showreel} />
         <ServicesSection services={tiles} />
         {/* <ShowcaseSection /> */}
-        <AgencySection eyebrow={agency.eyebrow} heading={agency.heading} copy={agency.copy} cta={agency.cta} clients={clients} />
+        <AgencySection eyebrow={agency.eyebrow} heading={agency.heading} copy={agency.copy} cta={hiddenPages.some((slug) => agency.cta?.href.startsWith(`/${slug}`)) ? null : agency.cta} clients={clients} />
         <ContactSection content={sections.contact ?? homeContact} />
         <LeadershipSection content={sections.leadership ?? homeLeadership} owners={team.owners} />
         {blog ? <BlogSection content={blog} posts={featured} tones={categoryTone} /> : null}
       </main>
-      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={await getServiceLinks()} />
+      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={await getServiceLinks()} hiddenPages={hiddenPages} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(site, team.owners)) }}

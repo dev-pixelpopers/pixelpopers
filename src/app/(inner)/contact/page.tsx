@@ -3,7 +3,7 @@ import ContactMotion from "@/components/inner/contact/ContactMotion";
 import Intro from "@/components/inner/contact/Intro";
 import { AfterSend, Channels, ChatFaq, NextSteps, WhereWhen } from "@/components/inner/contact/Sections";
 import QuoteCards from "@/components/inner/services-overview/QuoteCards";
-import { getContactPage, getQuotes, getSite, getTeam } from "@/lib/content";
+import { getContactPage, getQuotes, getSite, getTeam, assertPagePublished } from "@/lib/content";
 import { contactTestimonials } from "@/lib/pages/contact";
 import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
@@ -23,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   into the CMS inbox (Enquiries).
 */
 export default async function ContactPage() {
+  await assertPagePublished("contact");
   const [{ seo, sections: s }, site, team, quotes] = await Promise.all([
     getContactPage(),
     getSite(),

@@ -10,7 +10,7 @@ import Journey from "@/components/inner/about/Journey";
 import Testimonials from "@/components/inner/about/Testimonials";
 import Studio from "@/components/inner/about/Studio";
 import Closing from "@/components/inner/about/Closing";
-import { getAbout, getQuotes, getSite, getTeam } from "@/lib/content";
+import { getAbout, getQuotes, getSite, getTeam, assertPagePublished } from "@/lib/content";
 import { testimonials as staticTestimonials } from "@/lib/pages/about";
 import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
@@ -30,6 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   there is left out.
 */
 export default async function AboutPage() {
+  await assertPagePublished("about");
   const [{ seo, sections: s }, team, site, quotes] = await Promise.all([
     getAbout(),
     getTeam(),

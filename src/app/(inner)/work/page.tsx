@@ -5,7 +5,7 @@ import ProjectBrowser from "@/components/inner/work/ProjectBrowser";
 import Marquee from "@/components/inner/work/Marquee";
 import WorkMotion from "@/components/inner/work/WorkMotion";
 import { Clients, Cta, Impact, Intro, Teasers, Testimonials } from "@/components/inner/work/Sections";
-import { getClients, getProjects, getQuotes, getSite, getWorkPage } from "@/lib/content";
+import { getClients, getProjects, getQuotes, getSite, getWorkPage, assertPagePublished } from "@/lib/content";
 import { workTestimonials } from "@/lib/pages/work";
 import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
@@ -24,6 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   studies, logos from Client logos; sections switched off there are left out.
 */
 export default async function WorkPage() {
+  await assertPagePublished("work");
   const [{ seo, sections: s }, projects, clients, site, quotes] = await Promise.all([
     getWorkPage(),
     getProjects(),

@@ -66,7 +66,9 @@ class PageResource extends Resource
                         ->disabled()
                         ->dehydrated(false)
                         ->helperText('Matches a route on the website, so it can’t be changed here.'),
-                    Forms\Components\Toggle::make('is_published')->label('Published')->inline(false),
+                    Forms\Components\Toggle::make('is_published')->label('Published')->inline(false)
+                        ->helperText('Off: the page is removed from the header menu, footer and sitemap, and its address shows “not found”.')
+                        ->disabled(fn (?Page $record) => $record?->slug === 'home'),
                 ]),
                 Fields::seo(),
                 SchemaComponents\Section::make('Indexing')->collapsed()->schema([
@@ -112,7 +114,9 @@ class PageResource extends Resource
                 Tables\Columns\TextColumn::make('title')->searchable()->weight('bold'),
                 Tables\Columns\TextColumn::make('slug')->badge()->color('gray'),
                 Tables\Columns\TextColumn::make('sections_count')->counts('sections')->label('Sections'),
-                Tables\Columns\IconColumn::make('is_published')->boolean()->label('Published'),
+                Tables\Columns\ToggleColumn::make('is_published')->label('Published')
+                    ->tooltip('Off hides the page and its menu links on the website.')
+                    ->disabled(fn (Page $record) => $record->slug === 'home'),
                 Tables\Columns\TextColumn::make('updated_at')->since()->label('Updated')->sortable(),
             ])
             ->recordActions([Actions\EditAction::make()])

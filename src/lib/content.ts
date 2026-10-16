@@ -19,6 +19,8 @@
  */
 import "server-only";
 
+import { notFound } from "next/navigation";
+
 import { cache } from "react";
 
 import * as aboutStatic from "@/lib/pages/about";
@@ -154,6 +156,26 @@ export const getSite = cache(async () => {
 export type SiteSettings = Awaited<ReturnType<typeof getSite>>;
 
 export const getServiceDetails = cache(() => collection<ServiceDetail[]>("/services?full=1", staticServiceDetails));
+
+/** Pages that can be switched off in the CMS (Pages → Published). */
+export const TOGGLEABLE_PAGES = ["work", "services", "about", "blog", "contact"] as const;
+export type ToggleablePage = (typeof TOGGLEABLE_PAGES)[number];
+
+/**
+ * Pages unpublished in the CMS: their links leave the header menu, footer and
+ * sitemap, and the page itself is a 404. Without a CMS connection nothing is hidden.
+ */
+export const getHiddenPages = cache(async (): Promise<ToggleablePage[]> => {
+  const res = await fromCms<{ slug: string }[]>("/pages");
+  if (!res.ok) return [];
+  const published = new Set(res.data.map((p) => p.slug));
+  return TOGGLEABLE_PAGES.filter((slug) => !published.has(slug));
+});
+
+/** Ends the request with a 404 when the CMS has the page switched off. */
+export async function assertPagePublished(slug: ToggleablePage) {
+  if ((await getHiddenPages()).includes(slug)) notFound();
+}
 
 /** Name + page of every published service, in the CMS's order (the footer's Services menu). */
 export const getServiceLinks = cache(async (): Promise<{ label: string; href: string }[]> => {

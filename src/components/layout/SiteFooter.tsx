@@ -204,14 +204,22 @@ type SiteFooterProps = {
   availability?: string | null;
   /** The Services menu: one link per published service page. */
   services?: FooterLink[];
+  /** Pages switched off in the CMS (e.g. "work"); links into them are left out. */
+  hiddenPages?: readonly string[];
 };
 
 export default function SiteFooter({
   tagline = "A funky creative studio making brands impossible to scroll past — from strategy to the last pixel.",
   availability = "Available for new projects",
   services = defaultServiceLinks,
+  hiddenPages = [],
 }: SiteFooterProps) {
-  const navGroups = [navigation, { title: "Services", links: services }];
+  // "/about#studio" belongs to "about", so it goes when About is off.
+  const shown = (link: FooterLink) => !hiddenPages.includes(link.href.split(/[/#?]/)[1] ?? "");
+  const navGroups = [
+    { ...navigation, links: navigation.links.filter(shown) },
+    { title: "Services", links: services },
+  ];
   const scrollToTop = () => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
