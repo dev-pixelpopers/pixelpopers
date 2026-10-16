@@ -80,6 +80,8 @@ class Transformers
             'images' => (object) $s->imageOverrides(),
             // Digital marketing: the social account on the phone mock-ups.
             'social' => $s->social ? (object) $s->social : null,
+            // Web development: the "The stack" section.
+            'stack' => $s->stack ? (object) $s->stack : null,
             'updatedAt' => $s->updated_at?->toIso8601String(),
         ];
     }

@@ -39,6 +39,7 @@ class Service extends Model
         'visibility',
         'images',
         'social',
+        'stack',
         'og_image',
         'is_published',
         'sort_order',
@@ -162,6 +163,7 @@ class Service extends Model
         'visibility' => 'array',
         'images' => 'array',
         'social' => 'array',
+        'stack' => 'array',
         'is_published' => 'boolean',
         'sort_order' => 'integer',
     ];

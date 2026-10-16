@@ -126,21 +126,19 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       <section aria-labelledby="stack-title" className="shell mt-[clamp(3.5rem,4.06vw,4.875rem)] grid items-start gap-y-10 lg:grid-cols-[minmax(0,594fr)_minmax(0,994fr)]">
         <div>
           <SectionTitle
-            eyebrow="The stack"
+            eyebrow={service.stack?.eyebrow?.trim() || "The stack"}
             title={
-              <span id="stack-title">
-                Modern tools.
-                <br />
-                No duct tape.
+              <span id="stack-title" className="whitespace-pre-line">
+                {service.stack?.heading?.trim() || "Modern tools.\nNo duct tape."}
               </span>
             }
             titleClassName="!text-[clamp(1.75rem,2.71vw,3.25rem)] !leading-[1.19]"
           />
           <p data-reveal className="mt-[clamp(1rem,1.56vw,1.875rem)] max-w-[32.5rem] font-copy text-body leading-[1.64] font-light">
-            We pick the right tool for the job — not the trendiest one — so your site is fast today and easy to grow tomorrow.
+            {service.stack?.intro?.trim() || "We pick the right tool for the job — not the trendiest one — so your site is fast today and easy to grow tomorrow."}
           </p>
         </div>
-        <Keyboard className="w-full" />
+        <Keyboard className="w-full" keys={service.stack?.keys?.length ? service.stack.keys : undefined} />
       </section>
 
       {/* ── Responsive devices ─────────────────────────────────────── */}

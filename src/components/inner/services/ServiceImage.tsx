@@ -23,8 +23,9 @@ export function useServiceMedia(src: string, slot?: string): string {
 
 /**
  * `natural`: when an upload replaces the picture, show it at its own
- * proportions (full width, height to match) and mark it `data-natural`, so a
- * frame around it can drop its fixed shape (`has-[img[data-natural]]:…`).
+ * proportions (full width, height to match — overriding any fixed height or
+ * aspect class on the image) and mark it `data-natural`, so a frame around it
+ * can drop its fixed shape too (`has-[img[data-natural]]:…`).
  */
 export default function ServiceImage({ src, slot, alt, natural = false, className, ...props }: ImageProps & { slot?: string; natural?: boolean }) {
   const override = useContext(ServiceMedia)[slot ?? (typeof src === "string" ? src : "")];
@@ -38,7 +39,7 @@ export default function ServiceImage({ src, slot, alt, natural = false, classNam
       alt={alt}
       unoptimized={svg || props.unoptimized}
       data-natural={fitted ? "" : undefined}
-      className={fitted ? `${className ?? ""} !h-auto` : className}
+      className={fitted ? `${className ?? ""} !h-auto !aspect-auto` : className}
       {...props}
     />
   );

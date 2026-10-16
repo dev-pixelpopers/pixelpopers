@@ -32,6 +32,22 @@ class ServiceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    /** The keys the web development page shows until the stack is edited (matches the website's defaults). */
+    private const DEFAULT_STACK_KEYS = [
+        ['label' => 'Next.js', 'tone' => 'white'],
+        ['label' => 'React', 'tone' => 'lagoon'],
+        ['label' => 'TypeScript', 'tone' => 'grape'],
+        ['label' => 'Tailwind', 'tone' => 'lagoon'],
+        ['label' => 'Webflow', 'tone' => 'blush', 'pressed' => true],
+        ['label' => 'Shopify', 'tone' => 'sunbeam'],
+        ['label' => 'WordPress', 'tone' => 'grape'],
+        ['label' => 'Node.js', 'tone' => 'white'],
+        ['label' => 'Sanity', 'tone' => 'blush'],
+        ['label' => 'Vercel', 'tone' => 'white'],
+        ['label' => 'Figma', 'tone' => 'sunbeam'],
+        ['label' => 'GSAP', 'tone' => 'lagoon'],
+    ];
+
     /** A section's show/hide switch; a service without a saved choice shows everything. */
     private static function visible(string $key): Forms\Components\Toggle
     {
@@ -168,6 +184,33 @@ class ServiceResource extends Resource
                             ]),
                         ]),
                 ]),
+                SchemaComponents\Tabs\Tab::make('Stack')->icon('heroicon-o-command-line')
+                    ->visible(fn (?Service $record) => $record?->slug === 'web-development')
+                    ->schema([
+                        SchemaComponents\Text::make('The “The stack” section: the heading beside the keyboard and its keys. Empty text fields keep the design’s wording.'),
+                        SchemaComponents\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('stack.eyebrow')->label('Eyebrow')->placeholder('The stack'),
+                            Forms\Components\Textarea::make('stack.heading')->label('Heading')->rows(2)->placeholder("Modern tools.\nNo duct tape.")->helperText('Each line shows on its own line.'),
+                            Forms\Components\Textarea::make('stack.intro')->label('Intro')->rows(2)->columnSpanFull()
+                                ->placeholder('We pick the right tool for the job — not the trendiest one — so your site is fast today and easy to grow tomorrow.'),
+                        ]),
+                        Forms\Components\Repeater::make('stack.keys')->label('Keys')
+                            ->helperText('One key per tool, in order (four per row on wide screens). The icon is optional: a square PNG, SVG or WebP with a transparent background works best.')
+                            ->formatStateUsing(fn ($state) => $state ?: self::DEFAULT_STACK_KEYS)
+                            ->schema([
+                                Forms\Components\TextInput::make('label')->label('Name')->required(),
+                                Forms\Components\Select::make('tone')->label('Colour')->native(false)->default('white')->options([
+                                    'white' => 'White', 'lagoon' => 'Lagoon (teal)', 'grape' => 'Grape (purple)', 'blush' => 'Blush (pink)', 'sunbeam' => 'Sunbeam (yellow)',
+                                ]),
+                                Fields::media('icon', 'Icon')->columnSpanFull(),
+                                Forms\Components\Toggle::make('pressed')->label('Show pressed down')->inline(false),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state) => $state['label'] ?? null)
+                            ->reorderable()->cloneable()->collapsible()->collapsed()
+                            ->addActionLabel('Add key')
+                            ->columnSpanFull(),
+                    ]),
                 SchemaComponents\Tabs\Tab::make('Social account')->icon('heroicon-o-at-symbol')
                     ->visible(fn (?Service $record) => $record?->slug === 'digital-marketing')
                     ->schema([

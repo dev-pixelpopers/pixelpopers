@@ -1,4 +1,5 @@
 import Image from "@/components/inner/services/ServiceImage";
+import type { StackKeyTone, StackSection } from "@/lib/service-content";
 import type { ReactNode } from "react";
 import { mono } from "@/lib/inner-fonts";
 
@@ -104,6 +105,7 @@ export function BrowserPreview({ className = "", priority = false }: { className
           </span>
         </div>
         <Image
+          natural
           slot="hero-browser"
           src="/assets/inner/elevate.webp"
           alt="The Elevate website — “Drop your design” — on a laptop and phone"
@@ -155,35 +157,53 @@ export function Gauge({ score, label, color, numberTone }: { score: number; labe
 
 /* ── Tech-stack keyboard (1000 × 560) ─────────────────────────────────── */
 
-const keys = [
-  { label: "Next.js", bg: "bg-white text-ink" },
-  { label: "React", bg: "bg-lagoon text-ink" },
-  { label: "TypeScript", bg: "bg-grape text-white" },
-  { label: "Tailwind", bg: "bg-lagoon text-ink" },
-  { label: "Webflow", bg: "bg-blush text-white", pressed: true },
-  { label: "Shopify", bg: "bg-sunbeam text-ink" },
-  { label: "WordPress", bg: "bg-grape text-white" },
-  { label: "Node.js", bg: "bg-white text-ink" },
-  { label: "Sanity", bg: "bg-blush text-white" },
-  { label: "Vercel", bg: "bg-white text-ink" },
-  { label: "Figma", bg: "bg-sunbeam text-ink" },
-  { label: "GSAP", bg: "bg-lagoon text-ink" },
+type StackKey = NonNullable<StackSection["keys"]>[number];
+
+/** The keys shown until the CMS has its own list (Services → Web development → Stack). */
+export const defaultStackKeys: StackKey[] = [
+  { label: "Next.js", tone: "white" },
+  { label: "React", tone: "lagoon" },
+  { label: "TypeScript", tone: "grape" },
+  { label: "Tailwind", tone: "lagoon" },
+  { label: "Webflow", tone: "blush", pressed: true },
+  { label: "Shopify", tone: "sunbeam" },
+  { label: "WordPress", tone: "grape" },
+  { label: "Node.js", tone: "white" },
+  { label: "Sanity", tone: "blush" },
+  { label: "Vercel", tone: "white" },
+  { label: "Figma", tone: "sunbeam" },
+  { label: "GSAP", tone: "lagoon" },
 ];
 
-export function Keyboard({ className = "" }: { className?: string }) {
+const keyTone: Record<StackKeyTone, string> = {
+  white: "bg-white text-ink",
+  lagoon: "bg-lagoon text-ink",
+  grape: "bg-grape text-white",
+  blush: "bg-blush text-white",
+  sunbeam: "bg-sunbeam text-ink",
+};
+
+export function Keyboard({ className = "", keys = defaultStackKeys }: { className?: string; keys?: StackKey[] }) {
   return (
     <div className={`@container ${className}`}>
       <ul data-keys aria-label="Our tech stack" className="grid grid-cols-3 gap-x-[2.5cqw] gap-y-[2.9cqw] rounded-[4cqw] bg-ink p-[4cqw] shadow-[0_24px_60px_rgb(34_1_40/0.18)] sm:grid-cols-4">
         {keys.map((k, i) => (
           <li
-            key={k.label}
+            key={`${k.label}-${i}`}
             data-key
-            className={`flex aspect-[210/136] flex-col justify-between rounded-[2.2cqw] pt-[1.4cqw] pr-[2.9cqw] pb-[2.7cqw] pl-[1.8cqw] transition-[translate,box-shadow] duration-150 ${k.bg} ${
+            className={`flex aspect-[210/136] flex-col justify-between rounded-[2.2cqw] pt-[1.4cqw] pr-[2.9cqw] pb-[2.7cqw] pl-[1.8cqw] transition-[translate,box-shadow] duration-150 ${keyTone[k.tone ?? "white"] ?? keyTone.white} ${
               k.pressed ? "translate-y-[0.8cqw] shadow-[0_0.2cqw_0_#14031b]" : "shadow-[0_1.4cqw_0_#14031b] hover:translate-y-[0.8cqw] hover:shadow-[0_0.6cqw_0_#14031b]"
             } ${i >= 4 && i < 8 ? "sm:translate-x-[3cqw]" : ""}`}
           >
-            <span aria-hidden className="self-end font-copy text-[max(0.5625rem,1.5cqw)] leading-none font-bold opacity-40">
-              {String.fromCharCode(65 + i)}
+            <span className="flex items-start justify-between">
+              {k.icon ? (
+                <Image src={k.icon} alt="" width={64} height={64} sizes="48px" className="mt-[0.4cqw] size-[max(1rem,3.4cqw)] object-contain" />
+              ) : (
+                <span />
+              )}
+              <span aria-hidden className="font-copy text-[max(0.5625rem,1.5cqw)] leading-none font-bold opacity-40">
+                {String.fromCharCode(65 + (i % 26))}
+              </span>
             </span>
             <span className="font-display text-[max(0.6875rem,2cqw)] leading-none">{k.label}</span>
           </li>
@@ -209,21 +229,26 @@ function SizeTag({ children, className }: { children: ReactNode; className: stri
 export function Devices({ className = "" }: { className?: string }) {
   return (
     <figure className={`@container grid aspect-[1430/800] ${className}`}>
-      <div className={`${at} mt-[2.1%] w-[69.93%] rounded-[1.96cqw] bg-ink p-[1.26cqw] ${deviceShadow}`}>
-        <Image
-          slot="devices-laptop"
-          src="/assets/inner/elevate.webp"
-          alt="Elevate website at desktop width"
-          width={1600}
-          height={951}
-          sizes="(min-width: 1024px) 50vw, 65vw"
-          className="aspect-[964/584] w-full rounded-[0.98cqw] object-cover"
-        />
+      {/* Laptop + stand. An uploaded screenshot sets the screen's shape, so the stand follows the screen. */}
+      <div className={`${at} mt-[2.1%] flex w-[69.93%] flex-col items-center`}>
+        <div className={`w-full rounded-[1.96cqw] bg-ink p-[1.26cqw] ${deviceShadow}`}>
+          <Image
+            natural
+            slot="devices-laptop"
+            src="/assets/inner/elevate.webp"
+            alt="Elevate website at desktop width"
+            width={1600}
+            height={951}
+            sizes="(min-width: 1024px) 50vw, 65vw"
+            className="aspect-[964/584] w-full rounded-[0.98cqw] object-cover"
+          />
+        </div>
+        <span aria-hidden className="aspect-[200/60] w-[20%] rounded-[0.42cqw] bg-ink" />
+        <span aria-hidden className="-mt-[0.2%] aspect-[400/16] w-[40%] rounded-[0.56cqw] bg-ink" />
       </div>
-      <span aria-hidden className={`${at} mt-[45.45%] ml-[27.97%] aspect-[200/60] w-[13.99%] rounded-[0.42cqw] bg-ink`} />
-      <span aria-hidden className={`${at} mt-[49.51%] ml-[20.98%] aspect-[400/16] w-[27.97%] rounded-[0.56cqw] bg-ink`} />
       <div className={`${at} mt-[16.08%] ml-[61.54%] w-[26.57%] rounded-[2.52cqw] bg-ink p-[0.98cqw] ${deviceShadow}`}>
         <Image
+          natural
           slot="devices-tablet"
           src="/assets/inner/liquidity.webp"
           alt="Liquidity landing page at tablet width"
@@ -235,6 +260,7 @@ export function Devices({ className = "" }: { className?: string }) {
       </div>
       <div className={`${at} mt-[23.08%] ml-[83.92%] w-[16.08%] rounded-[2.52cqw] bg-ink p-[0.7cqw] ${deviceShadow}`}>
         <Image
+          natural
           slot="devices-phone"
           src="/assets/inner/ui-shop.webp"
           alt="Online shop design at phone width"

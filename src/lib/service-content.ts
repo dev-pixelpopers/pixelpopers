@@ -55,6 +55,18 @@ export type ServiceDetail = {
   images?: Record<string, string>;
   /** Digital marketing: the social account shown on the phone mock-ups (any field may be left out). */
   social?: SocialAccount;
+  /** Web development: the "The stack" section (any field may be left out). */
+  stack?: StackSection;
+};
+
+export type StackKeyTone = "white" | "lagoon" | "grape" | "blush" | "sunbeam";
+
+export type StackSection = {
+  eyebrow?: string;
+  /** Line breaks are kept. */
+  heading?: string;
+  intro?: string;
+  keys?: { label: string; tone?: StackKeyTone; icon?: string; pressed?: boolean }[];
 };
 
 export type SocialAccount = {

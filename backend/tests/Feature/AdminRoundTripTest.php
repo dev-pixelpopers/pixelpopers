@@ -131,6 +131,22 @@ class AdminRoundTripTest extends TestCase
         $this->assertSame(['avatar' => 'https://cms.test/a.webp'], $api['images']);
     }
 
+    public function test_the_web_development_stack_is_editable(): void
+    {
+        $service = Service::where('slug', 'web-development')->first();
+        Livewire::test(EditService::class, ['record' => $service->getRouteKey()])
+            ->assertSee('Add key')->assertSee('Next.js')
+            ->fillForm([
+                'stack.heading' => "Our tools.\nYour edge.",
+                'stack.keys' => [['label' => 'Laravel', 'tone' => 'blush', 'icon' => 'https://cms.test/laravel.svg', 'pressed' => false]],
+            ])
+            ->call('save')->assertHasNoFormErrors();
+
+        $stack = $this->getJson('/api/v1/services/web-development')->json('data.stack');
+        $this->assertSame("Our tools.\nYour edge.", $stack['heading']);
+        $this->assertSame([['label' => 'Laravel', 'tone' => 'blush', 'icon' => 'https://cms.test/laravel.svg']], $stack['keys']);
+    }
+
     public function test_every_case_study_survives_an_unchanged_save(): void
     {
         $fields = ['cover', 'services', 'categories', 'intro', 'brand', 'results', 'quote', 'story', 'gallery', 'delivered', 'phases', 'team'];

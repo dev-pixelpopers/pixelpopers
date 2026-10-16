@@ -13,7 +13,7 @@ namespace App\Models\Concerns;
 trait PrunesOptionalJson
 {
     /** Optional flags that mean the same as "absent" when false. */
-    private static array $falseMeansAbsent = ['popular', 'dark', 'featured'];
+    private static array $falseMeansAbsent = ['popular', 'dark', 'featured', 'pressed'];
 
     public static function bootPrunesOptionalJson(): void
     {
