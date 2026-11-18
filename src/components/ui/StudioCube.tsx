@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { VIDEO_CUBE_FACES } from "@/components/ui/cube-faces";
 import { projects as builtInProjects, type Project } from "@/lib/site-content";
@@ -33,6 +33,12 @@ export const CUBE_POSE = { rotationX: -18, rotationY: 24, rotationZ: -6 } as con
 /** `projects`: the showreel clips — the same ones as the slider, which folds into this cube. */
 export default function StudioCube({ projects = builtInProjects }: { projects?: readonly Project[] }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  // The cube is transparent at load (tucked under the hero until the
+  // slider hands off to it), so its six poster images would only compete
+  // with the headline for the first paint on a slow phone. They're fetched
+  // on the first scroll / touch / key — long before the cube can be seen.
+  const [postersOn, setPostersOn] = useState(false);
+  useEffect(() => afterFirstInteraction(() => setPostersOn(true)), []);
 
   // Only the face pointing at the camera plays; the rest hold their frame.
   // Decoding six clips while the cube tumbles is what made it stutter, and
@@ -125,7 +131,7 @@ export default function StudioCube({ projects = builtInProjects }: { projects?: 
         {/* Turn layer: steps the cube to the next face when a clip ends. */}
         <div data-cube="turn" className="absolute inset-0 [transform-style:preserve-3d]">
           {projects.map((project, i) => (
-            <VideoFace key={project.id} project={project} index={i} />
+            <VideoFace key={project.id} project={project} index={i} poster={postersOn} />
           ))}
         </div>
       </div>
@@ -139,7 +145,7 @@ export default function StudioCube({ projects = builtInProjects }: { projects?: 
  * can't cover it. Both sides render, so the inner walls show through the gaps
  * — matching the slider's folded cube, which it replaces seamlessly.
  */
-function VideoFace({ project, index }: { project: Project; index: number }) {
+function VideoFace({ project, index, poster }: { project: Project; index: number; poster: boolean }) {
   const face = VIDEO_CUBE_FACES[index % VIDEO_CUBE_FACES.length];
   return (
     <div
@@ -150,7 +156,7 @@ function VideoFace({ project, index }: { project: Project; index: number }) {
     >
       <video
         src={project.video}
-        poster={project.poster?.small}
+        poster={poster ? project.poster?.small : undefined}
         muted
         playsInline
         // Nothing loads until a face is actually played (see the effect above).
