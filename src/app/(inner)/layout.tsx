@@ -17,7 +17,7 @@ export default async function InnerLayout({ children }: LayoutProps<"/">) {
 
   return (
     <>
-      <SiteHeader ctaHref="/contact" hiddenPages={hiddenPages} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
+      <SiteHeader ctaHref="/contact" hiddenPages={hiddenPages} email={site.company_email} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
       <main id="main" className="flex-1">
         {children}
       </main>

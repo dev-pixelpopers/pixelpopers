@@ -3,7 +3,7 @@ import ContactMotion from "@/components/inner/contact/ContactMotion";
 import Intro from "@/components/inner/contact/Intro";
 import { AfterSend, Channels, ChatFaq, NextSteps, WhereWhen } from "@/components/inner/contact/Sections";
 import QuoteCards from "@/components/inner/services-overview/QuoteCards";
-import { getContactPage, getQuotes, getSite, getTeam, assertPagePublished, socialLinks, whatsappLink } from "@/lib/content";
+import { getContactPage, getQuotes, getSite, getTeam, assertPagePublished, socialLinks, whatsappLink, withCompanyEmail, emailText } from "@/lib/content";
 import { contactTestimonials } from "@/lib/pages/contact";
 import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
 
@@ -42,7 +42,10 @@ export default async function ContactPage() {
   const channels = s.channels
     ? {
         ...s.channels,
-        items: s.channels.items.flatMap((c) => {
+        items: s.channels.items.flatMap((card) => {
+          // Email links and an email shown as the card's text follow Site
+          // settings → Company → Email, whatever address the card was saved with.
+          const c = { ...card, href: withCompanyEmail(card.href, email), body: emailText(card.body, email) };
           if (!/^https?:\/\/(wa\.me|api\.whatsapp\.com)\/?$/i.test(c.href.trim())) return [c];
           return whatsapp ? [{ ...c, href: whatsapp }] : [];
         }),

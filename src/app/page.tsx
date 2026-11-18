@@ -11,7 +11,7 @@ import ServicesSection from "@/components/sections/ServicesSection";
 // import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import StudioSection from "@/components/sections/StudioSection";
 import ProjectSlider from "@/components/slider/ProjectSlider";
-import { getClients, getHiddenPages, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories, socialLinks } from "@/lib/content";
+import { getClients, getHiddenPages, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories, socialLinks, withCompanyEmail } from "@/lib/content";
 import { homeAgency, homeBlog, homeContact, homeHero, homeLeadership, homeStudio } from "@/lib/home-content";
 import { SITE_URL, fitTitle } from "@/lib/site";
 
@@ -76,10 +76,13 @@ export default async function Home() {
     .filter((post) => post !== undefined);
 
   const agency = sections.agency ?? homeAgency;
+  // "Schedule a Strategy Call" emails the address in Site settings → Company.
+  const contact = sections.contact ?? homeContact;
+  const contactContent = contact.cta ? { ...contact, cta: { ...contact.cta, href: withCompanyEmail(contact.cta.href, site.company_email) } } : contact;
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cream">
-      <SiteHeader hiddenPages={hiddenPages} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
+      <SiteHeader hiddenPages={hiddenPages} email={site.company_email} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
       <main className="flex flex-1 flex-col">
         <HeroFinal lines={(sections.hero ?? homeHero).lines}>
           <ProjectSlider projects={showreel} />
@@ -88,7 +91,7 @@ export default async function Home() {
         <ServicesSection services={tiles} />
         {/* <ShowcaseSection /> */}
         <AgencySection eyebrow={agency.eyebrow} heading={agency.heading} copy={agency.copy} cta={hiddenPages.some((slug) => agency.cta?.href.startsWith(`/${slug}`)) ? null : agency.cta} clients={clients} />
-        <ContactSection content={sections.contact ?? homeContact} />
+        <ContactSection content={contactContent} />
         <LeadershipSection content={sections.leadership ?? homeLeadership} owners={team.owners} />
         {blog ? <BlogSection content={blog} posts={featured.map((p) => ({ ...p, body: [], comments: [] }))} tones={categoryTone} /> : null}
       </main>

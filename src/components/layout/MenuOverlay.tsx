@@ -28,6 +28,8 @@ type MenuOverlayProps = {
   hiddenPages?: readonly string[];
   /** Real profile links from Site settings → Social (none → no pills). */
   socials?: readonly { label: string; href: string }[];
+  /** Site settings → Company → Email. */
+  email?: string;
 };
 
 /**
@@ -35,7 +37,7 @@ type MenuOverlayProps = {
  * The overlay itself is `fixed` — the one place positioning is unavoidable —
  * everything inside it is plain flex/grid flow.
  */
-export default function MenuOverlay({ open, onClose, hiddenPages = [], socials = [] }: MenuOverlayProps) {
+export default function MenuOverlay({ open, onClose, hiddenPages = [], socials = [], email = "hello@pixelpopers.com" }: MenuOverlayProps) {
   const visibleLinks = links.filter((l) => !hiddenPages.includes(l.href.slice(1)));
   const root = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
@@ -181,8 +183,8 @@ export default function MenuOverlay({ open, onClose, hiddenPages = [], socials =
 
             <div>
               <p className="font-display text-micro text-sunbeam uppercase">Say hello</p>
-              <a href="mailto:hello@pixelpopers.com" className="mt-2 inline-block font-haas text-[clamp(1.25rem,1.6vw,1.875rem)] text-cream hover:text-lagoon">
-                hello@pixelpopers.com
+              <a href={`mailto:${email}`} className="mt-2 inline-block font-haas text-[clamp(1.25rem,1.6vw,1.875rem)] text-cream hover:text-lagoon">
+                {email}
               </a>
               {socials.length ? (
                 <ul className="mt-6 flex flex-wrap gap-3">

@@ -206,6 +206,23 @@ export function whatsappLink(phone: string | null | undefined): string | null {
   return digits.length >= 7 ? `https://wa.me/${digits}` : null;
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Points a link at the company email (Site settings → Company → Email):
+ * `mailto:anything@…?subject=…` keeps its subject but goes to `email`.
+ * Other links are returned unchanged.
+ */
+export function withCompanyEmail(href: string, email: string): string {
+  const m = /^mailto:([^?]*)(\?.*)?$/i.exec(href.trim());
+  return m && email ? `mailto:${email}${m[2] ?? ""}` : href;
+}
+
+/** A card or line whose text is just an email address shows the company email instead. */
+export function emailText(text: string, email: string): string {
+  return email && EMAIL_RE.test(text.trim()) ? email : text;
+}
+
 export const getServiceDetails = cache(() => collection<ServiceDetail[]>("/services?full=1", staticServiceDetails));
 
 /** Pages that can be switched off in the CMS (Pages → Published). */

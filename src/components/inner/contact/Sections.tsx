@@ -40,9 +40,18 @@ export function Channels({ channels = defaultChannels }: { channels?: typeof def
   return (
     <section aria-labelledby="channels-title" className="shell">
       <SectionTitle align="center" eyebrow={channels.eyebrow} title={<span id="channels-title">{channels.heading}</span>} />
-      <ul data-wm="channels" className="mt-[clamp(2rem,4.5vw,5.375rem)] grid gap-[clamp(1rem,1.04vw,1.25rem)] sm:grid-cols-2 lg:grid-cols-4">
+      {/* Cards keep the four-up width and centre as a group, so a missing
+          card (no WhatsApp number in Site settings) leaves no hole. */}
+      <ul
+        data-wm="channels"
+        className="mt-[clamp(2rem,4.5vw,5.375rem)] flex flex-wrap justify-center gap-(--ch-gap) [--ch-gap:clamp(1rem,1.04vw,1.25rem)]"
+      >
         {channels.items.map((c) => (
-          <li key={c.title} data-wm="channel" className={`${c.tilt}`}>
+          <li
+            key={c.title}
+            data-wm="channel"
+            className={`w-full sm:w-[calc((100%-var(--ch-gap))/2)] lg:w-[calc((100%-3*var(--ch-gap))/4)] ${c.tilt}`}
+          >
             <a
               href={c.href}
               {...(c.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
