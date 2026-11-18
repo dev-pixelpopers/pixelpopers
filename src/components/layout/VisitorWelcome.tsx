@@ -11,7 +11,7 @@ import { Burst } from "@/components/inner/motion/bits";
 import { burst } from "@/components/inner/motion/kit";
 import BrandLogo from "@/components/ui/BrandLogo";
 import type { contactForm as defaultContactForm } from "@/lib/pages/contact";
-import { finishIntro, firstName, introPending, liftIntroCover, markGreeted, reopenIntro, saveVisitorName, shouldGreet, useIntroOpen, useVisitor, useVisitorName } from "@/lib/visitor";
+import { armIntro, finishIntro, firstName, introPending, liftIntroCover, markGreeted, reopenIntro, saveVisitorName, shouldGreet, useIntroOpen, useVisitor, useVisitorName } from "@/lib/visitor";
 
 /*
   The welcome: on a first visit, a full-screen intro warms up ("warming up
@@ -46,7 +46,9 @@ export default function VisitorWelcome({ gifs, chat }: { gifs: GreetingGifs; cha
   // launcher bubble.
   const [chatOpen, setChatOpen] = useState(false);
   const [chatUsed, setChatUsed] = useState(false);
-  // No intro after all (e.g. storage blocked): lift the first-paint cover.
+  // A first visit opens the intro on the visitor's first interaction (see armIntro).
+  useEffect(() => armIntro(), []);
+  // Clear any first-paint cover left by an older cached page.
   useEffect(() => {
     if (!introPending()) liftIntroCover();
   }, [open]);

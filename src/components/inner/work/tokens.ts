@@ -1,4 +1,5 @@
 import type { Accent } from "@/lib/pages/work";
+import { SITE_URL } from "@/lib/site";
 
 /** Literal class names per accent so Tailwind can see them. */
 export const accentBg: Record<Accent, string> = {
@@ -24,4 +25,4 @@ export const cardShadow = "shadow-[0_clamp(0.75rem,1.04vw,1.25rem)_clamp(1.75rem
 /** 1680px-wide Figma blocks sit 120px from the frame edge rather than the 166px shell. */
 export const wide = "mx-auto w-full max-w-[1920px] px-[clamp(1.25rem,6.25vw,7.5rem)]";
 
-export const SITE = "https://pixelpopers.vercel.app";
+export const SITE = SITE_URL;

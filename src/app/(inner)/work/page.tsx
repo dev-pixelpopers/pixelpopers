@@ -6,13 +6,13 @@ import Marquee from "@/components/inner/work/Marquee";
 import WorkMotion from "@/components/inner/work/WorkMotion";
 import { Clients, Cta, Impact, Intro, Teasers, Testimonials } from "@/components/inner/work/Sections";
 import { getClients, getProjects, getQuotes, getSite, getWorkPage, assertPagePublished } from "@/lib/content";
-import { workTestimonials } from "@/lib/pages/work";
-import { DEFAULT_OG_IMAGE } from "@/lib/site";
+import { toProjectCard, workTestimonials } from "@/lib/pages/work";
+import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getWorkPage();
   return {
-    title: seo.title,
+    title: { absolute: fitTitle(seo.title, "") },
     description: seo.description,
     alternates: { canonical: "/work" },
     openGraph: { title: seo.title, description: seo.description, type: "website", url: "/work", images: [seo.ogImage ?? DEFAULT_OG_IMAGE] },
@@ -54,7 +54,7 @@ export default async function WorkPage() {
   return (
     <WorkMotion className="flex flex-col pb-[clamp(5rem,9vw,10.875rem)]">
       {s.hero ? <Hero workHero={{ ...s.hero, count: s.hero.count || projects.length }} /> : null}
-      <ProjectBrowser projects={projects} filters={s.filters?.items} />
+      <ProjectBrowser projects={projects.map(toProjectCard)} filters={s.filters?.items} />
       {s.intro ? (
         <div className="mt-[clamp(5rem,8.96vw,10.75rem)]">
           <Intro workIntro={s.intro} />

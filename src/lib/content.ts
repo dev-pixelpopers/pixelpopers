@@ -138,10 +138,22 @@ export const getSite = cache(async () => {
     company_email: contactStatic.CONTACT_EMAIL,
     footer_tagline: "A funky creative studio making brands impossible to scroll past — from strategy to the last pixel.",
     availability_label: "Available for new projects" as string | null,
-    social_instagram: "https://instagram.com/" as string | null,
-    social_behance: "https://behance.net/" as string | null,
-    social_linkedin: "https://linkedin.com/" as string | null,
-    social_dribbble: "https://dribbble.com/" as string | null,
+    company_phone: null as string | null,
+    // Site settings → SEO defaults → Favicon. Empty = the built-in /favicon.ico.
+    favicon: null as string | null,
+    apple_touch_icon: null as string | null,
+    // Real profile URLs come from Site settings → Social. A link with no URL
+    // is hidden rather than pointing at a platform's home page.
+    social_instagram: null as string | null,
+    social_behance: null as string | null,
+    social_linkedin: null as string | null,
+    social_dribbble: null as string | null,
+    social_x: null as string | null,
+    social_facebook: null as string | null,
+    // Site settings → Analytics. The built-in values are the live ones, so the
+    // tags work even before they are entered in the CMS.
+    google_tag_manager_id: "GTM-TH5BHPLF" as string | null,
+    google_site_verification: "iovpXedxjvgPXgl6_27CWY_2zatebyAcjYZXCfzR8T4" as string | null,
     // Visitor greetings: GIFs uploaded in Site settings → Greetings (emoji badges until then).
     /** Greeting clips play their sound (Site settings → Greetings); on unless switched off. */
     greeting_sound: true as boolean,
@@ -168,10 +180,31 @@ export const getSite = cache(async () => {
     }
     if (key in merged && (value || key === "availability_label")) (merged as Record<string, unknown>)[key] = value || null;
   }
+  merged.site_url = merged.site_url.replace(/\/+$/, "");
   return merged;
 });
 
 export type SiteSettings = Awaited<ReturnType<typeof getSite>>;
+
+/** The social profiles that have a real URL in Site settings, in display order. */
+export function socialLinks(site: SiteSettings): { key: string; label: string; href: string }[] {
+  const all = [
+    { key: "instagram", label: "Instagram", href: site.social_instagram },
+    { key: "behance", label: "Behance", href: site.social_behance },
+    { key: "linkedin", label: "LinkedIn", href: site.social_linkedin },
+    { key: "dribbble", label: "Dribbble", href: site.social_dribbble },
+    { key: "x", label: "X", href: site.social_x },
+    { key: "facebook", label: "Facebook", href: site.social_facebook },
+  ];
+  // A bare platform address (https://behance.net/) isn't a profile: skip it.
+  return all.filter((s): s is { key: string; label: string; href: string } => !!s.href && /^https?:\/\/[^/]+\/.+/.test(s.href.trim()));
+}
+
+/** A WhatsApp chat link for the studio's phone number, or null when there's no number. */
+export function whatsappLink(phone: string | null | undefined): string | null {
+  const digits = (phone ?? "").replace(/\D/g, "");
+  return digits.length >= 7 ? `https://wa.me/${digits}` : null;
+}
 
 export const getServiceDetails = cache(() => collection<ServiceDetail[]>("/services?full=1", staticServiceDetails));
 

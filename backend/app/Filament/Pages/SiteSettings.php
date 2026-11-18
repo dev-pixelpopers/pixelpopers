@@ -39,10 +39,10 @@ class SiteSettings extends Page implements HasForms
 
     /** Every key this page edits (its form's field names). */
     private const KEYS = [
-        'site_name', 'site_title', 'site_description', 'site_keywords', 'site_url', 'default_og_image',
+        'site_name', 'site_title', 'site_description', 'site_keywords', 'site_url', 'default_og_image', 'favicon', 'apple_touch_icon',
         'company_email', 'company_phone', 'company_address', 'company_hours', 'footer_tagline', 'availability_label',
         'social_instagram', 'social_behance', 'social_linkedin', 'social_dribbble', 'social_x', 'social_facebook',
-        'google_analytics_id', 'google_tag_manager_id', 'meta_pixel_id',
+        'google_analytics_id', 'google_tag_manager_id', 'meta_pixel_id', 'google_site_verification',
         'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_encryption',
         'mail_from_address', 'mail_from_name', 'mail_to_address', 'notify_on_contact', 'notify_on_comment',
         'frontend_revalidate_url', 'frontend_revalidate_secret',
@@ -77,6 +77,15 @@ class SiteSettings extends Page implements HasForms
                         Forms\Components\Textarea::make('site_description')->label('Default meta description')->rows(3)->maxLength(500),
                         Forms\Components\TextInput::make('site_keywords')->label('Default keywords'),
                         Fields::media('default_og_image', 'Default share image (1200 × 630)'),
+                        SchemaComponents\Section::make('Favicon')
+                            ->description('The little icon in the browser tab, bookmarks and search results. Leave empty to use the built-in Pixel Popers icon.')
+                            ->columns(2)
+                            ->schema([
+                                Fields::media('favicon', 'Favicon', 'icon')
+                                    ->helperText('ICO, PNG or SVG, square — 48 × 48 or larger (a 512 × 512 PNG works everywhere).'),
+                                Fields::media('apple_touch_icon', 'Home-screen icon (iPhone / Android)', 'icon')
+                                    ->helperText('Optional: a 180 × 180 PNG with a solid background. Falls back to the favicon.'),
+                            ]),
                     ]),
                     SchemaComponents\Tabs\Tab::make('Company')->icon('heroicon-o-building-office')->schema([
                         SchemaComponents\Grid::make(2)->schema([
@@ -101,7 +110,11 @@ class SiteSettings extends Page implements HasForms
                     ]),
                     SchemaComponents\Tabs\Tab::make('Analytics')->icon('heroicon-o-chart-pie')->schema([
                         Forms\Components\TextInput::make('google_analytics_id')->label('Google Analytics ID')->placeholder('G-XXXXXXXXXX'),
-                        Forms\Components\TextInput::make('google_tag_manager_id')->label('Google Tag Manager ID')->placeholder('GTM-XXXXXXX'),
+                        Forms\Components\TextInput::make('google_tag_manager_id')->label('Google Tag Manager ID')->placeholder('GTM-XXXXXXX')
+                            ->regex('/^GTM-[A-Z0-9]+$/')->helperText('Loaded on every page of the website.'),
+                        Forms\Components\TextInput::make('google_site_verification')->label('Google Search Console verification')
+                            ->placeholder('iovpXedxjvgPXgl6_27CWY_…')
+                            ->helperText('Only the content="…" value of the google-site-verification meta tag.'),
                         Forms\Components\TextInput::make('meta_pixel_id')->label('Meta Pixel ID')->regex('/^\d*$/')->placeholder('123456789012345'),
                     ]),
                     SchemaComponents\Tabs\Tab::make('Email')->icon('heroicon-o-envelope')->schema([
@@ -159,7 +172,7 @@ class SiteSettings extends Page implements HasForms
                             ->description('When set, every save here tells the website to refresh its cached pages right away. Without it the website picks up changes within its cache window.')
                             ->schema([
                                 Forms\Components\TextInput::make('frontend_revalidate_url')->label('Revalidation URL')->url()
-                                    ->placeholder('https://pixelpopers.vercel.app/api/revalidate'),
+                                    ->placeholder('https://www.pixelpopers.com/api/revalidate'),
                                 Forms\Components\TextInput::make('frontend_revalidate_secret')->label('Shared secret')->password()->revealable()
                                     ->helperText('Must match REVALIDATE_SECRET in the website’s environment.')
                                     ->suffixAction(\Filament\Actions\Action::make('generate')->icon('heroicon-o-key')->tooltip('Generate')

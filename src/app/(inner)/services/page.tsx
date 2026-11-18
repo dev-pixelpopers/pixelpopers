@@ -17,12 +17,12 @@ import {
 } from "@/components/inner/services-overview/Sections";
 import { getQuotes, getServiceDetails, getServicesPage, getSite, assertPagePublished } from "@/lib/content";
 import { servicesTestimonials } from "@/lib/pages/services";
-import { DEFAULT_OG_IMAGE } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getServicesPage();
   return {
-    title: seo.title,
+    title: { absolute: fitTitle(seo.title, "") },
     description: seo.description,
     alternates: { canonical: "/services" },
     openGraph: { title: seo.title, description: seo.description, type: "website", url: "/services", images: [seo.ogImage ?? DEFAULT_OG_IMAGE] },
@@ -87,7 +87,7 @@ export default async function ServicesPage() {
       ) : null}
       {s.rows ? (
         <div className="mt-[clamp(3.5rem,9.4vw,11.25rem)]">
-          <ServiceRows serviceRows={s.rows.items} serviceDetails={details} />
+          <ServiceRows serviceRows={s.rows.items} serviceDetails={details.map(({ slug, name }) => ({ slug, name }))} />
         </div>
       ) : null}
       {s.marquee ? (

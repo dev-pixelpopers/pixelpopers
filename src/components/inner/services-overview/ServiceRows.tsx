@@ -19,7 +19,11 @@ const toneText: Record<Tone, string> = {
  * panel, white type) — the second by default as in Figma — and the highlight
  * follows the pointer / keyboard focus.
  */
-export default function ServiceRows({ serviceDetails = defaultServiceDetails, serviceRows = defaultServiceRows }: { serviceDetails?: typeof defaultServiceDetails; serviceRows?: typeof defaultServiceRows } = {}) {
+/** Only the name and slug are needed here — passing whole service records would
+ *  serialise all of their long-form copy into the page's client payload. */
+type ServiceName = { slug: string; name: string };
+
+export default function ServiceRows({ serviceDetails = defaultServiceDetails, serviceRows = defaultServiceRows }: { serviceDetails?: readonly ServiceName[]; serviceRows?: typeof defaultServiceRows } = {}) {
   const [active, setActive] = useState(1);
 
   return (

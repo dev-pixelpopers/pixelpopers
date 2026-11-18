@@ -31,20 +31,22 @@ class Fields
      * or a full URL — the Upload button stores a new file on this server and
      * fills in its public URL.
      */
-    /** `$kind`: 'image', 'video', or 'animation' (a GIF or a short MP4/WebM clip). */
+    /** `$kind`: 'image', 'video', 'animation' (a GIF or a short MP4/WebM clip) or 'icon' (a favicon). */
     public static function media(string $name, string $label = 'Image', string $kind = 'image'): TextInput
     {
         $isVideo = $kind === 'video';
         $isAnimation = $kind === 'animation';
+        $isIcon = $kind === 'icon';
         [$fileLabel, $folder, $types, $maxKb] = match (true) {
             $isVideo => ['Video (MP4, keep it under ~3 MB)', 'uploads/videos', ['video/mp4', 'video/webm'], 20480],
+            $isIcon => ['Icon (ICO, PNG or SVG — square, at least 48 × 48)', 'uploads/icons', ['image/x-icon', 'image/vnd.microsoft.icon', 'image/png', 'image/svg+xml', 'image/webp'], 1024],
             $isAnimation => ['Animation (GIF or a short MP4 — keep it under ~2 MB)', 'uploads/animations', ['image/gif', 'video/mp4', 'video/webm', 'image/webp', 'image/png'], 10240],
             default => ['Image (WebP, AVIF, PNG, JPG or GIF)', 'uploads/images', ['image/webp', 'image/avif', 'image/png', 'image/jpeg', 'image/svg+xml', 'image/gif'], 8192],
         };
 
         return TextInput::make($name)
             ->label($label)
-            ->placeholder($isVideo ? '/assets/videos/clip.mp4' : '/assets/inner/photo.webp')
+            ->placeholder($isVideo ? '/assets/videos/clip.mp4' : ($isIcon ? '/favicon.ico' : '/assets/inner/photo.webp'))
             ->helperText('A path on the website (e.g. /assets/…) or a full URL. Use Upload to add a new file.')
             ->suffixAction(
                 Action::make('upload_'.str_replace('.', '_', $name))

@@ -1,2 +1,7 @@
+# admin.pixelpopers.com is the Pixel Popers CMS, not the website
+# (that's https://www.pixelpopers.com). Every response here carries
+# "X-Robots-Tag: noindex", so search engines drop it from their results.
+# Crawling stays allowed on purpose: a crawler that can't fetch a page
+# never sees its noindex, and a blocked URL can stay listed.
 User-agent: *
-Disallow:
+Allow: /

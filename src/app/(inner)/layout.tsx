@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
-import { getHiddenPages, getServiceLinks, getSite } from "@/lib/content";
+import { getHiddenPages, getServiceLinks, getSite, socialLinks } from "@/lib/content";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pixelpopers.vercel.app"),
+  metadataBase: new URL(SITE_URL),
 };
 
 /**
@@ -16,7 +17,7 @@ export default async function InnerLayout({ children }: LayoutProps<"/">) {
 
   return (
     <>
-      <SiteHeader ctaHref="/contact" hiddenPages={hiddenPages} />
+      <SiteHeader ctaHref="/contact" hiddenPages={hiddenPages} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
       <main id="main" className="flex-1">
         {children}
       </main>

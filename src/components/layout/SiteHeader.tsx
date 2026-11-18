@@ -11,9 +11,11 @@ type SiteHeaderProps = {
   ctaHref?: string;
   /** Pages switched off in the CMS; the menu leaves their links out. */
   hiddenPages?: readonly string[];
+  /** Social profiles for the menu (Site settings → Social). */
+  socials?: readonly { label: string; href: string }[];
 };
 
-export default function SiteHeader({ ctaHref = "#contact", hiddenPages }: SiteHeaderProps) {
+export default function SiteHeader({ ctaHref = "#contact", hiddenPages, socials }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -35,7 +37,7 @@ export default function SiteHeader({ ctaHref = "#contact", hiddenPages }: SiteHe
 
       <PopButton href={ctaHref} label="Lets Talk" size="sm" />
 
-      <MenuOverlay open={menuOpen} onClose={closeMenu} hiddenPages={hiddenPages} />
+      <MenuOverlay open={menuOpen} onClose={closeMenu} hiddenPages={hiddenPages} socials={socials} />
     </header>
   );
 }

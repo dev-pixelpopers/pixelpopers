@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
 
+import { getSite } from "@/lib/content";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 
-/** /manifest.webmanifest — name, colours and icon for "add to home screen". */
-export default function manifest(): MetadataRoute.Manifest {
+/** /manifest.webmanifest — name, colours and icon for "add to home screen" (icons from Site settings). */
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const site = await getSite();
+  const icon = site.apple_touch_icon || site.favicon;
   return {
     name: SITE_NAME,
     short_name: SITE_NAME,
@@ -12,6 +15,6 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#ffe5d7",
     theme_color: "#ffe5d7",
-    icons: [{ src: "/favicon.ico", sizes: "any", type: "image/x-icon" }],
+    icons: icon ? [{ src: icon, sizes: "any" }] : [{ src: "/favicon.ico", sizes: "any", type: "image/x-icon" }],
   };
 }

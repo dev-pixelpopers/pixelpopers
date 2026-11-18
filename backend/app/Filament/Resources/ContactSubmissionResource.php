@@ -47,6 +47,8 @@ class ContactSubmissionResource extends Resource
             SchemaComponents\Section::make('From')->columns(2)->schema([
                 Infolists\Components\TextEntry::make('name'),
                 Infolists\Components\TextEntry::make('email')->copyable()->url(fn (ContactSubmission $record) => 'mailto:'.$record->email),
+                Infolists\Components\TextEntry::make('phone')->copyable()->placeholder('—')
+                    ->url(fn (ContactSubmission $record) => $record->phone ? 'tel:'.preg_replace('/[^\d+]/', '', $record->phone) : null),
                 Infolists\Components\TextEntry::make('company')->placeholder('—'),
                 Infolists\Components\TextEntry::make('website')->placeholder('—')
                     ->url(fn (ContactSubmission $record) => $record->website ? (str_starts_with($record->website, 'http') ? $record->website : 'https://'.$record->website) : null, true),
@@ -68,7 +70,8 @@ class ContactSubmissionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->weight('bold')->description(fn (ContactSubmission $record) => $record->email),
+                Tables\Columns\TextColumn::make('name')->searchable()->weight('bold')->description(fn (ContactSubmission $record) => $record->email.($record->phone ? ' · '.$record->phone : '')),
+                Tables\Columns\TextColumn::make('phone')->searchable()->copyable()->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('company')->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('services')->badge()->toggleable(),
                 Tables\Columns\TextColumn::make('budget')->toggleable(),

@@ -19,10 +19,10 @@ class Setting extends Model
 
     /** Keys the public API may expose (everything else — SMTP, secrets — stays private). */
     public const PUBLIC_KEYS = [
-        'site_name', 'site_title', 'site_description', 'site_keywords', 'site_url', 'default_og_image',
+        'site_name', 'site_title', 'site_description', 'site_keywords', 'site_url', 'default_og_image', 'favicon', 'apple_touch_icon',
         'company_email', 'company_phone', 'company_address', 'company_hours',
         'social_instagram', 'social_behance', 'social_linkedin', 'social_dribbble', 'social_x', 'social_facebook',
-        'google_analytics_id', 'google_tag_manager_id', 'meta_pixel_id',
+        'google_analytics_id', 'google_tag_manager_id', 'meta_pixel_id', 'google_site_verification',
         'footer_tagline', 'availability_label',
         // Visitor greetings (Site settings → Greetings).
         'greeting_sound', 'greeting_gif', 'thumbs_gif', 'greeting_gif_home', 'greeting_gif_work', 'greeting_gif_case_study', 'greeting_gif_services', 'greeting_gif_service', 'greeting_gif_about', 'greeting_gif_blog', 'greeting_gif_post', 'greeting_gif_contact',

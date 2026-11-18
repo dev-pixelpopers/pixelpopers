@@ -12,12 +12,12 @@ import {
   TrendingTags,
 } from "@/components/inner/blog/Sections";
 import { getBlogPage, getCategories, getPosts, getSite, getTeam, assertPagePublished } from "@/lib/content";
-import { DEFAULT_OG_IMAGE } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getBlogPage();
   return {
-    title: seo.title,
+    title: { absolute: fitTitle(seo.title, "") },
     description: seo.description,
     alternates: { canonical: "/blog" },
     openGraph: { title: seo.title, description: seo.description, type: "website", url: "/blog", images: [seo.ogImage ?? DEFAULT_OG_IMAGE] },
@@ -68,7 +68,7 @@ export default async function BlogPage() {
           className="pointer-events-none col-start-1 row-start-1 mt-[37.5vw] mr-[3.6vw] hidden h-auto w-[12.4vw] max-w-[239px] -rotate-[15deg] self-start justify-self-end lg:block"
         />
         <div className="col-start-1 row-start-1">
-          <BlogExplorer posts={posts} owners={team.owners} categories={categories} />
+          <BlogExplorer posts={posts.map((p) => ({ ...p, body: [], comments: [] }))} owners={team.owners} categories={categories} />
         </div>
       </div>
 

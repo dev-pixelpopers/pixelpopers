@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Project } from "@/lib/pages/work";
+import type { ProjectCardData } from "@/lib/pages/work";
 import { cardShadow } from "./tokens";
 
 const cell = "col-start-1 row-start-1";
 
 /** Figma "Featured case — Snack Bar": a 1680×800 cover with a grape shade and the details laid over it. */
-export default function FeaturedCard({ project }: { project: Project }) {
+export default function FeaturedCard({ project }: { project: ProjectCardData }) {
   const p = project;
   return (
     <article data-wb="featured" className="group">

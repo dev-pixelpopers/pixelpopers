@@ -90,7 +90,7 @@ export const serviceDetails: ServiceDetail[] = [
     heroIntro:
       "Logos, palettes, type and brand books that make you instantly recognisable — on a cup, a screen or a billboard.",
     heroCta: "Start your brand",
-    metaTitle: "Brand Identity Design Agency — Logos, Colour & Brand Guidelines",
+    metaTitle: "Brand Identity Design — Logos, Colour & Guidelines",
     metaDescription:
       "Pixel Popers designs brand identities that stick: brand strategy, logo design, colour systems, typography and brand guidelines for start-ups and growing businesses.",
     accent: "blush",
@@ -420,7 +420,7 @@ export const serviceDetails: ServiceDetail[] = [
     heroIntro:
       "Social, search, ads and email — planned with data, made with personality and measured every single month.",
     heroCta: "Grow my brand",
-    metaTitle: "Digital Marketing Agency — Social Media, SEO & Paid Ads",
+    metaTitle: "Digital Marketing Agency — Social, SEO & Paid Ads",
     metaDescription:
       "Pixel Popers runs data-driven digital marketing: social media management, SEO, Google and Meta ads, email marketing and content campaigns that grow traffic and sales.",
     accent: "lagoon",
@@ -585,7 +585,7 @@ export const serviceDetails: ServiceDetail[] = [
     heroIntro:
       "Fast, accessible websites and web apps built on modern stacks — easy for your team to update, impossible for Google to ignore.",
     heroCta: "Build my site",
-    metaTitle: "Web Development Agency — Fast, SEO-Friendly Websites & Web Apps",
+    metaTitle: "Web Development Agency — Fast, SEO-Friendly Sites",
     metaDescription:
       "Pixel Popers builds fast, responsive websites and web apps with Next.js and headless CMS: custom development, e-commerce, performance optimisation and technical SEO.",
     accent: "grape",
@@ -750,7 +750,7 @@ export const serviceDetails: ServiceDetail[] = [
     heroIntro:
       "Logo stings, explainers, reels and UI animation that give your brand rhythm — and keep people watching till the very last frame.",
     heroCta: "Make it move",
-    metaTitle: "Motion Graphics Studio — Explainer Videos, Logo Animation & Social Video",
+    metaTitle: "Motion Graphics Studio — Explainers & Social Video",
     metaDescription:
       "Pixel Popers creates motion graphics: logo animations, 2D and 3D explainer videos, product animations, UI motion and short-form social video for brands.",
     accent: "sunbeam",
@@ -915,7 +915,7 @@ export const serviceDetails: ServiceDetail[] = [
     heroIntro:
       "Web copy, blogs, scripts and captions that sound like you on your best day — and rank, convert and get shared.",
     heroCta: "Find my voice",
-    metaTitle: "Content Writing & Copywriting Services — SEO Blogs, Website Copy",
+    metaTitle: "Content Writing Services — SEO Blogs & Web Copy",
     metaDescription:
       "Pixel Popers offers content writing and copywriting: website copy, SEO blog articles, brand tone of voice, social captions, email and video scripts that convert.",
     accent: "blush",

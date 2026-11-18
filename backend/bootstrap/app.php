@@ -12,7 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // The CMS must never show up in search results.
+        $middleware->append(\App\Http\Middleware\NoIndex::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // API errors (404s, validation, rate limits) are always JSON.

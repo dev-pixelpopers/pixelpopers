@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
-import { filters as defaultFilters, PAGE_SIZE, type Category, type Project } from "@/lib/pages/work";
+import { filters as defaultFilters, PAGE_SIZE, type Category, type ProjectCardData } from "@/lib/pages/work";
 import FeaturedCard from "./FeaturedCard";
 import ProjectCard from "./ProjectCard";
 import { wide } from "./tokens";
@@ -27,16 +27,16 @@ type Filter = "all" | Category;
  * the scroll. All scrubbed except the chips. It is rebuilt whenever the
  * filter, sort or "Load more" changes which cards are on screen.
  */
-export default function ProjectBrowser({ projects, filters = defaultFilters }: { projects: Project[] } & { filters?: typeof defaultFilters }) {
+export default function ProjectBrowser({ projects, filters = defaultFilters }: { projects: ProjectCardData[] } & { filters?: typeof defaultFilters }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [newestFirst, setNewestFirst] = useState(true);
   const [visible, setVisible] = useState(PAGE_SIZE);
 
-  const matches = (p: Project) => filter === "all" || p.categories.includes(filter);
+  const matches = (p: ProjectCardData) => filter === "all" || p.categories.includes(filter);
   const featured = projects.find((p) => p.featured && matches(p));
 
   const list = useMemo(() => {
-    const score = (p: Project) => p.year * 12 + p.month;
+    const score = (p: ProjectCardData) => p.year * 12 + p.month;
     return projects
       .filter((p) => !p.featured && (filter === "all" || p.categories.includes(filter)))
       .sort((a, b) => (newestFirst ? score(b) - score(a) : score(a) - score(b)));
@@ -137,7 +137,7 @@ export default function ProjectBrowser({ projects, filters = defaultFilters }: {
     setVisible(PAGE_SIZE);
   };
 
-  const item = (p: Project, i: number) => (
+  const item = (p: ProjectCardData, i: number) => (
     <li key={p.slug} data-wb="card" style={{ order: i }}>
       <ProjectCard project={p} priority={i < 2} />
     </li>

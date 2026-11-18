@@ -14,6 +14,7 @@ import {
 } from "@/components/inner/blog/PostSections";
 import { getPost, getPosts, getSite, getTeam } from "@/lib/content";
 import { wordCount } from "@/lib/pages/blog";
+import { fitTitle } from "@/lib/site";
 
 /** Posts published in the CMS after a build render on first visit. */
 export const dynamicParams = true;
@@ -31,7 +32,7 @@ export async function generateMetadata({
   if (!found) return {};
   const { post } = found;
   const seo = (post as { seo?: { title?: string | null; ogImage?: string | null } }).seo;
-  const title = seo?.title || `${post.title} | Pixel Popers Blog`;
+  const title = fitTitle(seo?.title || post.title);
   const url = `/blog/${post.slug}`;
   return {
     title,

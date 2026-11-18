@@ -36,6 +36,13 @@ class FormController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email:rfc', 'max:255'],
+            // Any common format: +, spaces, dashes, dots and brackets; 7–15 digits.
+            'phone' => ['required', 'string', 'max:40', 'regex:/^\+?[\d\s().-]{7,22}$/', function (string $attribute, mixed $value, \Closure $fail) {
+                $digits = strlen(preg_replace('/\D/', '', (string) $value));
+                if ($digits < 7 || $digits > 15) {
+                    $fail('Please enter a full phone number, including the country code.');
+                }
+            }],
             'company' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
             'services' => ['nullable', 'array', 'max:12'],
@@ -55,6 +62,7 @@ class FormController extends Controller
                 implode("\n", [
                     'Name: '.$submission->name,
                     'Email: '.$submission->email,
+                    'Phone: '.($submission->phone ?: '—'),
                     'Company: '.($submission->company ?: '—'),
                     'Website: '.($submission->website ?: '—'),
                     'Services: '.(implode(', ', $submission->services ?? []) ?: 'Not sure yet'),

@@ -31,6 +31,10 @@
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always unset X-Powered-By
 
+    # This is the CMS, not the website: nothing here (pages, uploads, API)
+    # may appear in search results.
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+
     # Static assets (Filament's versioned CSS/JS, fonts) and uploaded media
     # (/storage/uploads/…, never overwritten in place) can be cached for a year.
     <FilesMatch "\.(js|mjs|css|png|jpg|jpeg|gif|svg|webp|avif|ico|woff|woff2|mp4|webm)$">

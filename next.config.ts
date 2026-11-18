@@ -9,12 +9,42 @@ const cmsHost = (() => {
   }
 })();
 
+/** The one address the site should be indexed under. */
+const CANONICAL_HOST = "www.pixelpopers.com";
+
+/**
+ * Other addresses that have served (or could serve) this site and must hand
+ * their traffic — and their search rankings — to the canonical host with a
+ * permanent redirect: the production *.vercel.app alias, the bare domain, and
+ * the old backend.pixelpopers.com address Google indexed.
+ */
+const LEGACY_HOSTS = ["pixelpopers.vercel.app", "pixelpopers.com", "backend.pixelpopers.com"];
+
 const nextConfig: NextConfig = {
-  experimental: {
-    // Tailwind's CSS is small and atomic: shipped inline in the <head> it
-    // stops being a render-blocking request (~850ms on a throttled phone).
-    inlineCss: true,
+  async redirects() {
+    return LEGACY_HOSTS.map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: `^${host.replace(/\./g, "\\.")}$` }],
+      destination: `https://${CANONICAL_HOST}/:path*`,
+      permanent: true,
+    }));
   },
+  // Any other *.vercel.app address (preview deployments) stays reachable for
+  // review but is kept out of search results.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "(?<sub>.*)\\.vercel\\.app" }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
+  },
+  // No `experimental.inlineCss`: it put the whole Tailwind stylesheet (~240KB)
+  // into every page twice — once in a <style> tag and again inside the React
+  // payload — so ~70% of each HTML file was CSS (the audit's "low text-HTML
+  // ratio") and the main thread had to parse it all on every navigation. As a
+  // normal stylesheet it is one cached request shared by every page.
   images: {
     // AVIF first (smallest), WebP as the fallback for older browsers.
     formats: ["image/avif", "image/webp"],

@@ -3,14 +3,14 @@ import ContactMotion from "@/components/inner/contact/ContactMotion";
 import Intro from "@/components/inner/contact/Intro";
 import { AfterSend, Channels, ChatFaq, NextSteps, WhereWhen } from "@/components/inner/contact/Sections";
 import QuoteCards from "@/components/inner/services-overview/QuoteCards";
-import { getContactPage, getQuotes, getSite, getTeam, assertPagePublished } from "@/lib/content";
+import { getContactPage, getQuotes, getSite, getTeam, assertPagePublished, socialLinks, whatsappLink } from "@/lib/content";
 import { contactTestimonials } from "@/lib/pages/contact";
-import { DEFAULT_OG_IMAGE } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getContactPage();
   return {
-    title: seo.title,
+    title: { absolute: fitTitle(seo.title, "") },
     description: seo.description,
     alternates: { canonical: "/contact" },
     openGraph: { title: seo.title, description: seo.description, type: "website", url: "/contact", images: [seo.ogImage ?? DEFAULT_OG_IMAGE] },
@@ -32,6 +32,22 @@ export default async function ContactPage() {
   ]);
   const url = site.site_url;
   const email = site.company_email;
+  const socials = socialLinks(site);
+  const whatsapp = whatsappLink(site.company_phone);
+  // Social pills link to the real profiles in Site settings; none set → no pills.
+  const info = s.info ? { ...s.info, socials: socials.map(({ label, href }) => ({ label, href })) } : null;
+  // The WhatsApp card opens a chat with the studio's number (Site settings →
+  // Company → Phone). A bare https://wa.me/ is a broken link, so without a
+  // number the card is left out.
+  const channels = s.channels
+    ? {
+        ...s.channels,
+        items: s.channels.items.flatMap((c) => {
+          if (!/^https?:\/\/(wa\.me|api\.whatsapp\.com)\/?$/i.test(c.href.trim())) return [c];
+          return whatsapp ? [{ ...c, href: whatsapp }] : [];
+        }),
+      }
+    : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -45,10 +61,13 @@ export default async function ContactPage() {
       url,
       logo: `${url}/assets/logo-pixelpopers.png`,
       email,
+      ...(site.company_phone ? { telephone: site.company_phone } : {}),
+      ...(socials.length ? { sameAs: socials.map((x) => x.href) } : {}),
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "sales",
         email,
+        ...(site.company_phone ? { telephone: site.company_phone } : {}),
         areaServed: "Worldwide",
         availableLanguage: ["English"],
         hoursAvailable: {
@@ -67,8 +86,8 @@ export default async function ContactPage() {
         <Intro
           CONTACT_EMAIL={email}
           contactHero={s.hero}
-          contactInfo={s.info ?? undefined}
-          showInfo={!!s.info}
+          contactInfo={info ?? undefined}
+          showInfo={!!info}
           contactForm={s.form ?? undefined}
           owners={team.owners}
         />
@@ -78,9 +97,9 @@ export default async function ContactPage() {
           <NextSteps nextSteps={s.next_steps} />
         </div>
       ) : null}
-      {s.channels ? (
+      {channels && channels.items.length ? (
         <div className="mt-[clamp(4rem,8.33vw,10rem)]">
-          <Channels channels={s.channels} />
+          <Channels channels={channels} />
         </div>
       ) : null}
       {s.chat_faq ? (

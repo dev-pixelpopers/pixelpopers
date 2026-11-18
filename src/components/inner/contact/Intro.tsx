@@ -146,6 +146,8 @@ export default function Intro({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactHe
               </p>
             </div>
 
+            {contactInfo.socials.length ? (
+              <>
             <p data-whero="hello" className={`${kicker} mt-[clamp(2rem,3.1vw,3.75rem)]`}>{contactInfo.follow}</p>
             <ul className="relative z-10 mt-4 flex flex-wrap gap-2.5">
               {contactInfo.socials.map((s) => (
@@ -162,6 +164,8 @@ export default function Intro({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactHe
                 </li>
               ))}
             </ul>
+              </>
+            ) : null}
             {/* Yellow loop doodle tucked under the social pills (Figma 337:41). */}
             <Image
               aria-hidden

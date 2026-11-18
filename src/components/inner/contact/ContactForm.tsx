@@ -31,13 +31,14 @@ type Answers = {
   budget: string;
   details: string;
   email: string;
+  phone: string;
 };
 
 type StepKey = keyof Answers;
 
 type Step = {
   key: StepKey;
-  kind: "text" | "email" | "url" | "textarea" | "multi" | "single";
+  kind: "text" | "email" | "tel" | "url" | "textarea" | "multi" | "single";
   /** `returning`: the welcome intro already told us their name. */
   ask: (a: Answers, first: string, returning?: boolean) => ReactNode;
   placeholder?: string;
@@ -51,6 +52,8 @@ const first = (name: string) => name.trim().split(/\s+/)[0] || "friend";
 const list = (items: string[]) =>
   items.length <= 1 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+/** A phone number in any common format: +, spaces, dashes, dots and brackets allowed; 7–15 digits. */
+const phoneOk = (v: string) => /^\+?[\d\s().-]{7,22}$/.test(v.trim()) && (v.match(/\d/g)?.length ?? 0) >= 7 && (v.match(/\d/g)?.length ?? 0) <= 15;
 
 const steps: Step[] = [
   {
@@ -132,7 +135,18 @@ const steps: Step[] = [
     placeholder: "you@brand.com",
     ask: (_a, f) => (
       <>
-        Love it. Last one, {f} — <b>where should we send our reply?</b>
+        Love it, {f}. <b>Where should we send our reply?</b>
+      </>
+    ),
+  },
+  {
+    key: "phone",
+    kind: "tel",
+    autoComplete: "tel",
+    placeholder: "+1 555 123 4567",
+    ask: () => (
+      <>
+        Last one — <b>what’s the best number to reach you on?</b> Include your country code so we can call or WhatsApp you.
       </>
     ),
   },
@@ -154,7 +168,7 @@ function shown(step: Step, a: Answers): string {
   }
 }
 
-const empty: Answers = { name: "", services: [], company: "", website: "", budget: "", details: "", email: "" };
+const empty: Answers = { name: "", services: [], company: "", website: "", budget: "", details: "", email: "", phone: "" };
 
 const chipTone = ["bg-blush text-white", "bg-grape text-white", "bg-lagoon text-white", "bg-sunbeam text-ink"];
 const chip =
@@ -318,6 +332,10 @@ export default function ContactForm({
       setHint("Hmm, that email doesn’t look quite right — mind checking it?");
       return;
     }
+    if (current.kind === "tel" && !phoneOk(value)) {
+      setHint("That number looks a little short — add the full number with your country code, e.g. +1 555 123 4567.");
+      return;
+    }
     answer(value);
   }
 
@@ -345,6 +363,7 @@ export default function ContactForm({
     const result = await submitForm("contact", {
       name: answers.name,
       email: answers.email,
+      phone: answers.phone,
       company: answers.company,
       website: answers.website || null,
       services: answers.services,
@@ -367,6 +386,7 @@ export default function ContactForm({
     const lines = [
       `Name: ${answers.name}`,
       `Email: ${answers.email}`,
+      `Phone: ${answers.phone}`,
       `Company / brand: ${answers.company}`,
       `Website: ${answers.website || "—"}`,
       `Services: ${answers.services.length ? answers.services.join(", ") : NOT_SURE}`,
@@ -429,7 +449,7 @@ export default function ContactForm({
               <dl className="grid gap-x-6 gap-y-2.5 rounded-[22px] border border-ink/10 bg-cream/40 p-[clamp(1rem,1.4vw,1.5rem)] font-copy text-[0.9375rem] sm:grid-cols-[auto_1fr]">
                 {steps.map((s, i) => (
                   <div key={s.key} className="contents">
-                    <dt className="font-haas text-ink/55">{{ name: "Name", services: "Services", company: "Brand", website: "Website", budget: "Budget", details: "Project", email: "Email" }[s.key]}</dt>
+                    <dt className="font-haas text-ink/55">{{ name: "Name", services: "Services", company: "Brand", website: "Website", budget: "Budget", details: "Project", email: "Email", phone: "Phone" }[s.key]}</dt>
                     <dd className="flex min-w-0 items-start justify-between gap-3 text-ink max-sm:mb-1.5">
                       <span className="line-clamp-3 break-words whitespace-pre-line">{shown(s, answers)}</span>
                       <button type="button" onClick={() => edit(i)} className="shrink-0 text-[0.8125rem] text-grape underline-offset-2 hover:underline">
@@ -570,8 +590,8 @@ export default function ContactForm({
                   onKeyDown={onKey}
                   aria-labelledby={questionId}
                   aria-invalid={hint ? true : undefined}
-                  type={current.kind === "email" ? "email" : "text"}
-                  inputMode={current.kind === "url" ? "url" : current.kind === "email" ? "email" : undefined}
+                  type={current.kind === "email" ? "email" : current.kind === "tel" ? "tel" : "text"}
+                  inputMode={current.kind === "url" ? "url" : current.kind === "email" ? "email" : current.kind === "tel" ? "tel" : undefined}
                   autoComplete={current.autoComplete}
                   maxLength={255}
                   placeholder={current.placeholder}

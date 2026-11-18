@@ -15,6 +15,7 @@ import {
   Timeline,
 } from "@/components/inner/work/CaseStudy";
 import { getProject, getProjects, getSite, getTeam } from "@/lib/content";
+import { fitTitle } from "@/lib/site";
 
 /** Case studies added in the CMS after a build render on first visit. */
 export const dynamicParams = true;
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: PageProps<"/work/[slug]">): P
   if (!found) return {};
   const p = found.project;
   const seo = (p as { seo?: { title?: string | null; description?: string | null; ogImage?: string | null } }).seo;
-  const title = seo?.title || `${p.name} — ${p.discipline} Case Study | Pixel Popers`;
+  const title = fitTitle(seo?.title || `${p.name} — ${p.discipline} Case Study`);
   const description = seo?.description || p.description;
   return {
     title,

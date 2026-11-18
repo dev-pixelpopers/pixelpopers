@@ -23,12 +23,8 @@ export const contactInfo = {
   talkTo: "You’ll talk to one of us",
   founders: { names: "Adan, James & Barry", line: "The founders, not a sales team." },
   follow: "Follow the pop",
-  socials: [
-    { label: "Instagram", href: "https://www.instagram.com/" },
-    { label: "Behance", href: "https://www.behance.net/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/" },
-    { label: "Dribbble", href: "https://dribbble.com/" },
-  ],
+  // Filled from Site settings → Social at render time (see app/(inner)/contact/page.tsx).
+  socials: [] as { label: string; href: string }[],
 };
 
 export const contactForm = {

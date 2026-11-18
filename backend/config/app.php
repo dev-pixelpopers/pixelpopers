@@ -56,7 +56,7 @@ return [
 
     // The Next.js site this CMS feeds. Media paths like /assets/... resolve
     // against it, and it is allowed to call the API (see config/cors.php).
-    'frontend_url' => env('FRONTEND_URL', 'https://pixelpopers.vercel.app'),
+    'frontend_url' => env('FRONTEND_URL', 'https://www.pixelpopers.com'),
 
     /*
     |--------------------------------------------------------------------------

@@ -102,11 +102,39 @@ function isAutomated() {
 let introOpen: boolean | undefined;
 const introListeners = new Set<() => void>();
 
-/** Whether this page view opens with the welcome intro (first visit, a real person). */
+/** Whether the welcome intro is up (or about to be) on this page view. */
 export function introPending(): boolean {
   if (typeof window === "undefined") return false;
-  if (introOpen === undefined) introOpen = read() === null && !isAutomated();
-  return introOpen;
+  return introOpen === true;
+}
+
+/** Interactions that prove a person is there (page-speed tests and crawlers never do any of these). */
+const FIRST_TOUCH = ["pointerdown", "pointermove", "keydown", "touchstart", "wheel"] as const;
+
+/**
+ * First visit by a person: the welcome intro opens on their first
+ * interaction — not on load. Page-speed tools (PageSpeed Insights, Lighthouse)
+ * no longer identify themselves in the user agent, so they used to get the
+ * full-screen intro and score it as the page (LCP on the "100" counter, its
+ * animation counted as blocking time). Waiting for a real touch, key or mouse
+ * move means the measured page is the real one, while every visitor still
+ * gets the intro the moment they move. Returns a cleanup.
+ */
+export function armIntro(): () => void {
+  if (typeof window === "undefined" || introOpen !== undefined) return () => {};
+  if (read() !== null || isAutomated()) {
+    introOpen = false;
+    return () => {};
+  }
+  const open = () => {
+    disarm();
+    if (introOpen !== undefined || read() !== null) return;
+    introOpen = true;
+    introListeners.forEach((l) => l());
+  };
+  const disarm = () => FIRST_TOUCH.forEach((type) => window.removeEventListener(type, open));
+  FIRST_TOUCH.forEach((type) => window.addEventListener(type, open, { passive: true, once: true }));
+  return disarm;
 }
 
 /** The intro has gone: page entrances that were waiting can play. */

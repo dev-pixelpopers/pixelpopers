@@ -7,7 +7,7 @@ import ServicePageMotion from "@/components/inner/service/ServicePageMotion";
 import { conceptFor } from "@/components/inner/services/registry";
 import { ServiceMediaProvider } from "@/components/inner/services/ServiceImage";
 import { getServiceDetail, getServiceDetails, getSite } from "@/lib/content";
-import { DEFAULT_OG_IMAGE } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
 
 /** Services added in the CMS after a build render on first visit. */
 export const dynamicParams = true;
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/services/[slug]">
   if (!service) return {};
   const og = (service as { ogImage?: string | null }).ogImage;
   return {
-    title: `${service.metaTitle || service.name} | Pixel Popers`,
+    title: fitTitle(service.metaTitle || service.name),
     description: service.metaDescription,
     alternates: { canonical: `/services/${service.slug}` },
     openGraph: { title: service.metaTitle, description: service.metaDescription, type: "website", url: `/services/${service.slug}`, images: [og || DEFAULT_OG_IMAGE] },

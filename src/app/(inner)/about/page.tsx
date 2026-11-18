@@ -12,12 +12,12 @@ import Studio from "@/components/inner/about/Studio";
 import Closing from "@/components/inner/about/Closing";
 import { getAbout, getQuotes, getSite, getTeam, assertPagePublished } from "@/lib/content";
 import { testimonials as staticTestimonials } from "@/lib/pages/about";
-import { DEFAULT_OG_IMAGE } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getAbout();
   return {
-    title: seo.title,
+    title: { absolute: fitTitle(seo.title, "") },
     description: seo.description,
     alternates: { canonical: "/about" },
     openGraph: { title: seo.title, description: seo.description, type: "website", url: "/about", images: [seo.ogImage ?? DEFAULT_OG_IMAGE] },

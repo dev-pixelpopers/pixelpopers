@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Project } from "@/lib/pages/work";
+import type { ProjectCardData } from "@/lib/pages/work";
 import { accentBg, cardShadow, onAccent } from "./tokens";
 
 /**
@@ -9,7 +9,7 @@ import { accentBg, cardShadow, onAccent } from "./tokens";
  * Figma shows the hover state — a -1° tilt, a white 10px frame and the pink
  * "VIEW PROJECT" cursor bubble — so every card does that on hover.
  */
-export default function ProjectCard({ project, priority = false }: { project: Project; priority?: boolean }) {
+export default function ProjectCard({ project, priority = false }: { project: ProjectCardData; priority?: boolean }) {
   const p = project;
   return (
     <article className="group">

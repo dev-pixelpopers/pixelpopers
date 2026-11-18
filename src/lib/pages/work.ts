@@ -10,6 +10,18 @@ export type Category = "branding" | "ui-ux" | "web" | "motion" | "marketing";
 
 export type Img = { src: string; w: number; h: number; alt: string; position?: string };
 
+/** The case-study-only fields, left out where a project is just a card. */
+type CaseStudyFields = "intro" | "brand" | "results" | "quote" | "story" | "gallery" | "galleryHeading" | "delivered" | "phases" | "team";
+
+/** What a project card needs (the /work grid) — no case-study copy, so it stays out of the page's client payload. */
+export type ProjectCardData = Omit<Project, CaseStudyFields>;
+
+export function toProjectCard(p: Project): ProjectCardData {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { intro, brand, results, quote, story, gallery, galleryHeading, delivered, phases, team, ...card } = p;
+  return card;
+}
+
 export type Project = {
   slug: string;
   name: string;

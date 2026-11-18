@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SITE_URL } from "@/lib/site";
 
 type Crumb = { label: string; href?: string };
 
@@ -11,7 +12,7 @@ export default function Breadcrumb({ items, className = "" }: { items: Crumb[]; 
       "@type": "ListItem",
       position: i + 1,
       name: c.label,
-      ...(c.href ? { item: `https://pixelpopers.vercel.app${c.href}` } : {}),
+      ...(c.href ? { item: `${SITE_URL}${c.href}` } : {}),
     })),
   };
 

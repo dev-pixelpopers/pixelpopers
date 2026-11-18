@@ -21,13 +21,13 @@ const links = [
   { label: "Contact", href: "/contact" },
 ];
 
-const socials = ["Instagram", "Behance", "LinkedIn", "Dribbble"];
-
 type MenuOverlayProps = {
   open: boolean;
   onClose: () => void;
   /** Pages switched off in the CMS (e.g. "work"); their links are left out. */
   hiddenPages?: readonly string[];
+  /** Real profile links from Site settings → Social (none → no pills). */
+  socials?: readonly { label: string; href: string }[];
 };
 
 /**
@@ -35,7 +35,7 @@ type MenuOverlayProps = {
  * The overlay itself is `fixed` — the one place positioning is unavoidable —
  * everything inside it is plain flex/grid flow.
  */
-export default function MenuOverlay({ open, onClose, hiddenPages = [] }: MenuOverlayProps) {
+export default function MenuOverlay({ open, onClose, hiddenPages = [], socials = [] }: MenuOverlayProps) {
   const visibleLinks = links.filter((l) => !hiddenPages.includes(l.href.slice(1)));
   const root = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
@@ -184,15 +184,22 @@ export default function MenuOverlay({ open, onClose, hiddenPages = [] }: MenuOve
               <a href="mailto:hello@pixelpopers.com" className="mt-2 inline-block font-haas text-[clamp(1.25rem,1.6vw,1.875rem)] text-cream hover:text-lagoon">
                 hello@pixelpopers.com
               </a>
-              <ul className="mt-6 flex flex-wrap gap-3">
-                {socials.map((s) => (
-                  <li key={s}>
-                    <a href="#" className="inline-block rounded-full border border-cream/30 px-5 py-2 font-haas text-micro text-cream/80 transition-colors hover:border-lagoon hover:text-lagoon">
-                      {s}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              {socials.length ? (
+                <ul className="mt-6 flex flex-wrap gap-3">
+                  {socials.map((s) => (
+                    <li key={s.label}>
+                      <a
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block rounded-full border border-cream/30 px-5 py-2 font-haas text-micro text-cream/80 transition-colors hover:border-lagoon hover:text-lagoon"
+                      >
+                        {s.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           </aside>
         </div>
