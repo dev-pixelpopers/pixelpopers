@@ -7,7 +7,7 @@ import { useRef, type ReactNode } from "react";
 
 import HeroFrame from "@/components/hero/HeroFrame";
 import { doodleIdle, letterBounce, POP_LANDED, popEntrance, scrollHandOff } from "@/components/hero/hero-animations";
-import { revealStatic } from "@/components/hero/hero-shared";
+import { revealStatic, splitHeroChars } from "@/components/hero/hero-shared";
 import { ambient } from "@/lib/ambient";
 import { holdForIntro } from "@/lib/visitor";
 import { safeIn } from "@/lib/gsap-safe";
@@ -41,6 +41,9 @@ export default function HeroFinal({ children, lines }: { children?: ReactNode; l
           const { motion, hover } = mm.conditions as { motion: boolean; hover: boolean };
           if (!motion) return;
 
+          // The letters exist only while the motion does (see splitHeroChars).
+          const unsplit = splitHeroChars(root);
+
           // Callbacks that run later belong to this branch (see safeIn).
           const contextSafe = safeIn(mm) as Parameters<typeof letterBounce>[1];
 
@@ -60,6 +63,7 @@ export default function HeroFinal({ children, lines }: { children?: ReactNode; l
           entrance.call(contextSafe(() => (stopIdle = ambient(doodleIdle(q), q("[data-hero-frame='headline']")[0] ?? root))), [], 2.6);
 
           return () => {
+            unsplit();
             release();
             stopIdle?.();
             stopBounce?.();

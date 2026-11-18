@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Fragment } from "react";
 
 type Doodle = {
   src: string;
@@ -69,7 +68,7 @@ type HeroHeadlineProps = {
  *   data-hero="line"        each line (visible from the first paint — it's the LCP)
  *   data-line="1|2|3"       which line
  *   data-hero="mask"        inline-block around the text, for masked reveals
- *   data-hero="char"        each letter, when `chars` is on
+ *   data-hero="char"        each letter, when `chars` is on (made in the browser — see splitHeroChars in hero-shared)
  *   data-hero="doodle-wrap" positioned doodle wrapper (free for parallax)
  *   data-hero="doodle"      the doodle artwork (entrance owns its transform)
  *   data-hero="spark"       burst particles by the flower (ship hidden)
@@ -112,27 +111,16 @@ export default function HeroHeadline({ chars = false, lines: text }: HeroHeadlin
             {line.doodle ? <HeroDoodle doodle={line.doodle} sparks={line.sparks} /> : null}
             <span
               data-hero="mask"
+              data-split={chars || undefined}
               aria-hidden={chars || undefined}
               className="inline-block py-[0.08em] -my-[0.08em] align-bottom"
             >
-              {chars ? <SplitChars text={line.text} /> : line.text}
+              {line.text}
             </span>
           </span>
         ))}
       </h1>
     </>
-  );
-}
-
-function SplitChars({ text }: { text: string }) {
-  return text.split("").map((char, i) =>
-    char === " " ? (
-      <Fragment key={i}> </Fragment>
-    ) : (
-      <span key={i} data-hero="char" className="inline-block">
-        {char}
-      </span>
-    ),
   );
 }
 
