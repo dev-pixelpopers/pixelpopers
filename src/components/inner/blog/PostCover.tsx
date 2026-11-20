@@ -29,7 +29,7 @@ export default function PostCover({
     >
       <Image
         src={cover.src}
-        alt={cover.alt}
+        alt={cover.alt || "Blog post cover illustration"}
         width={cover.width}
         height={cover.height}
         sizes={sizes}

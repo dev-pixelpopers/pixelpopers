@@ -62,7 +62,7 @@ export default async function BlogPage() {
         <Image
           aria-hidden
           src="/assets/inner/about/doodle-loop.svg"
-          alt=""
+          alt="Hand-drawn loop doodle"
           width={283}
           height={256}
           className="pointer-events-none col-start-1 row-start-1 mt-[37.5vw] mr-[3.6vw] hidden h-auto w-[12.4vw] max-w-[239px] -rotate-[15deg] self-start justify-self-end lg:block"

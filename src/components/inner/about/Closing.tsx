@@ -10,7 +10,7 @@ export default function Closing({ aboutCta = defaultAboutCta }: { aboutCta?: typ
       <Image
         aria-hidden
         src="/assets/inner/about/doodle-loop.svg"
-        alt=""
+        alt="Hand-drawn loop doodle"
         width={283}
         height={256}
         data-wm="doodle"

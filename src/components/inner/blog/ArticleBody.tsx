@@ -119,7 +119,7 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
               <figure key={key} className={`${gap} flex flex-col gap-4`}>
                 <Image
                   src={b.src}
-                  alt={b.alt}
+                  alt={b.alt || b.caption || "Illustration for this article"}
                   width={b.width}
                   height={b.height}
                   sizes="(min-width: 1920px) 880px, (min-width: 1024px) 46vw, 100vw"

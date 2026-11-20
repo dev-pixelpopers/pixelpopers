@@ -64,7 +64,7 @@ export function CaseHero({ project }: { project: Project }) {
         >
           <Image
             src={p.cover.src}
-            alt={p.cover.alt}
+            alt={p.cover.alt || `${p.name} project cover`}
             width={p.cover.w}
             height={p.cover.h}
             loading="eager"
@@ -82,7 +82,7 @@ export function CaseHero({ project }: { project: Project }) {
         <Image
           aria-hidden
           src="/icons/doodle-flower.svg"
-          alt=""
+          alt="Hand-drawn flower doodle"
           width={256}
           height={251}
           className={`${cell} relative -mr-[4.5%] -mb-[5%] hidden h-auto w-[12.7%] -rotate-[57deg] self-end justify-self-end md:block`}
@@ -119,7 +119,7 @@ export function BrandSystem({ project }: { project: Project }) {
         <Image
           data-reveal
           src={brand.detail.src}
-          alt={brand.detail.alt}
+          alt={brand.detail.alt || `${project.name} brand system`}
           width={brand.detail.w}
           height={brand.detail.h}
           sizes="(min-width: 1920px) 1000px, (min-width: 1024px) 52vw, 92vw"
@@ -252,7 +252,7 @@ export function Gallery({ project }: { project: Project }) {
   const img = (g: Project["gallery"][number], cls: string, sizes: string) => (
     <Image
       src={g.src}
-      alt={g.alt}
+      alt={g.alt || `${project.name} project image`}
       width={g.w}
       height={g.h}
       sizes={sizes}
@@ -400,7 +400,7 @@ export function NextProject({ next }: { next: Project }) {
         </div>
         <Image
           src={next.cover.src}
-          alt={next.cover.alt}
+          alt={next.cover.alt || `${next.name} project cover`}
           width={next.cover.w}
           height={next.cover.h}
           sizes="(min-width: 1920px) 840px, (min-width: 768px) 46vw, 92vw"

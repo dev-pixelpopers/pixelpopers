@@ -22,7 +22,7 @@ export default function ProjectCard({ project, priority = false }: { project: Pr
         >
           <Image
             src={p.cover.src}
-            alt={p.cover.alt}
+            alt={p.cover.alt || `${p.name} project cover`}
             width={p.cover.w}
             height={p.cover.h}
             loading={priority ? "eager" : undefined}

@@ -64,7 +64,7 @@ export default async function NotFound() {
             <span className="relative mx-[clamp(-1rem,-1vw,0rem)] grid w-[clamp(7rem,19vw,21rem)] place-items-center">
               <Image
                 src="/icons/doodle-flower.svg"
-                alt=""
+                alt="Hand-drawn flower doodle as the zero in 404"
                 width={256}
                 height={251}
                 priority
@@ -72,7 +72,7 @@ export default async function NotFound() {
               />
               <Image
                 src="/icons/doodle-sparkle.svg"
-                alt=""
+                alt="Hand-drawn sparkle doodle"
                 width={244}
                 height={206}
                 className="absolute top-[2%] -right-[26%] w-[38%] rotate-12 motion-safe:animate-pulse"

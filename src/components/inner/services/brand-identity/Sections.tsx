@@ -97,14 +97,14 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                   BRAND GUIDELINES
                   <span className="mt-[1.2cqw] block font-copy text-[3.2cqw] font-medium text-white/80">VOL. 01 · 2026</span>
                 </span>
-                <Image src="/assets/logo-pixelpopers.png" alt="" width={1906} height={933} sizes="120px" className={`${layer} mt-[116cqw] ml-[66cqw] h-auto w-[26.8cqw]`} />
+                <Image src="/assets/logo-pixelpopers.png" alt="Pixel Popers logo" width={1906} height={933} sizes="120px" className={`${layer} mt-[116cqw] ml-[66cqw] h-auto w-[26.8cqw]`} />
               </div>
             </div>
             <div data-parallax="-10" className={`${layer} mt-[62.43%] ml-[37.43%] aspect-[520/350] w-[57.78%] rotate-[-6deg] overflow-hidden rounded-[2.67cqw] border-[1.11cqw] border-white ${cardShadow}`}>
               <Image
                 slot="hero"
                 src="/assets/inner/brand-identity/fifth-sip-packaging.webp"
-                alt=""
+                alt="Fifth Sip packaging design by Pixel Popers"
                 width={980}
                 height={640}
                 sizes="(min-width: 1024px) 28vw, 60vw"

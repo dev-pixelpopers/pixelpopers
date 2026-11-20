@@ -197,7 +197,7 @@ export function Keyboard({ className = "", keys = defaultStackKeys }: { classNam
           >
             <span className="flex items-start justify-between">
               {k.icon ? (
-                <Image src={k.icon} alt="" width={64} height={64} sizes="48px" className="mt-[0.4cqw] size-[max(1rem,3.4cqw)] object-contain" />
+                <Image src={k.icon} alt={`${k.label} logo`} width={64} height={64} sizes="48px" className="mt-[0.4cqw] size-[max(1rem,3.4cqw)] object-contain" />
               ) : (
                 <span />
               )}

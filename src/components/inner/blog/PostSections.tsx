@@ -41,7 +41,7 @@ export function PostHero({ post, owners }: { post: Post; owners?: readonly Owner
           {owner ? (
             <Image
               src={owner.avatar}
-              alt=""
+              alt={`Portrait of ${owner.name}`}
               width={56}
               height={56}
               className="size-[clamp(2.75rem,2.9vw,3.5rem)] shrink-0 rounded-full bg-lagoon object-cover"

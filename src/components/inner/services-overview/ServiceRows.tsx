@@ -86,7 +86,7 @@ export default function ServiceRows({ serviceDetails = defaultServiceDetails, se
                 <div data-wm="row-img" className="grid md:self-center lg:mr-[1.8%] lg:w-[70.5%] lg:justify-self-end">
                   <Image
                     src={row.image.src}
-                    alt={row.image.alt}
+                    alt={row.image.alt || `${detail.name} by Pixel Popers`}
                     width={row.image.w}
                     height={row.image.h}
                     sizes="(min-width: 1920px) 560px, (min-width: 768px) 40vw, 92vw"
@@ -97,7 +97,7 @@ export default function ServiceRows({ serviceDetails = defaultServiceDetails, se
                     <Image
                       aria-hidden
                       src="/assets/inner/services/doodle-loop-pink.svg"
-                      alt=""
+                      alt="Pink hand-drawn loop doodle"
                       width={283}
                       height={256}
                       className="pointer-events-none col-start-1 row-start-1 z-10 mr-[24%] -mb-[15%] hidden h-auto w-[15%] rotate-[100deg] self-end justify-self-end lg:block"

@@ -183,7 +183,7 @@ export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typ
               <div data-whero="photo" className={`overflow-hidden rounded-[clamp(0.875rem,2.08vw,2.5rem)] ${photoBg[i]}`}>
                 <Image
                   src={img.src}
-                  alt={img.alt}
+                  alt={img.alt || "The Pixel Popers studio at work"}
                   width={img.w}
                   height={img.h}
                   loading={i === 1 ? "eager" : undefined}

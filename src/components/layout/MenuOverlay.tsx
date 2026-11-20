@@ -172,7 +172,7 @@ export default function MenuOverlay({ open, onClose, hiddenPages = [], socials =
               </span>
               <Image
                 src="/icons/doodle-flower.svg"
-                alt=""
+                alt="Hand-drawn flower doodle"
                 width={160}
                 height={160}
                 className="col-start-1 row-start-1 mr-[-2.5rem] mb-[-3rem] w-[clamp(6rem,8vw,10rem)] self-end justify-self-end"

@@ -634,7 +634,7 @@ export default function AgencySection({
                 <Image
                   key={line.src}
                   src={line.src}
-                  alt=""
+                  alt="Decorative line drawing around the Pixel Popers folder"
                   width={line.width}
                   height={line.height}
                   className="h-auto w-[45%] max-w-none opacity-70"
@@ -703,7 +703,7 @@ export default function AgencySection({
               <div data-agency="folder-layer" aria-hidden className="absolute inset-0 z-0">
                 <Image
                   src="/icons/folder-body-shadow.svg"
-                  alt=""
+                  alt="Shadow under the Pixel Popers folder"
                   width={334}
                   height={289}
                   className="h-full w-full"

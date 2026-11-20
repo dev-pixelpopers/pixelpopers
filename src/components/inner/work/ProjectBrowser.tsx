@@ -194,7 +194,7 @@ export default function ProjectBrowser({ projects, filters = defaultFilters }: {
             <div className="contents md:grid md:grid-cols-1 md:grid-rows-1 md:items-start">
               <Image
                 src="/assets/inner/about/doodle-loop.svg"
-                alt=""
+                alt="Hand-drawn loop doodle"
                 aria-hidden
                 width={283}
                 height={256}

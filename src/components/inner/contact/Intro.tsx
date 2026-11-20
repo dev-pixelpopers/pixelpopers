@@ -170,7 +170,7 @@ export default function Intro({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactHe
             <Image
               aria-hidden
               src="/assets/inner/contact/doodle-loop.svg"
-              alt=""
+              alt="Hand-drawn loop doodle"
               width={283}
               height={256}
               data-whero="doodle"

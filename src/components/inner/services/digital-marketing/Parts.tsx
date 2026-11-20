@@ -185,7 +185,7 @@ export function PostPhone({ className = "", social }: { className?: string; soci
           <Image
             slot="hero-post"
             src="/assets/inner/fifth-sip.webp"
-            alt=""
+            alt="Fifth Sip sponsored social media post"
             width={857}
             height={1200}
             sizes="(min-width: 1024px) 16vw, 60vw"
@@ -271,7 +271,7 @@ export function ProfilePhone({ className = "", social }: { className?: string; s
                   key={i}
                   slot={`grid-${tiles.slice(0, i + 1).filter((x) => "img" in x).length}`}
                   src={`/assets/inner/${t.img}`}
-                  alt=""
+                  alt={`Social media post: ${t.img.replace(/\.\w+$/, "").replace(/-/g, " ")}`}
                   width={t.w}
                   height={t.h}
                   sizes="(min-width: 1024px) 7vw, 28vw"

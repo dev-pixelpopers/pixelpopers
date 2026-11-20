@@ -6,7 +6,7 @@ import Image, { useServiceMedia } from "@/components/inner/services/ServiceImage
 export function Avatar({ className, letterClass, sizes }: { className: string; letterClass: string; sizes: string }) {
   const src = useServiceMedia("", "avatar");
   return src ? (
-    <Image src={src} alt="" width={200} height={200} sizes={sizes} className={`${className} rounded-full object-cover`} />
+    <Image src={src} alt="Brand profile picture" width={200} height={200} sizes={sizes} className={`${className} rounded-full object-cover`} />
   ) : (
     <span className={`${className} grid place-items-center rounded-full bg-blush font-pop leading-none text-white ${letterClass}`}>P</span>
   );
@@ -16,7 +16,7 @@ export function Avatar({ className, letterClass, sizes }: { className: string; l
 export function TextTile({ tile, slot }: { tile: { text: string; bg: string; tone: string }; slot: string }) {
   const src = useServiceMedia("", slot);
   return src ? (
-    <Image src={src} alt="" width={600} height={600} sizes="(min-width: 1024px) 7vw, 28vw" className="aspect-square w-full object-cover" />
+    <Image src={src} alt={tile.text.replace(/\s+/g, " ").trim() || "Social media post"} width={600} height={600} sizes="(min-width: 1024px) 7vw, 28vw" className="aspect-square w-full object-cover" />
   ) : (
     <span className={`grid aspect-square place-items-center text-center font-pop text-[8.64cqw] leading-[1.05] whitespace-pre-line ${tile.bg} ${tile.tone}`}>
       {tile.text}

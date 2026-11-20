@@ -147,7 +147,7 @@ export default function ServiceTile({ service, fxTone }: ServiceTileProps) {
               className="absolute -inset-x-[15%] -inset-y-[35%] opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none"
               style={{ clipPath: `url(#${clipId})`, WebkitClipPath: `url(#${clipId})` }}
             >
-              <ServiceMediaFill media={media} videoRef={videoRef} />
+              <ServiceMediaFill media={media} videoRef={videoRef} alt={`${title} work by Pixel Popers`} />
             </div>
           </>
         ) : null}
@@ -240,9 +240,11 @@ const mediaClasses =
 function ServiceMediaFill({
   media,
   videoRef,
+  alt,
 }: {
   media: ServiceMedia;
   videoRef: RefObject<HTMLVideoElement | null>;
+  alt: string;
 }) {
   if (media.type === "video") {
     return (
@@ -261,7 +263,7 @@ function ServiceMediaFill({
   }
 
   return (
-    <Image src={media.src} alt="" fill sizes="(max-width: 640px) 100vw, 40vw" className={mediaClasses} />
+    <Image src={media.src} alt={alt} fill sizes="(max-width: 640px) 100vw, 40vw" className={mediaClasses} />
   );
 }
 

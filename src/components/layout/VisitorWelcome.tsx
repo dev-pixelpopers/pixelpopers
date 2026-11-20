@@ -230,7 +230,7 @@ function Gif({ src, className, sound = false, frame = "relative block" }: { src:
       });
   }, [src, sound, isVideo]);
 
-  if (!isVideo) return <Image src={src} alt="" width={320} height={320} unoptimized className={className} />;
+  if (!isVideo) return <Image src={src} alt="Animated greeting from Pixel Popers" width={320} height={320} unoptimized className={className} />;
 
   const turnOn = () => {
     const v = ref.current;

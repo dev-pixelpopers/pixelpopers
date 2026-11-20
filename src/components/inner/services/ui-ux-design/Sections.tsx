@@ -119,7 +119,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             </div>
 
             <Phone className={`${layer} ml-[34.51%] w-[35.4%]`}>
-              <PhoneShot slot="hero-phone" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="(min-width: 1024px) 22vw, 55vw" />
+              <PhoneShot slot="hero-phone" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="E-commerce app screen designed by Pixel Popers on a phone" sizes="(min-width: 1024px) 22vw, 55vw" />
             </Phone>
             <div className={`${layer} mt-[20.35%] ml-[36.81%] grid aspect-[348/190] w-[30.8%] border-2 border-blush`}>
               <Handles border="border-blush" />
@@ -241,7 +241,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               <div className={`${layer} ml-[27.08%] flex w-[45.83%] flex-col items-center`}>
                 <div className="grid aspect-[880/550] min-h-0 w-full grid-rows-[minmax(0,1fr)] rounded-[1.25cqw] border border-white/12 bg-[#120118] p-[0.83cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)] has-[img[data-natural]]:aspect-auto">
                   <div className="overflow-hidden rounded-[0.625cqw]">
-                    <PhoneShot slot="devices-laptop" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="46vw" contain natural />
+                    <PhoneShot slot="devices-laptop" src="/assets/inner/liquidity.webp" w={736} h={552} alt="Liquidity dashboard designed by Pixel Popers on a laptop" sizes="46vw" contain natural />
                   </div>
                 </div>
                 <span className="h-[2.08cqw] w-[13.64%] bg-[#120118]" />
@@ -249,12 +249,12 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               </div>
               <div className={`${layer} mt-[6.77%] ml-[17.19%] grid aspect-[340/460] has-[img[data-natural]]:aspect-auto w-[17.71%] rounded-[1.77cqw] border border-white/12 bg-[#120118] p-[0.73cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="overflow-hidden rounded-[1.15cqw]">
-                  <PhoneShot slot="devices-tablet" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="" sizes="18vw" contain natural />
+                  <PhoneShot slot="devices-tablet" src="/assets/inner/ui-shop.webp" w={1600} h={900} alt="E-commerce dashboard designed by Pixel Popers on a tablet" sizes="18vw" contain natural />
                 </div>
               </div>
               <div className={`${layer} mt-[7.81%] ml-[69.27%] grid aspect-[220/450] w-[11.46%] rounded-[1.98cqw] border border-white/12 bg-[#120118] p-[0.52cqw] shadow-[0_2.08cqw_4.17cqw_rgb(0_0_0/0.45)]`}>
                 <div className="col-start-1 row-start-1 overflow-hidden rounded-[1.56cqw]">
-                  <PhoneShot slot="devices-phone" src="/assets/inner/liquidity.webp" w={736} h={552} alt="" sizes="12vw" />
+                  <PhoneShot slot="devices-phone" src="/assets/inner/liquidity.webp" w={736} h={552} alt="Liquidity app screen designed by Pixel Popers on a phone" sizes="12vw" />
                 </div>
                 <span className="col-start-1 row-start-1 mt-[0.52cqw] h-[1.04cqw] w-[3.65cqw] self-start justify-self-center rounded-full bg-[#120118]" />
               </div>

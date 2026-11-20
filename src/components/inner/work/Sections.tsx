@@ -175,7 +175,7 @@ export function Teasers({ teasers = defaultTeasers }: { teasers?: typeof default
           <li key={t.tag} data-wm="teaser" className={`grid aspect-[520/360] grid-cols-1 grid-rows-1 overflow-hidden rounded-[32px] ${t.bg}`}>
             <Image
               src={t.img.src}
-              alt=""
+              alt={`Upcoming ${t.tag} project preview`}
               width={t.img.w}
               height={t.img.h}
               sizes="(min-width: 768px) 30vw, 92vw"

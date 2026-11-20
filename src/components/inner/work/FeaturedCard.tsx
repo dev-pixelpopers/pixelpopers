@@ -17,7 +17,7 @@ export default function FeaturedCard({ project }: { project: ProjectCardData }) 
       >
         <Image
           src={p.cover.src}
-          alt={p.cover.alt}
+          alt={p.cover.alt || `${p.name} project cover`}
           width={p.cover.w}
           height={p.cover.h}
           loading="eager"

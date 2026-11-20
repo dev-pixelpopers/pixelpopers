@@ -158,7 +158,7 @@ export default function BlogExplorer({ posts, owners = defaultOwners, categories
                 {author ? (
                   <Image
                     src={author.avatar}
-                    alt=""
+                    alt={`Portrait of ${author.name}`}
                     width={56}
                     height={56}
                     className="size-[clamp(2.75rem,2.9vw,3.5rem)] rounded-full bg-lagoon object-cover"

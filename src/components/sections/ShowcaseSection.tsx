@@ -15,7 +15,7 @@ export default function ShowcaseSection() {
         <Image
           aria-hidden
           src="/icons/showcase-wave-top.svg"
-          alt=""
+          alt="Decorative pink wave"
           width={2090}
           height={702}
           className="pointer-events-none absolute top-[6.5%] left-[2.7%] w-[96.1%] max-w-none -rotate-[4.92deg]"
@@ -33,7 +33,7 @@ export default function ShowcaseSection() {
         <Image
           aria-hidden
           src="/icons/showcase-wave-bottom.svg"
-          alt=""
+          alt="Decorative pink wave"
           width={2004}
           height={844}
           className="pointer-events-none absolute top-[76.7%] left-0 w-[95.4%] max-w-none"

@@ -135,7 +135,7 @@ function HeroDoodle({ doodle, sparks }: { doodle: Doodle; sparks?: boolean }) {
         data-hero="doodle"
         data-rotate={doodle.rotate}
         src={doodle.src}
-        alt=""
+        alt={doodle.src.includes("flower") ? "Hand-drawn flower doodle" : "Hand-drawn sparkle doodle"}
         width={doodle.width}
         height={doodle.height}
         className="gsap-reveal w-full max-w-none"

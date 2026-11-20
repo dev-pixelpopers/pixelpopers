@@ -17,7 +17,7 @@ export default function Values({ values = defaultValues, inPractice = defaultInP
         aria-hidden
         data-wm="squiggle"
         src="/assets/inner/about/squiggle.svg"
-        alt=""
+        alt="Hand-drawn squiggle"
         width={931}
         height={1278}
         className="pointer-events-none absolute top-[-1.9vw] left-0 -z-10 h-auto w-[48.5vw] max-w-[931px]"
@@ -28,7 +28,7 @@ export default function Values({ values = defaultValues, inPractice = defaultInP
           <Image
             aria-hidden
             src="/assets/inner/about/doodle-loop.svg"
-            alt=""
+            alt="Hand-drawn loop doodle"
             width={283}
             height={256}
             data-wm="doodle"
@@ -37,7 +37,7 @@ export default function Values({ values = defaultValues, inPractice = defaultInP
           <Image
             aria-hidden
             src="/assets/inner/about/doodle-bloom.svg"
-            alt=""
+            alt="Hand-drawn bloom doodle"
             width={275}
             height={276}
             data-wm="doodle"
