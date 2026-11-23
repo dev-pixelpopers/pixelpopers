@@ -103,11 +103,24 @@ export async function generateMetadata(): Promise<Metadata> {
     // <meta name="google-site-verification"> for Search Console (Site settings → Analytics).
     ...(site.google_site_verification ? { verification: { google: site.google_site_verification } } : {}),
     // Favicon from Site settings (falls back to the built-in Pixel Popers icon).
-    icons: {
-      icon: [{ url: site.favicon || "/favicon.ico", ...iconType(site.favicon || "/favicon.ico") }],
-      shortcut: site.favicon || "/favicon.ico",
-      apple: site.apple_touch_icon || site.favicon || undefined,
-    },
+    // An icon uploaded in Site settings → SEO defaults → Favicon wins;
+    // otherwise the built-in Pixel Popers "P" set in /public. Google needs a
+    // square icon of at least 48 × 48 — the 192px PNG covers that.
+    icons: site.favicon
+      ? {
+          icon: [{ url: site.favicon, ...iconType(site.favicon) }],
+          shortcut: site.favicon,
+          apple: site.apple_touch_icon || site.favicon,
+        }
+      : {
+          icon: [
+            { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+            { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+            { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+          ],
+          shortcut: "/favicon.ico",
+          apple: site.apple_touch_icon || "/apple-touch-icon.png",
+        },
   };
 }
 
