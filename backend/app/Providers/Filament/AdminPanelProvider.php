@@ -28,6 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // Account page (user menu → name): change your name, email or password.
+            ->profile(isSimple: false)
             ->brandName('Pixel Popers CMS')
             // Accessible brand raspberry for actions, grape for info.
             ->colors([

@@ -117,8 +117,18 @@ function iconType(url: string): { type?: string } {
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getSite();
+  // Site settings → SEO defaults: the fallback title, description, keywords
+  // and share image for any page that doesn't set its own (each page's own
+  // tags, e.g. Pages → Home → Search & sharing, always win).
+  const keywords = site.site_keywords?.split(",").map((k) => k.trim()).filter(Boolean);
+  const share = site.default_og_image ? { images: [site.default_og_image] } : {};
   return {
     ...baseMetadata,
+    title: site.site_title,
+    description: site.site_description,
+    ...(keywords?.length ? { keywords } : {}),
+    openGraph: { ...baseMetadata.openGraph, title: site.site_title, description: site.site_description, ...share },
+    twitter: { ...baseMetadata.twitter, title: site.site_title, description: site.site_description, ...share },
     // <meta name="google-site-verification"> for Search Console (Site settings → Analytics).
     ...(site.google_site_verification ? { verification: { google: site.google_site_verification } } : {}),
     // Favicon from Site settings (falls back to the built-in Pixel Popers icon).

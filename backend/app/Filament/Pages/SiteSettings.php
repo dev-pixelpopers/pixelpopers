@@ -73,10 +73,16 @@ class SiteSettings extends Page implements HasForms
                             Forms\Components\TextInput::make('site_url')->label('Website URL')->url()->required()
                                 ->helperText('Canonical URLs, the sitemap and share links use this.'),
                         ]),
-                        Forms\Components\TextInput::make('site_title')->label('Default page title')->maxLength(150),
-                        Forms\Components\Textarea::make('site_description')->label('Default meta description')->rows(3)->maxLength(500),
-                        Forms\Components\TextInput::make('site_keywords')->label('Default keywords'),
-                        Fields::media('default_og_image', 'Default share image (1200 × 630)'),
+                        SchemaComponents\Section::make('Fallback search & sharing tags')
+                            ->description(new \Illuminate\Support\HtmlString('Used only where a page has none of its own — they never replace a page’s own tags. Each page sets its own under <strong>Pages → (page) → Page &amp; SEO → Search &amp; sharing</strong>; the <a href="'.e(\App\Filament\Resources\PageResource::getUrl('index')).'" class="underline">home page’s tags are under Pages → Home</a>.'))
+                            ->schema([
+                                Forms\Components\TextInput::make('site_title')->label('Fallback page title')->maxLength(150)
+                                    ->helperText('For a page with an empty meta title (e.g. the 404 page, or Home before its own title is filled in).'),
+                                Forms\Components\Textarea::make('site_description')->label('Fallback meta description')->rows(3)->maxLength(500)
+                                    ->helperText('Also used as the company description in Google’s structured data.'),
+                                Forms\Components\TextInput::make('site_keywords')->label('Keywords')->helperText('Comma-separated. Search engines mostly ignore these.'),
+                                Fields::media('default_og_image', 'Fallback share image (1200 × 630)'),
+                            ]),
                         SchemaComponents\Section::make('Favicon')
                             ->description('The little icon in the browser tab, bookmarks and search results. Leave empty to use the built-in Pixel Popers icon.')
                             ->columns(2)

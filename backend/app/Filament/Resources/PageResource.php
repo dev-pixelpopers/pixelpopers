@@ -70,7 +70,9 @@ class PageResource extends Resource
                         ->helperText('Off: the page is removed from the header menu, footer and sitemap, and its address shows “not found”.')
                         ->disabled(fn (?Page $record) => $record?->slug === 'home'),
                 ]),
-                Fields::seo(),
+                Fields::seo()->description(fn (?Page $record) => $record?->slug === 'home'
+                    ? 'These are the home page’s own tags — what Google shows for www.pixelpopers.com. Leave a field empty to use Site settings → SEO defaults instead.'
+                    : 'This page’s own tags. Leave a field empty to use the built-in text for this page.'),
                 SchemaComponents\Section::make('Indexing')->collapsed()->schema([
                     Forms\Components\TextInput::make('seo_keywords')->label('Meta keywords')->helperText('Comma-separated. Search engines mostly ignore these.'),
                     Forms\Components\Select::make('robots')->options([

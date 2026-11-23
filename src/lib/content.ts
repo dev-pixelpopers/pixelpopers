@@ -151,6 +151,9 @@ export const getSite = cache(async () => {
     site_name: siteStatic.SITE_NAME,
     site_title: siteStatic.SITE_TITLE,
     site_description: siteStatic.SITE_DESCRIPTION,
+    // Site settings → SEO defaults → Keywords / Fallback share image.
+    site_keywords: null as string | null,
+    default_og_image: null as string | null,
     site_url: siteStatic.SITE_URL,
     company_email: contactStatic.CONTACT_EMAIL,
     footer_tagline: "A funky creative studio making brands impossible to scroll past — from strategy to the last pixel.",
@@ -368,6 +371,7 @@ export const getCategories = cache(async (): Promise<{ categories: Category[]; c
 /* ───────────────────────────── Pages ───────────────────────────── */
 
 export const getHome = cache(async () => {
+  const site = await getSite();
   const page = await pageSections(
     "home",
     {
@@ -378,7 +382,9 @@ export const getHome = cache(async () => {
       leadership: homeStatic.homeLeadership,
       blog: homeStatic.homeBlog,
     },
-    { title: siteStatic.SITE_TITLE, description: siteStatic.SITE_DESCRIPTION },
+    // Home's own tags (Pages → Home → Search & sharing) win; an empty field
+    // falls back to Site settings → SEO defaults, then the built-in text.
+    { title: site.site_title, description: site.site_description },
   );
   return page;
 });

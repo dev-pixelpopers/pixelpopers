@@ -17,12 +17,13 @@ import { SITE_URL, fitTitle } from "@/lib/site";
 import { PageCode } from "@/components/layout/CustomCode";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { seo } = await getHome();
+  const [{ seo }, site] = await Promise.all([getHome(), getSite()]);
+  const ogImage = seo.ogImage || site.default_og_image;
   return {
     title: { absolute: fitTitle(seo.title, "") },
     description: seo.description,
     alternates: { canonical: "/" },
-    openGraph: { title: seo.title, description: seo.description, ...(seo.ogImage ? { images: [seo.ogImage] } : {}) },
+    openGraph: { title: seo.title, description: seo.description, ...(ogImage ? { images: [ogImage] } : {}) },
     twitter: { title: seo.title, description: seo.description },
   };
 }
