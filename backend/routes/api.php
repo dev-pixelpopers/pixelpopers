@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::get('/site', [ContentController::class, 'site']);
     Route::get('/sitemap', [ContentController::class, 'sitemap']);
+    Route::get('/redirects', [ContentController::class, 'redirects']);
+    Route::get('/scripts', [ContentController::class, 'scripts']);
 
     Route::get('/pages', [ContentController::class, 'pages']);
     Route::get('/pages/{slug}', [ContentController::class, 'page']);

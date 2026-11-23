@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Transformers as T;
 use App\Models\Client;
+use App\Models\CustomScript;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\Redirect;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\Setting;
@@ -172,6 +174,23 @@ class ContentController extends Controller
     }
 
     /** Every public URL with its last change, for the website's sitemap. */
+    /** Active redirects (SEO → Redirects): exact paths first, then folder rules (longest first). */
+    public function redirects(): JsonResponse
+    {
+        return $this->respond(ContentCache::remember('redirects', fn () => Redirect::active()->get()
+            ->sortBy(fn (Redirect $r) => [$r->isWildcard() ? 1 : 0, -strlen($r->from_path)])
+            ->map(fn (Redirect $r) => ['from' => $r->from_path, 'to' => $r->to_url, 'status' => $r->status_code])
+            ->values()->all()));
+    }
+
+    /** Active code snippets (SEO → Scripts & tags), in the admin's order. */
+    public function scripts(): JsonResponse
+    {
+        return $this->respond(ContentCache::remember('scripts', fn () => CustomScript::active()->orderBy('sort_order')->orderBy('id')->get()
+            ->map(fn (CustomScript $s) => ['id' => $s->id, 'target' => $s->target, 'location' => $s->location, 'code' => $s->code])
+            ->all()));
+    }
+
     public function sitemap(): JsonResponse
     {
         return $this->respond(ContentCache::remember('sitemap', function () {

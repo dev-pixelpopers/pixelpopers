@@ -14,6 +14,7 @@ import ProjectSlider from "@/components/slider/ProjectSlider";
 import { getClients, getHiddenPages, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories, socialLinks, withCompanyEmail } from "@/lib/content";
 import { homeAgency, homeBlog, homeContact, homeHero, homeLeadership, homeStudio } from "@/lib/home-content";
 import { SITE_URL, fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getHome();
@@ -81,25 +82,29 @@ export default async function Home() {
   const contactContent = contact.cta ? { ...contact, cta: { ...contact.cta, href: withCompanyEmail(contact.cta.href, site.company_email) } } : contact;
 
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-cream">
-      <SiteHeader hiddenPages={hiddenPages} email={site.company_email} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
-      <main className="flex flex-1 flex-col">
-        <HeroFinal lines={(sections.hero ?? homeHero).lines}>
-          <ProjectSlider projects={showreel} />
-        </HeroFinal>
-        <StudioSection content={sections.studio ?? homeStudio} projects={showreel} />
-        <ServicesSection services={tiles} />
-        {/* <ShowcaseSection /> */}
-        <AgencySection eyebrow={agency.eyebrow} heading={agency.heading} copy={agency.copy} cta={hiddenPages.some((slug) => agency.cta?.href.startsWith(`/${slug}`)) ? null : agency.cta} clients={clients} />
-        <ContactSection content={contactContent} />
-        <LeadershipSection content={sections.leadership ?? homeLeadership} owners={team.owners} />
-        {blog ? <BlogSection content={blog} posts={featured.map((p) => ({ ...p, body: [], comments: [] }))} tones={categoryTone} /> : null}
-      </main>
-      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={await getServiceLinks()} hiddenPages={hiddenPages} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(site, team.owners)) }}
-      />
-    </div>
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path="/" />
+      <div className="flex min-h-full flex-1 flex-col bg-cream">
+        <SiteHeader hiddenPages={hiddenPages} email={site.company_email} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
+        <main className="flex flex-1 flex-col">
+          <HeroFinal lines={(sections.hero ?? homeHero).lines}>
+            <ProjectSlider projects={showreel} />
+          </HeroFinal>
+          <StudioSection content={sections.studio ?? homeStudio} projects={showreel} />
+          <ServicesSection services={tiles} />
+          {/* <ShowcaseSection /> */}
+          <AgencySection eyebrow={agency.eyebrow} heading={agency.heading} copy={agency.copy} cta={hiddenPages.some((slug) => agency.cta?.href.startsWith(`/${slug}`)) ? null : agency.cta} clients={clients} />
+          <ContactSection content={contactContent} />
+          <LeadershipSection content={sections.leadership ?? homeLeadership} owners={team.owners} />
+          {blog ? <BlogSection content={blog} posts={featured.map((p) => ({ ...p, body: [], comments: [] }))} tones={categoryTone} /> : null}
+        </main>
+        <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={await getServiceLinks()} hiddenPages={hiddenPages} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(site, team.owners)) }}
+        />
+      </div>
+    </>
   );
 }

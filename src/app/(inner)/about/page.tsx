@@ -13,6 +13,7 @@ import Closing from "@/components/inner/about/Closing";
 import { getAbout, getQuotes, getSite, getTeam, assertPagePublished } from "@/lib/content";
 import { testimonials as staticTestimonials } from "@/lib/pages/about";
 import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getAbout();
@@ -58,55 +59,59 @@ export default async function AboutPage() {
   };
 
   return (
-    <AboutMotion className="flex flex-col pb-[clamp(5rem,11vw,13.25rem)]">
-      {s.hero ? <Hero aboutHero={s.hero} /> : null}
-      {s.story ? <Story aboutStory={s.story} owners={team.owners} /> : null}
-      {s.full_story ? (
-        <LongFormSplit
-          id="full-story-title"
-          eyebrow={s.full_story.eyebrow}
-          heading={s.full_story.heading}
-          paragraphs={s.full_story.paragraphs}
-          stats={s.full_story.stats}
-          className="mt-[clamp(5rem,8.33vw,10rem)]"
-        />
-      ) : null}
-      {s.values ? (
-        <div className="mt-[clamp(5rem,9.4vw,11.25rem)]">
-          <Values values={s.values.items} inPractice={s.in_practice ?? undefined} hidePractice={!s.in_practice} />
-        </div>
-      ) : null}
-      {s.how_we_work ? (
-        <div className="mt-[clamp(5rem,10.9vw,13.125rem)]">
-          <Process howWeWork={s.how_we_work} />
-        </div>
-      ) : null}
-      {s.audience ? (
-        <div className="mt-[clamp(5rem,8.33vw,10rem)]">
-          <Audience audience={s.audience} />
-        </div>
-      ) : null}
-      {s.journey ? (
-        <div className="mt-[clamp(5rem,8.33vw,10rem)]">
-          <Journey journey={s.journey} />
-        </div>
-      ) : null}
-      {s.testimonials && quotes.length ? (
-        <div className="mt-[clamp(4.5rem,6.46vw,7.75rem)]">
-          <Testimonials testimonials={{ ...s.testimonials, items: quotes }} />
-        </div>
-      ) : null}
-      {s.perks || s.hiring ? (
-        <div className="mt-[clamp(4.5rem,4.7vw,5.625rem)]">
-          <Studio perks={s.perks ?? undefined} hiring={s.hiring ?? undefined} showPerks={!!s.perks} showHiring={!!s.hiring} />
-        </div>
-      ) : null}
-      {s.cta ? (
-        <div className="mt-[clamp(5rem,11.5vw,13.75rem)]">
-          <Closing aboutCta={s.cta} />
-        </div>
-      ) : null}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </AboutMotion>
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path="/about" />
+      <AboutMotion className="flex flex-col pb-[clamp(5rem,11vw,13.25rem)]">
+        {s.hero ? <Hero aboutHero={s.hero} /> : null}
+        {s.story ? <Story aboutStory={s.story} owners={team.owners} /> : null}
+        {s.full_story ? (
+          <LongFormSplit
+            id="full-story-title"
+            eyebrow={s.full_story.eyebrow}
+            heading={s.full_story.heading}
+            paragraphs={s.full_story.paragraphs}
+            stats={s.full_story.stats}
+            className="mt-[clamp(5rem,8.33vw,10rem)]"
+          />
+        ) : null}
+        {s.values ? (
+          <div className="mt-[clamp(5rem,9.4vw,11.25rem)]">
+            <Values values={s.values.items} inPractice={s.in_practice ?? undefined} hidePractice={!s.in_practice} />
+          </div>
+        ) : null}
+        {s.how_we_work ? (
+          <div className="mt-[clamp(5rem,10.9vw,13.125rem)]">
+            <Process howWeWork={s.how_we_work} />
+          </div>
+        ) : null}
+        {s.audience ? (
+          <div className="mt-[clamp(5rem,8.33vw,10rem)]">
+            <Audience audience={s.audience} />
+          </div>
+        ) : null}
+        {s.journey ? (
+          <div className="mt-[clamp(5rem,8.33vw,10rem)]">
+            <Journey journey={s.journey} />
+          </div>
+        ) : null}
+        {s.testimonials && quotes.length ? (
+          <div className="mt-[clamp(4.5rem,6.46vw,7.75rem)]">
+            <Testimonials testimonials={{ ...s.testimonials, items: quotes }} />
+          </div>
+        ) : null}
+        {s.perks || s.hiring ? (
+          <div className="mt-[clamp(4.5rem,4.7vw,5.625rem)]">
+            <Studio perks={s.perks ?? undefined} hiring={s.hiring ?? undefined} showPerks={!!s.perks} showHiring={!!s.hiring} />
+          </div>
+        ) : null}
+        {s.cta ? (
+          <div className="mt-[clamp(5rem,11.5vw,13.75rem)]">
+            <Closing aboutCta={s.cta} />
+          </div>
+        ) : null}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </AboutMotion>
+    </>
   );
 }

@@ -16,6 +16,7 @@ import {
 } from "@/components/inner/work/CaseStudy";
 import { getProject, getProjects, getSite, getTeam } from "@/lib/content";
 import { fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 /** Case studies added in the CMS after a build render on first visit. */
 export const dynamicParams = true;
@@ -75,39 +76,43 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   };
 
   return (
-    <Reveal as="article" className="flex flex-col pb-[clamp(5rem,8.33vw,10rem)]">
-      <CaseHero project={project} />
-      <div className="mt-[clamp(3.5rem,7.3vw,8.75rem)]">
-        <Brief project={project} />
-      </div>
-      <div className="mt-[clamp(4rem,10.4vw,12.5rem)]">
-        <BrandSystem project={project} />
-      </div>
-      <div className="mt-[clamp(4rem,7.3vw,8.75rem)]">
-        <Results project={project} />
-      </div>
-      <div className="mt-[clamp(3rem,5.2vw,6.25rem)]">
-        <PullQuote project={project} />
-      </div>
-      <div className="mt-[clamp(4rem,6.25vw,7.5rem)]">
-        <FullStory project={project} />
-      </div>
-      <div className="mt-[clamp(4rem,6.25vw,7.5rem)]">
-        <Gallery project={project} />
-      </div>
-      <div className="mt-[clamp(4rem,5.2vw,6.25rem)]">
-        <Delivered project={project} />
-      </div>
-      <div className="mt-[clamp(4rem,9.4vw,11.25rem)]">
-        <Timeline project={project} />
-      </div>
-      <div className="mt-[clamp(4rem,5.2vw,6.25rem)]">
-        <Team project={project} owners={team.owners} />
-      </div>
-      <div className="mt-[clamp(4rem,16vw,19.375rem)]">
-        <NextProject next={next} />
-      </div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </Reveal>
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path={`/work/${slug}`} />
+      <Reveal as="article" className="flex flex-col pb-[clamp(5rem,8.33vw,10rem)]">
+        <CaseHero project={project} />
+        <div className="mt-[clamp(3.5rem,7.3vw,8.75rem)]">
+          <Brief project={project} />
+        </div>
+        <div className="mt-[clamp(4rem,10.4vw,12.5rem)]">
+          <BrandSystem project={project} />
+        </div>
+        <div className="mt-[clamp(4rem,7.3vw,8.75rem)]">
+          <Results project={project} />
+        </div>
+        <div className="mt-[clamp(3rem,5.2vw,6.25rem)]">
+          <PullQuote project={project} />
+        </div>
+        <div className="mt-[clamp(4rem,6.25vw,7.5rem)]">
+          <FullStory project={project} />
+        </div>
+        <div className="mt-[clamp(4rem,6.25vw,7.5rem)]">
+          <Gallery project={project} />
+        </div>
+        <div className="mt-[clamp(4rem,5.2vw,6.25rem)]">
+          <Delivered project={project} />
+        </div>
+        <div className="mt-[clamp(4rem,9.4vw,11.25rem)]">
+          <Timeline project={project} />
+        </div>
+        <div className="mt-[clamp(4rem,5.2vw,6.25rem)]">
+          <Team project={project} owners={team.owners} />
+        </div>
+        <div className="mt-[clamp(4rem,16vw,19.375rem)]">
+          <NextProject next={next} />
+        </div>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </Reveal>
+    </>
   );
 }

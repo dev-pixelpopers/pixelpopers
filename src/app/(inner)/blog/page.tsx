@@ -13,6 +13,7 @@ import {
 } from "@/components/inner/blog/Sections";
 import { getBlogPage, getCategories, getPosts, getSite, getTeam, assertPagePublished } from "@/lib/content";
 import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getBlogPage();
@@ -54,62 +55,66 @@ export default async function BlogPage() {
   };
 
   return (
-    <Reveal className="flex flex-col pb-[clamp(5rem,7.3vw,8.75rem)]">
-      {s.hero ? <BlogHero blogHero={s.hero} /> : null}
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path="/blog" />
+      <Reveal className="flex flex-col pb-[clamp(5rem,7.3vw,8.75rem)]">
+        {s.hero ? <BlogHero blogHero={s.hero} /> : null}
 
-      {/* The loop doodle shares the explorer's grid cell, tucked behind the cards. */}
-      <div className="mt-[clamp(2.5rem,4.17vw,5rem)] grid">
-        <Image
-          aria-hidden
-          src="/assets/inner/about/doodle-loop.svg"
-          alt="Hand-drawn loop doodle"
-          width={283}
-          height={256}
-          className="pointer-events-none col-start-1 row-start-1 mt-[37.5vw] mr-[3.6vw] hidden h-auto w-[12.4vw] max-w-[239px] -rotate-[15deg] self-start justify-self-end lg:block"
+        {/* The loop doodle shares the explorer's grid cell, tucked behind the cards. */}
+        <div className="mt-[clamp(2.5rem,4.17vw,5rem)] grid">
+          <Image
+            aria-hidden
+            src="/assets/inner/about/doodle-loop.svg"
+            alt="Hand-drawn loop doodle"
+            width={283}
+            height={256}
+            className="pointer-events-none col-start-1 row-start-1 mt-[37.5vw] mr-[3.6vw] hidden h-auto w-[12.4vw] max-w-[239px] -rotate-[15deg] self-start justify-self-end lg:block"
+          />
+          <div className="col-start-1 row-start-1">
+            <BlogExplorer posts={posts.map((p) => ({ ...p, body: [], comments: [] }))} owners={team.owners} categories={categories} />
+          </div>
+        </div>
+
+        {s.journal_intro ? (
+
+          <div className="mt-[clamp(4rem,6.25vw,7.5rem)]">
+
+            <JournalIntro journalIntro={s.journal_intro!} />
+
+          </div>
+
+        ) : null}
+        {s.start_here ? (
+          <div className="mt-[clamp(4rem,5vw,6rem)]">
+            <StartHere startHere={s.start_here!} posts={posts} />
+          </div>
+        ) : null}
+        {s.popular || s.topics ? (
+          <div className="mt-[clamp(4.5rem,7.5vw,9rem)]">
+            <PopularAndTopics popularSlugs={s.popular?.slugs ?? []} topics={s.topics?.items ?? []} posts={posts} />
+          </div>
+        ) : null}
+        {s.resources ? (
+          <div className="mt-[clamp(4.5rem,4.7vw,5.625rem)]">
+            <Resources resources={s.resources!.items} />
+          </div>
+        ) : null}
+        {s.trending_tags ? (
+          <div className="mt-[clamp(3rem,3.65vw,4.375rem)]">
+            <TrendingTags trendingTags={s.trending_tags!.items} />
+          </div>
+        ) : null}
+        {s.newsletter ? (
+          <div className="mt-[clamp(4.5rem,11.7vw,14rem)]">
+            <Newsletter newsletter={s.newsletter!} />
+          </div>
+        ) : null}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <div className="col-start-1 row-start-1">
-          <BlogExplorer posts={posts.map((p) => ({ ...p, body: [], comments: [] }))} owners={team.owners} categories={categories} />
-        </div>
-      </div>
-
-      {s.journal_intro ? (
-
-        <div className="mt-[clamp(4rem,6.25vw,7.5rem)]">
-
-          <JournalIntro journalIntro={s.journal_intro!} />
-
-        </div>
-
-      ) : null}
-      {s.start_here ? (
-        <div className="mt-[clamp(4rem,5vw,6rem)]">
-          <StartHere startHere={s.start_here!} posts={posts} />
-        </div>
-      ) : null}
-      {s.popular || s.topics ? (
-        <div className="mt-[clamp(4.5rem,7.5vw,9rem)]">
-          <PopularAndTopics popularSlugs={s.popular?.slugs ?? []} topics={s.topics?.items ?? []} posts={posts} />
-        </div>
-      ) : null}
-      {s.resources ? (
-        <div className="mt-[clamp(4.5rem,4.7vw,5.625rem)]">
-          <Resources resources={s.resources!.items} />
-        </div>
-      ) : null}
-      {s.trending_tags ? (
-        <div className="mt-[clamp(3rem,3.65vw,4.375rem)]">
-          <TrendingTags trendingTags={s.trending_tags!.items} />
-        </div>
-      ) : null}
-      {s.newsletter ? (
-        <div className="mt-[clamp(4.5rem,11.7vw,14rem)]">
-          <Newsletter newsletter={s.newsletter!} />
-        </div>
-      ) : null}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-    </Reveal>
+      </Reveal>
+    </>
   );
 }

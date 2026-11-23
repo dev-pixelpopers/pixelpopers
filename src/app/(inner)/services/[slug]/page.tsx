@@ -8,6 +8,7 @@ import { conceptFor } from "@/components/inner/services/registry";
 import { ServiceMediaProvider } from "@/components/inner/services/ServiceImage";
 import { getServiceDetail, getServiceDetails, getSite } from "@/lib/content";
 import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 /** Services added in the CMS after a build render on first visit. */
 export const dynamicParams = true;
@@ -56,17 +57,21 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
   };
 
   return (
-    <ServicePageMotion className={pageClassName}>
-      <ServiceMediaProvider images={service.images}>
-        <Sections service={service} />
-      </ServiceMediaProvider>
-      <ServiceLongForm service={service} hideProcess={processInConcept} />
-      <ServiceClosing
-        service={service}
-        serviceDetails={allServices}
-        renderPackage={(pkg, i) => <PackageCard pkg={pkg} index={i} />}
-      />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </ServicePageMotion>
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path={`/services/${slug}`} />
+      <ServicePageMotion className={pageClassName}>
+        <ServiceMediaProvider images={service.images}>
+          <Sections service={service} />
+        </ServiceMediaProvider>
+        <ServiceLongForm service={service} hideProcess={processInConcept} />
+        <ServiceClosing
+          service={service}
+          serviceDetails={allServices}
+          renderPackage={(pkg, i) => <PackageCard pkg={pkg} index={i} />}
+        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </ServicePageMotion>
+    </>
   );
 }

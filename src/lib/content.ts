@@ -223,6 +223,12 @@ export function whatsappLink(phone: string | null | undefined): string | null {
   return digits.length >= 7 ? `https://wa.me/${digits}` : null;
 }
 
+/** A code snippet from the CMS (SEO → Scripts & tags). `target` is "*" (every page) or one page's path. */
+export type CustomScript = { id: number; target: string; location: "head" | "body"; code: string };
+
+/** Active snippets, in the CMS's order. None without the CMS. */
+export const getScripts = cache(() => collection<CustomScript[]>("/scripts", []));
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**

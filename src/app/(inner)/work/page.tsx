@@ -8,6 +8,7 @@ import { Clients, Cta, Impact, Intro, Teasers, Testimonials } from "@/components
 import { getClients, getProjects, getQuotes, getSite, getWorkPage, assertPagePublished } from "@/lib/content";
 import { toProjectCard, workTestimonials } from "@/lib/pages/work";
 import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getWorkPage();
@@ -52,45 +53,49 @@ export default async function WorkPage() {
   };
 
   return (
-    <WorkMotion className="flex flex-col pb-[clamp(5rem,9vw,10.875rem)]">
-      {s.hero ? <Hero workHero={{ ...s.hero, count: s.hero.count || projects.length }} /> : null}
-      <ProjectBrowser projects={projects.map(toProjectCard)} filters={s.filters?.items} />
-      {s.intro ? (
-        <div className="mt-[clamp(5rem,8.96vw,10.75rem)]">
-          <Intro workIntro={s.intro} />
-        </div>
-      ) : null}
-      {s.clients && clients.length ? (
-        <div className="mt-[clamp(5rem,8.33vw,10rem)]">
-          <Clients content={s.clients} clients={clients} />
-        </div>
-      ) : null}
-      {s.impact ? (
-        <div className="mt-[clamp(4rem,5.2vw,6.25rem)]">
-          <Impact impact={s.impact} />
-        </div>
-      ) : null}
-      {s.testimonials && quotes.length ? (
-        <div className="mt-[clamp(5rem,8.33vw,10rem)]">
-          <Testimonials workTestimonials={{ ...s.testimonials, items: quotes }} />
-        </div>
-      ) : null}
-      {s.teasers ? (
-        <div className="mt-[clamp(4rem,4.7vw,5.625rem)]">
-          <Teasers teasers={s.teasers} />
-        </div>
-      ) : null}
-      {s.marquees ? (
-        <div className="mt-[clamp(2.5rem,3.125vw,3.75rem)]">
-          <Marquee marquees={s.marquees} />
-        </div>
-      ) : null}
-      {s.cta ? (
-        <div className="mt-[clamp(4rem,7.3vw,8.75rem)]">
-          <Cta workCta={s.cta} />
-        </div>
-      ) : null}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </WorkMotion>
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path="/work" />
+      <WorkMotion className="flex flex-col pb-[clamp(5rem,9vw,10.875rem)]">
+        {s.hero ? <Hero workHero={{ ...s.hero, count: s.hero.count || projects.length }} /> : null}
+        <ProjectBrowser projects={projects.map(toProjectCard)} filters={s.filters?.items} />
+        {s.intro ? (
+          <div className="mt-[clamp(5rem,8.96vw,10.75rem)]">
+            <Intro workIntro={s.intro} />
+          </div>
+        ) : null}
+        {s.clients && clients.length ? (
+          <div className="mt-[clamp(5rem,8.33vw,10rem)]">
+            <Clients content={s.clients} clients={clients} />
+          </div>
+        ) : null}
+        {s.impact ? (
+          <div className="mt-[clamp(4rem,5.2vw,6.25rem)]">
+            <Impact impact={s.impact} />
+          </div>
+        ) : null}
+        {s.testimonials && quotes.length ? (
+          <div className="mt-[clamp(5rem,8.33vw,10rem)]">
+            <Testimonials workTestimonials={{ ...s.testimonials, items: quotes }} />
+          </div>
+        ) : null}
+        {s.teasers ? (
+          <div className="mt-[clamp(4rem,4.7vw,5.625rem)]">
+            <Teasers teasers={s.teasers} />
+          </div>
+        ) : null}
+        {s.marquees ? (
+          <div className="mt-[clamp(2.5rem,3.125vw,3.75rem)]">
+            <Marquee marquees={s.marquees} />
+          </div>
+        ) : null}
+        {s.cta ? (
+          <div className="mt-[clamp(4rem,7.3vw,8.75rem)]">
+            <Cta workCta={s.cta} />
+          </div>
+        ) : null}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </WorkMotion>
+    </>
   );
 }

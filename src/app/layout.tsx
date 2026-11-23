@@ -4,6 +4,7 @@ import Script from "next/script";
 
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 
+import { SiteBodyCode, SiteHeadCode } from "@/components/layout/CustomCode";
 import VisitorWelcome from "@/components/layout/VisitorWelcome";
 import { getContactPage, getSite } from "@/lib/content";
 
@@ -193,6 +194,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           // first paint or hydration.
           <script dangerouslySetInnerHTML={{ __html: gtmBootstrap() }} />
         ) : null}
+        {/* SEO → Scripts & tags in the CMS: snippets for every page's <head>. */}
+        <SiteHeadCode />
       </head>
       <body className="flex min-h-full flex-col bg-cream text-ink">
         {gtmId ? (
@@ -203,6 +206,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <VisitorWelcome gifs={gifs} chat={chat} />
         {gtmId ? <Script id="gtm" strategy="lazyOnload" src={`https://www.googletagmanager.com/gtm.js?id=${gtmId}`} /> : null}
+        {/* SEO → Scripts & tags: snippets for the end of every page's <body>. */}
+        <SiteBodyCode />
       </body>
     </html>
   );

@@ -15,6 +15,7 @@ import {
 import { getPost, getPosts, getSite, getTeam } from "@/lib/content";
 import { wordCount } from "@/lib/pages/blog";
 import { fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 /** Posts published in the CMS after a build render on first visit. */
 export const dynamicParams = true;
@@ -108,68 +109,72 @@ export default async function BlogPostPage({
   };
 
   return (
-    <Reveal className="flex flex-col pb-[clamp(5rem,8.33vw,10rem)]">
-      <PostHero post={post} owners={team.owners} />
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path={`/blog/${slug}`} />
+      <Reveal className="flex flex-col pb-[clamp(5rem,8.33vw,10rem)]">
+        <PostHero post={post} owners={team.owners} />
 
-      {/* TOC | article | share — Figma columns 340 / 880 / 56 with 140 / 120 gutters. */}
-      <div className="mx-auto mt-[clamp(2.5rem,6.25vw,7.5rem)] grid w-full max-w-[1920px] gap-y-10 px-[clamp(1.25rem,6.25vw,7.5rem)] lg:grid-cols-[minmax(0,340fr)_minmax(0,140fr)_minmax(0,880fr)_minmax(0,120fr)_minmax(0,200fr)]">
-        <aside className="hidden lg:col-start-1 lg:block">
-          <div className="sticky top-8">
-            <Toc items={toc} />
-          </div>
-        </aside>
+        {/* TOC | article | share — Figma columns 340 / 880 / 56 with 140 / 120 gutters. */}
+        <div className="mx-auto mt-[clamp(2.5rem,6.25vw,7.5rem)] grid w-full max-w-[1920px] gap-y-10 px-[clamp(1.25rem,6.25vw,7.5rem)] lg:grid-cols-[minmax(0,340fr)_minmax(0,140fr)_minmax(0,880fr)_minmax(0,120fr)_minmax(0,200fr)]">
+          <aside className="hidden lg:col-start-1 lg:block">
+            <div className="sticky top-8">
+              <Toc items={toc} />
+            </div>
+          </aside>
 
-        <article className="mx-auto w-full max-w-[55rem] lg:col-start-3 lg:row-start-1">
-          {/* Below lg the sticky TOC column is gone, so offer a collapsible one instead. */}
-          <details className="group mb-10 rounded-3xl border border-white bg-white/60 p-6 lg:hidden">
-            <summary className="flex cursor-pointer list-none items-center justify-between font-display text-micro text-blush-deep uppercase">
-              In this article
-              <span
-                aria-hidden
-                className="text-lg transition-transform group-open:rotate-45"
-              >
-                +
-              </span>
-            </summary>
-            <ol className="mt-4 flex flex-col gap-3">
-              {toc.map((t) => (
-                <li key={t.id}>
-                  <a
-                    href={`#${t.id}`}
-                    className="font-copy text-base text-ink/70 hover:text-blush-deep"
-                  >
-                    {t.label}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </details>
-          <ArticleBody blocks={post.body} />
-          <div className="mt-[clamp(3rem,5.2vw,6.25rem)]">
-            <PostTags tags={post.tags} />
-          </div>
-          <div className="mt-[clamp(2rem,3.4vw,4rem)]">
-            <AuthorCard author={post.author} authorBios={team.bios} owners={team.owners} />
-          </div>
-          <div className="mt-[clamp(3rem,5.6vw,6.75rem)]">
-            <Comments comments={post.comments} slug={post.slug} />
-          </div>
-        </article>
+          <article className="mx-auto w-full max-w-[55rem] lg:col-start-3 lg:row-start-1">
+            {/* Below lg the sticky TOC column is gone, so offer a collapsible one instead. */}
+            <details className="group mb-10 rounded-3xl border border-white bg-white/60 p-6 lg:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between font-display text-micro text-blush-deep uppercase">
+                In this article
+                <span
+                  aria-hidden
+                  className="text-lg transition-transform group-open:rotate-45"
+                >
+                  +
+                </span>
+              </summary>
+              <ol className="mt-4 flex flex-col gap-3">
+                {toc.map((t) => (
+                  <li key={t.id}>
+                    <a
+                      href={`#${t.id}`}
+                      className="font-copy text-base text-ink/70 hover:text-blush-deep"
+                    >
+                      {t.label}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </details>
+            <ArticleBody blocks={post.body} />
+            <div className="mt-[clamp(3rem,5.2vw,6.25rem)]">
+              <PostTags tags={post.tags} />
+            </div>
+            <div className="mt-[clamp(2rem,3.4vw,4rem)]">
+              <AuthorCard author={post.author} authorBios={team.bios} owners={team.owners} />
+            </div>
+            <div className="mt-[clamp(3rem,5.6vw,6.75rem)]">
+              <Comments comments={post.comments} slug={post.slug} />
+            </div>
+          </article>
 
-        <div className="mx-auto w-full max-w-[55rem] lg:col-start-5 lg:row-start-1 lg:mx-0">
-          <div className="lg:sticky lg:top-8">
-            <ShareLinks url={url} title={post.title} />
+          <div className="mx-auto w-full max-w-[55rem] lg:col-start-5 lg:row-start-1 lg:mx-0">
+            <div className="lg:sticky lg:top-8">
+              <ShareLinks url={url} title={post.title} />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-[clamp(4.5rem,8.3vw,10rem)]">
-        <RelatedPosts posts={related} />
-      </div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-    </Reveal>
+        <div className="mt-[clamp(4.5rem,8.3vw,10rem)]">
+          <RelatedPosts posts={related} />
+        </div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </Reveal>
+    </>
   );
 }

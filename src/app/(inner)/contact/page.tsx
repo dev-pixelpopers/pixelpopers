@@ -6,6 +6,7 @@ import QuoteCards from "@/components/inner/services-overview/QuoteCards";
 import { getContactPage, getQuotes, getSite, getTeam, assertPagePublished, socialLinks, whatsappLink, withCompanyEmail, emailText } from "@/lib/content";
 import { contactTestimonials } from "@/lib/pages/contact";
 import { DEFAULT_OG_IMAGE, fitTitle } from "@/lib/site";
+import { PageCode } from "@/components/layout/CustomCode";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getContactPage();
@@ -84,48 +85,52 @@ export default async function ContactPage() {
   };
 
   return (
-    <ContactMotion className="flex flex-col overflow-x-clip pb-[clamp(4rem,6vw,7rem)]">
-      {s.hero ? (
-        <Intro
-          CONTACT_EMAIL={email}
-          contactHero={s.hero}
-          contactInfo={info ?? undefined}
-          showInfo={!!info}
-          contactForm={s.form ?? undefined}
-          owners={team.owners}
-        />
-      ) : null}
-      {s.next_steps ? (
-        <div className="mt-[clamp(4rem,8.33vw,10rem)]">
-          <NextSteps nextSteps={s.next_steps} />
-        </div>
-      ) : null}
-      {channels && channels.items.length ? (
-        <div className="mt-[clamp(4rem,8.33vw,10rem)]">
-          <Channels channels={channels} />
-        </div>
-      ) : null}
-      {s.chat_faq ? (
-        <div className="mt-[clamp(4rem,8.85vw,10.625rem)]">
-          <ChatFaq chatFaq={s.chat_faq} />
-        </div>
-      ) : null}
-      {s.after_send ? (
-        <div className="mt-[clamp(4rem,8.85vw,10.625rem)]">
-          <AfterSend afterSend={s.after_send} />
-        </div>
-      ) : null}
-      {s.where_when ? (
-        <div className="mt-[clamp(4rem,8.33vw,10rem)]">
-          <WhereWhen whereWhen={s.where_when} />
-        </div>
-      ) : null}
-      {s.testimonials && quotes.length ? (
-        <div className="mt-[clamp(4rem,8.33vw,10rem)]">
-          <QuoteCards id="testimonials-title" eyebrow={s.testimonials.eyebrow} heading={s.testimonials.heading} items={quotes} />
-        </div>
-      ) : null}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </ContactMotion>
+    <>
+      {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
+      <PageCode path="/contact" />
+      <ContactMotion className="flex flex-col overflow-x-clip pb-[clamp(4rem,6vw,7rem)]">
+        {s.hero ? (
+          <Intro
+            CONTACT_EMAIL={email}
+            contactHero={s.hero}
+            contactInfo={info ?? undefined}
+            showInfo={!!info}
+            contactForm={s.form ?? undefined}
+            owners={team.owners}
+          />
+        ) : null}
+        {s.next_steps ? (
+          <div className="mt-[clamp(4rem,8.33vw,10rem)]">
+            <NextSteps nextSteps={s.next_steps} />
+          </div>
+        ) : null}
+        {channels && channels.items.length ? (
+          <div className="mt-[clamp(4rem,8.33vw,10rem)]">
+            <Channels channels={channels} />
+          </div>
+        ) : null}
+        {s.chat_faq ? (
+          <div className="mt-[clamp(4rem,8.85vw,10.625rem)]">
+            <ChatFaq chatFaq={s.chat_faq} />
+          </div>
+        ) : null}
+        {s.after_send ? (
+          <div className="mt-[clamp(4rem,8.85vw,10.625rem)]">
+            <AfterSend afterSend={s.after_send} />
+          </div>
+        ) : null}
+        {s.where_when ? (
+          <div className="mt-[clamp(4rem,8.33vw,10rem)]">
+            <WhereWhen whereWhen={s.where_when} />
+          </div>
+        ) : null}
+        {s.testimonials && quotes.length ? (
+          <div className="mt-[clamp(4rem,8.33vw,10rem)]">
+            <QuoteCards id="testimonials-title" eyebrow={s.testimonials.eyebrow} heading={s.testimonials.heading} items={quotes} />
+          </div>
+        ) : null}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </ContactMotion>
+    </>
   );
 }

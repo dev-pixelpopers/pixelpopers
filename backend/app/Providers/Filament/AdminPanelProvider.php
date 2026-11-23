@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Content'),
                 NavigationGroup::make('Blog'),
                 NavigationGroup::make('Inbox'),
+                NavigationGroup::make('SEO'),
                 NavigationGroup::make('Settings'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
