@@ -18,13 +18,6 @@ const fillClasses: Record<ServiceFill, string> = {
   photo: "text-cream [-webkit-text-stroke:1px_var(--grape)] [paint-order:stroke_fill]",
 };
 
-const labelToneClasses: Record<ServiceFill, string> = {
-  outline: "text-black",
-  grape: "text-white",
-  sunbeam: "text-white",
-  photo: "text-white",
-};
-
 /**
  * Offsets are expressed in `cqw` (a fraction of the tile's own width) so the
  * whole composition scales as one unit — no absolute positioning, and the
