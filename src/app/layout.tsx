@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Michroma, Modak } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 
@@ -31,23 +30,42 @@ const haasGrot = localFont({
   preload: false,
 });
 
-const archivo = Archivo({
+// Archivo, Michroma and Modak are open-source (SIL OFL) Google fonts, stored
+// in /public/assets/fonts instead of downloaded from Google at build time —
+// so a Google Fonts hiccup on the build server can never fail a deploy.
+// (next/font needs every path written out literally.)
+const archivo = localFont({
+  src: [
+    { path: "../../public/assets/fonts/archivo-latin-300-normal.woff2", weight: "300", style: "normal" },
+    { path: "../../public/assets/fonts/archivo-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../public/assets/fonts/archivo-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../public/assets/fonts/archivo-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../public/assets/fonts/archivo-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../../public/assets/fonts/archivo-latin-800-normal.woff2", weight: "800", style: "normal" },
+    { path: "../../public/assets/fonts/archivo-latin-900-normal.woff2", weight: "900", style: "normal" },
+  ],
   variable: "--font-archivo",
-  subsets: ["latin"],
-});
-
-// Stand-in for the licensed "Nevera" display face used in Figma.
-const michroma = Michroma({
-  variable: "--font-michroma",
-  subsets: ["latin"],
-  weight: "400",
+  display: "swap",
+  adjustFontFallback: "Arial",
+  // Seven weights: the browser fetches only the ones a page uses, instead of
+  // all of them up front. The metric-matched fallback keeps text steady.
   preload: false,
 });
 
-const modak = Modak({
+// Stand-in for the licensed "Nevera" display face used in Figma.
+const michroma = localFont({
+  src: "../../public/assets/fonts/michroma-latin-400-normal.woff2",
+  variable: "--font-michroma",
+  display: "swap",
+  adjustFontFallback: "Arial",
+  preload: false,
+});
+
+const modak = localFont({
+  src: "../../public/assets/fonts/modak-latin-400-normal.woff2",
   variable: "--font-modak",
-  subsets: ["latin"],
-  weight: "400",
+  display: "swap",
+  adjustFontFallback: "Arial",
   preload: false,
 });
 

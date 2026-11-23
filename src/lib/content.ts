@@ -67,9 +67,19 @@ const secureCmsLinks = (json: string) =>
 type Fetched<T> = { ok: true; data: T } | { ok: false; reason: "unavailable" | "missing" };
 
 let warned = false;
+/**
+ * Set once the CMS has refused a connection (nothing listening — e.g. the
+ * local CMS isn't running during `npm run build`). Every later request in
+ * this process then uses the built-in content straight away instead of
+ * trying again, so the build doesn't fill up with identical "fetch failed"
+ * errors. A slow or erroring CMS is still retried as before. On the live
+ * site the pause lasts only 30 seconds, so a brief network blip never sticks.
+ */
+let refusedUntil = 0;
+const NOT_LISTENING = new Set(["ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "EHOSTUNREACH"]);
 
 async function fromCms<T>(path: string, attempt = 1): Promise<Fetched<T>> {
-  if (!API) return { ok: false, reason: "unavailable" };
+  if (!API || Date.now() < refusedUntil) return { ok: false, reason: "unavailable" };
   try {
     const res = await fetch(`${API}/api/v1${path}`, {
       headers: { Accept: "application/json" },
@@ -84,10 +94,17 @@ async function fromCms<T>(path: string, attempt = 1): Promise<Fetched<T>> {
     const body = JSON.parse(secureCmsLinks(text)) as { data: T };
     return { ok: true, data: body.data };
   } catch (error) {
-    if (attempt < ATTEMPTS) return fromCms<T>(path, attempt + 1);
+    const code = ((error as { cause?: { code?: string } }).cause?.code ?? "") as string;
+    const refused = NOT_LISTENING.has(code);
+    if (refused) refusedUntil = IS_BUILD ? Infinity : Date.now() + 30_000;
+    else if (attempt < ATTEMPTS) return fromCms<T>(path, attempt + 1);
     if (!warned) {
       warned = true;
-      console.warn(`[cms] ${API} unavailable (${(error as Error).message}) — using built-in content.`);
+      console.warn(
+        refused
+          ? `[cms] Nothing is answering at ${API} (${code}) — is the CMS running? Using the built-in content.`
+          : `[cms] ${API} unavailable (${(error as Error).message}) — using built-in content.`,
+      );
     }
     return { ok: false, reason: "unavailable" };
   }
