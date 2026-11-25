@@ -22,6 +22,12 @@ use Illuminate\Support\Str;
  */
 class ServiceResource extends Resource
 {
+    /** Services whose design sections have their own "Page sections" form: slug => form class. */
+    private const PAGE_SECTIONS = [
+        'digital-marketing' => \App\Filament\Support\DigitalMarketingSections::class,
+        'mobile-app-development' => \App\Filament\Support\MobileAppSections::class,
+    ];
+
     protected static ?string $model = Service::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
@@ -225,9 +231,10 @@ class ServiceResource extends Resource
                                 ->placeholder('As a web development agency, we build responsive websites that adapt seamlessly to desktops, tablets and smartphones. Every layout is designed to maintain its visual appeal, functionality and ease of use, no matter the screen size.'),
                         ]),
                     ]),
+                // Every word of a bespoke page's design sections (digital marketing, mobile apps).
                 SchemaComponents\Tabs\Tab::make('Page sections')->icon('heroicon-o-sparkles')
-                    ->visible(fn (?Service $record) => $record?->slug === 'digital-marketing')
-                    ->schema(\App\Filament\Support\DigitalMarketingSections::schema()),
+                    ->visible(fn (?Service $record) => isset(self::PAGE_SECTIONS[$record?->slug]))
+                    ->schema(fn (?Service $record) => isset(self::PAGE_SECTIONS[$record?->slug]) ? self::PAGE_SECTIONS[$record->slug]::schema() : []),
                 SchemaComponents\Tabs\Tab::make('Social account')->icon('heroicon-o-at-symbol')
                     ->visible(fn (?Service $record) => $record?->slug === 'digital-marketing')
                     ->schema([

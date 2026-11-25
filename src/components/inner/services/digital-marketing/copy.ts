@@ -1,3 +1,4 @@
+import { overlayCopy } from "@/components/inner/service/page-copy";
 import type { ServiceDetail } from "@/lib/service-content";
 
 /*
@@ -104,25 +105,7 @@ export const DM_COPY = {
 
 export type DmCopy = typeof DM_COPY;
 
-/**
- * The design's copy with the CMS's edits laid over it: text fields that are
- * empty in the CMS keep the design's value; lists keep the design's length.
- * Each section's `text` is the description under its visual (shown when it has words).
- */
-function overlay<T>(base: T, edit: unknown): T {
-  if (Array.isArray(base)) {
-    const list = Array.isArray(edit) ? edit : [];
-    return base.map((item, i) => overlay(item, list[i])) as T;
-  }
-  if (base && typeof base === "object") {
-    const obj = edit && typeof edit === "object" && !Array.isArray(edit) ? (edit as Record<string, unknown>) : {};
-    return Object.fromEntries(Object.entries(base).map(([k, v]) => [k, overlay(v, obj[k])])) as T;
-  }
-  if (typeof base === "string") return (typeof edit === "string" && edit.trim() ? edit.trim() : base) as T;
-  return base;
-}
-
 export function dmCopy(service: ServiceDetail): DmCopy {
   // The growth engine has its own field (service.engine); the other sections live in service.copy.
-  return overlay(DM_COPY, { ...(service.copy ?? {}), engine: service.engine ?? {} });
+  return overlayCopy(DM_COPY, { ...(service.copy ?? {}), engine: service.engine ?? {} });
 }

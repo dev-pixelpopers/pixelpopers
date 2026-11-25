@@ -20,6 +20,8 @@ use Filament\Schemas\Components as SchemaComponents;
  */
 class DigitalMarketingSections
 {
+    use BuildsPageSectionFields;
+
     public const DEFAULTS = [
         'hero' => [
             'dashboard' => [
@@ -111,12 +113,6 @@ class DigitalMarketingSections
         ],
     ];
 
-    /** The design default for a dotted key inside DEFAULTS, e.g. "funnel.stages.0.stage". */
-    public static function default(string $key): string
-    {
-        return (string) data_get(self::DEFAULTS, $key, '');
-    }
-
     /** The tab's contents: one collapsible block per page section, top to bottom. */
     public static function schema(): array
     {
@@ -173,58 +169,5 @@ class DigitalMarketingSections
                 ...self::items('ads.stories', 4, 'Story ad', ['headline' => 'Headline', 'cta' => 'Button', 'alt' => 'Image description (alt)']),
             ]),
         ];
-    }
-
-    /** Eyebrow, heading and description (plus an optional sub-heading) for one section. */
-    private static function titleFields(string $key, string $store = 'copy', bool $withSubheading = false): array
-    {
-        return array_values(array_filter([
-            self::input("$key.eyebrow", 'Eyebrow', $store),
-            self::area("$key.heading", 'Heading', $store, 2)->helperText('Each line shows on its own line.'),
-            $withSubheading ? self::input("$key.subheading", 'Description heading', $store)->columnSpanFull() : null,
-            self::area("$key.text", 'Description', $store, 4)->columnSpanFull()
-                ->helperText('Shown under the section’s visual.'),
-        ]));
-    }
-
-    /** One fixed list as a small group per item. */
-    private static function items(string $key, int $count, string $noun, array $fields, string $store = 'copy'): array
-    {
-        $out = [];
-        for ($i = 0; $i < $count; $i++) {
-            $out[] = SchemaComponents\Fieldset::make("$noun ".($i + 1))
-                ->columns(count($fields) > 2 ? 3 : count($fields))
-                ->columnSpanFull()
-                ->schema(array_map(
-                    fn ($f, $label) => self::input("$key.$i.$f", $label, $store),
-                    array_keys($fields),
-                    $fields,
-                ));
-        }
-
-        return $out;
-    }
-
-    private static function section(string $title, array $schema, bool $collapsed = false): SchemaComponents\Section
-    {
-        return SchemaComponents\Section::make($title)->collapsible()->collapsed($collapsed)->columns(2)->schema($schema);
-    }
-
-    private static function input(string $key, string $label, string $store = 'copy'): Forms\Components\TextInput
-    {
-        return Forms\Components\TextInput::make(self::path($key, $store))->label($label)
-            ->placeholder(self::default($key))->maxLength(300);
-    }
-
-    private static function area(string $key, string $label, string $store = 'copy', int $rows = 3): Forms\Components\Textarea
-    {
-        return Forms\Components\Textarea::make(self::path($key, $store))->label($label)->rows($rows)
-            ->placeholder(self::default($key));
-    }
-
-    /** `engine.*` keys already start with "engine"; everything else lives under `copy`. */
-    private static function path(string $key, string $store): string
-    {
-        return $store === 'engine' ? $key : "copy.$key";
     }
 }

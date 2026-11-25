@@ -134,6 +134,9 @@ class Service extends Model
         'content-writing' => [
             'post-photo' => ['/assets/inner/writing.webp', 'Article photo', 'The Poppin’ Post'],
         ],
+        'mobile-app-development' => [
+            'app-screen' => ['/assets/inner/fifth-sip.webp', 'Photo inside the phone app', 'Hero'],
+        ],
     ];
 
     /** @return array<string, string> slot => uploaded replacement */

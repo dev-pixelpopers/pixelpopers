@@ -53,8 +53,9 @@ export default function ServiceRows({ serviceDetails = defaultServiceDetails, se
                   <Burst pieces={10} className="top-1/2 left-[0.6em] size-0" />
                 </span>
 
+                {/* Short names run on one line into the gap before the image; longer ones (e.g. "Mobile App Development") wrap within it. */}
                 <div className="flex flex-col items-start pt-[clamp(0rem,1.04vw,1.25rem)]">
-                  <h2 data-wm="row-title" className={`flex items-baseline gap-4 font-display lg:w-max lg:whitespace-nowrap text-[clamp(1.75rem,3.125vw,3.75rem)] leading-[1.2] uppercase transition-colors ${on ? "text-white" : "text-grape"}`}>
+                  <h2 data-wm="row-title" className={`flex items-baseline gap-4 font-display ${detail.name.length > 18 ? "lg:w-[137%]" : "lg:w-max lg:whitespace-nowrap"} text-[clamp(1.75rem,3.125vw,3.75rem)] leading-[1.2] uppercase transition-colors ${on ? "text-white" : "text-grape"}`}>
                     <span aria-hidden className={`font-pop leading-none lg:hidden ${toneText[row.tone]}`}>
                       {String(i + 1).padStart(2, "0")}
                     </span>

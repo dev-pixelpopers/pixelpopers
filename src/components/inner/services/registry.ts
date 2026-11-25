@@ -13,6 +13,8 @@ import MotionSections from "./motion-graphic/Sections";
 import MotionPackage from "./motion-graphic/PackageCard";
 import ContentSections from "./content-writing/Sections";
 import ContentPackage from "./content-writing/PackageCard";
+import MobileSections from "./mobile-app-development/Sections";
+import MobilePackage from "./mobile-app-development/PackageCard";
 import GenericSections from "./generic/Sections";
 
 export type ServiceConcept = {
@@ -26,13 +28,19 @@ export type ServiceConcept = {
   pageClassName?: string;
 };
 
-export const serviceConcepts: Record<ServiceSlug, ServiceConcept> = {
+/**
+ * Services with a bespoke concept page. Mobile App Development is CMS-only
+ * content (seeded by backend MobileAppDevelopmentSeeder), so it isn't one of
+ * the static ServiceSlugs.
+ */
+export const serviceConcepts: Record<ServiceSlug | "mobile-app-development", ServiceConcept> = {
   "brand-identity": { Sections: BrandSections, PackageCard: BrandPackage, processInConcept: true },
   "ui-ux-design": { Sections: UiuxSections, PackageCard: UiuxPackage, processInConcept: true, pageClassName: "bg-paper" },
   "digital-marketing": { Sections: MarketingSections, PackageCard: MarketingPackage, processInConcept: true },
   "web-development": { Sections: WebSections, PackageCard: WebPackage },
   "motion-graphic": { Sections: MotionSections, PackageCard: MotionPackage },
   "content-writing": { Sections: ContentSections, PackageCard: ContentPackage },
+  "mobile-app-development": { Sections: MobileSections, PackageCard: MobilePackage, processInConcept: true },
 };
 
 /**
@@ -42,5 +50,5 @@ export const serviceConcepts: Record<ServiceSlug, ServiceConcept> = {
 const genericConcept: ServiceConcept = { Sections: GenericSections, PackageCard: BrandPackage };
 
 export function conceptFor(slug: string): ServiceConcept {
-  return serviceConcepts[slug as ServiceSlug] ?? genericConcept;
+  return serviceConcepts[slug as keyof typeof serviceConcepts] ?? genericConcept;
 }
