@@ -16,6 +16,7 @@ class Page extends Model
 
     protected $fillable = [
         'slug',
+        'is_custom',
         'title',
         'seo_title',
         'seo_description',
@@ -27,9 +28,21 @@ class Page extends Model
     ];
 
     protected $casts = [
+        'is_custom' => 'boolean',
         'is_published' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        // Menu links to a page follow it when its address changes, and go when it's deleted.
+        static::updated(function (Page $page) {
+            if ($page->wasChanged('slug')) {
+                \App\Support\Navigation::renamePage((string) $page->getOriginal('slug'), $page->slug);
+            }
+        });
+        static::deleted(fn (Page $page) => \App\Support\Navigation::forgetPage($page->slug));
+    }
 
     public function sections(): HasMany
     {

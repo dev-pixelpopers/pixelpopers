@@ -34,7 +34,7 @@ function Chars({ text }: { text: string }) {
   words rise in and the quote button pops with a burst; on the way out the
   copy blurs down and the button spins away.
 */
-export default function Hero({ servicesHero = defaultServicesHero }: { servicesHero?: typeof defaultServicesHero } = {}) {
+export default function Hero({ servicesHero = defaultServicesHero, crumb = "Services" }: { servicesHero?: typeof defaultServicesHero; /** Last breadcrumb (the page's name). */ crumb?: string } = {}) {
   const [l1, l2, ...rest] = servicesHero.lines;
   // Extra lines from the CMS join the last line rather than disappearing.
   const l3 = rest.join(" ");
@@ -70,7 +70,7 @@ export default function Hero({ servicesHero = defaultServicesHero }: { servicesH
       <div className="shell pt-[clamp(1rem,2.6vw,3.125rem)]">
         <div data-whero="crumb-out">
           <div data-whero="crumb">
-            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Services" }]} />
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: crumb }]} />
           </div>
         </div>
 

@@ -49,7 +49,7 @@ function Chars({ text }: { text: string }) {
   ));
 }
 
-export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typeof defaultAboutHero } = {}) {
+export default function Hero({ aboutHero = defaultAboutHero, crumb = "About" }: { aboutHero?: typeof defaultAboutHero; /** Last breadcrumb (the page's name). */ crumb?: string } = {}) {
   const [l1, l2, ...rest] = aboutHero.lines;
   // Extra lines from the CMS join the last line rather than disappearing.
   const l3 = rest.join(" ");
@@ -128,7 +128,7 @@ export default function Hero({ aboutHero = defaultAboutHero }: { aboutHero?: typ
 
       <div data-whero="crumb-out" className="shell pt-[clamp(1rem,2.6vw,3.125rem)]">
         <div data-whero="crumb">
-          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About" }]} />
+          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: crumb }]} />
         </div>
       </div>
 

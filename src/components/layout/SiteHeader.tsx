@@ -15,9 +15,11 @@ type SiteHeaderProps = {
   socials?: readonly { label: string; href: string }[];
   /** Site settings → Company → Email, shown in the menu. */
   email?: string;
+  /** The main menu's links (Settings → Navigation). */
+  links?: readonly { label: string; href: string; pill?: string; newTab?: boolean }[];
 };
 
-export default function SiteHeader({ ctaHref = "#contact", hiddenPages, socials, email }: SiteHeaderProps) {
+export default function SiteHeader({ ctaHref = "#contact", hiddenPages, socials, email, links }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -39,7 +41,7 @@ export default function SiteHeader({ ctaHref = "#contact", hiddenPages, socials,
 
       <PopButton href={ctaHref} label="Lets Talk" size="sm" />
 
-      <MenuOverlay open={menuOpen} onClose={closeMenu} hiddenPages={hiddenPages} socials={socials} email={email} />
+      <MenuOverlay open={menuOpen} onClose={closeMenu} hiddenPages={hiddenPages} socials={socials} email={email} links={links} />
     </header>
   );
 }

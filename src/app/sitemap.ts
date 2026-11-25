@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 
-import { getHiddenPages, getPosts, getProjects, getServiceDetails, getSite } from "@/lib/content";
+import { getCustomPages, getHiddenPages, getPosts, getProjects, getServiceDetails, getSite } from "@/lib/content";
 
 /** /sitemap.xml — every page, including each service, case study and post (from the CMS when connected). */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [site, services, projects, posts, hidden] = await Promise.all([getSite(), getServiceDetails(), getProjects(), getPosts(), getHiddenPages()]);
+  const [site, services, projects, posts, hidden, custom] = await Promise.all([getSite(), getServiceDetails(), getProjects(), getPosts(), getHiddenPages(), getCustomPages()]);
   const base = site.site_url.replace(/\/$/, "");
   const now = new Date();
   const page = (path: string, priority: number, changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] = "monthly") => ({
@@ -26,6 +26,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     page("/", 1, "weekly"),
     ...listing,
+    // Pages built in the CMS (Pages → New page).
+    ...custom.map((p) => ({ ...page(`/${p.slug}`, 0.7), ...(p.updatedAt ? { lastModified: new Date(p.updatedAt) } : {}) })),
     ...services.map((s) => page(`/services/${s.slug}`, 0.8)),
     ...projects.map((p) => page(`/work/${p.slug}`, 0.6)),
     ...posts.map((p) => ({ ...page(`/blog/${p.slug}`, 0.6), lastModified: new Date(`${p.date}T12:00:00Z`) })),

@@ -11,7 +11,7 @@ import ServicesSection from "@/components/sections/ServicesSection";
 // import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import StudioSection from "@/components/sections/StudioSection";
 import ProjectSlider from "@/components/slider/ProjectSlider";
-import { getClients, getHiddenPages, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories, socialLinks, withCompanyEmail } from "@/lib/content";
+import { getClients, getHiddenPages, getHome, getPosts, getServiceLinks, getServiceTiles, getShowreel, getSite, getTeam, getCategories, getNavigation, socialLinks, withCompanyEmail } from "@/lib/content";
 import { homeAgency, homeBlog, homeContact, homeHero, homeLeadership, homeStudio } from "@/lib/home-content";
 import { SITE_URL, fitTitle } from "@/lib/site";
 import { PageCode } from "@/components/layout/CustomCode";
@@ -57,7 +57,7 @@ function structuredData(site: Awaited<ReturnType<typeof getSite>>, owners: Await
 }
 
 export default async function Home() {
-  const hiddenPages = await getHiddenPages();
+  const [hiddenPages, nav] = await Promise.all([getHiddenPages(), getNavigation()]);
   const [home, site, team, tiles, showreel, clients, posts, { categoryTone }] = await Promise.all([
     getHome(),
     getSite(),
@@ -87,7 +87,7 @@ export default async function Home() {
       {/* SEO → Scripts & tags in the CMS: snippets added to this page only. */}
       <PageCode path="/" />
       <div className="flex min-h-full flex-1 flex-col bg-cream">
-        <SiteHeader hiddenPages={hiddenPages} email={site.company_email} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
+        <SiteHeader hiddenPages={hiddenPages} email={site.company_email} links={nav.main} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
         <main className="flex flex-1 flex-col">
           <HeroFinal lines={(sections.hero ?? homeHero).lines}>
             <ProjectSlider projects={showreel} />
@@ -100,7 +100,7 @@ export default async function Home() {
           <LeadershipSection content={sections.leadership ?? homeLeadership} owners={team.owners} />
           {blog ? <BlogSection content={blog} posts={featured.map((p) => ({ ...p, body: [], comments: [] }))} tones={categoryTone} /> : null}
         </main>
-        <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={await getServiceLinks()} hiddenPages={hiddenPages} />
+        <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={await getServiceLinks()} hiddenPages={hiddenPages} links={nav.footer} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(site, team.owners)) }}

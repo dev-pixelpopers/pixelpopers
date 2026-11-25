@@ -23,7 +23,7 @@ import { cardShadow, toneFill, toneText } from "./tones";
  * The first two lines start 171px (12.6% of the 1360px block) in from the
  * third, so the three lines share one `w-fit` block sized by the widest line.
  */
-export function BlogHero({ blogHero = defaultBlogHero }: { blogHero?: typeof defaultBlogHero } = {}) {
+export function BlogHero({ blogHero = defaultBlogHero, crumb = "Blog" }: { blogHero?: typeof defaultBlogHero; /** Last breadcrumb (the page's name). */ crumb?: string } = {}) {
   const [l1, l2, ...rest] = blogHero.lines;
   // Extra lines from the CMS join the last line rather than disappearing.
   const l3 = rest.join(" ");
@@ -35,7 +35,7 @@ export function BlogHero({ blogHero = defaultBlogHero }: { blogHero?: typeof def
         className="pointer-events-none absolute inset-x-0 -top-52 -z-10 h-[clamp(40rem,62vw,74rem)] bg-[radial-gradient(ellipse_27%_32%_at_50%_10%,rgb(242_119_147/0.38),transparent_75%),radial-gradient(ellipse_36%_22%_at_49%_62%,rgb(159_201_204/0.5),transparent_75%)]"
       />
       <div className="shell pt-[clamp(1rem,2.6vw,3.125rem)]">
-        <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Blog" }]} />
+        <Breadcrumb items={[{ label: "Home", href: "/" }, { label: crumb }]} />
       </div>
       <div className="mx-auto mt-[clamp(1.75rem,3.1vw,3.75rem)] w-fit max-w-full px-5">
         <h1 id="blog-title" data-reveal className="uppercase">

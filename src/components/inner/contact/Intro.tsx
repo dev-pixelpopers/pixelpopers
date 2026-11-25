@@ -40,7 +40,7 @@ function Chars({ text }: { text: string }) {
   another, the social pills pop, the doodle spins), and the form card rises
   in tilted while its chips pop. Both ship hidden so they don't flash first.
 */
-export default function Intro({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactHero = defaultContactHero, contactInfo = defaultContactInfo, owners = defaultOwners, contactForm, showInfo = true }: { CONTACT_EMAIL?: string; contactHero?: typeof defaultContactHero; contactInfo?: typeof defaultContactInfo; owners?: typeof defaultOwners; /** The project form's copy (passed to ContactForm). */ contactForm?: NonNullable<ComponentProps<typeof ContactForm>>["contactForm"]; /** The Contact info section is switched off in the CMS. */ showInfo?: boolean } = {}) {
+export default function Intro({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactHero = defaultContactHero, contactInfo = defaultContactInfo, owners = defaultOwners, contactForm, showInfo = true, crumb = "Contact" }: { /** Last breadcrumb (the page's name). */ crumb?: string; CONTACT_EMAIL?: string; contactHero?: typeof defaultContactHero; contactInfo?: typeof defaultContactInfo; owners?: typeof defaultOwners; /** The project form's copy (passed to ContactForm). */ contactForm?: NonNullable<ComponentProps<typeof ContactForm>>["contactForm"]; /** The Contact info section is switched off in the CMS. */ showInfo?: boolean } = {}) {
   const [l1, l2, ...rest] = contactHero.lines;
   // Extra lines from the CMS join the last line rather than disappearing.
   const l3 = rest.join(" ");
@@ -82,7 +82,7 @@ export default function Intro({ CONTACT_EMAIL = DEFAULT_CONTACT_EMAIL, contactHe
       <div className="shell pt-[clamp(1rem,2.6vw,3.125rem)]">
         <div data-whero="crumb-out">
           <div data-whero="crumb">
-            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: crumb }]} />
           </div>
         </div>
 

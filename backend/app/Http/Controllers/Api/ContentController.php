@@ -42,8 +42,8 @@ class ContentController extends Controller
     public function pages(): JsonResponse
     {
         return $this->respond(ContentCache::remember('pages', fn () => Page::published()->ordered()
-            ->get(['slug', 'title', 'updated_at'])
-            ->map(fn (Page $p) => ['slug' => $p->slug, 'title' => $p->title, 'updatedAt' => $p->updated_at?->toIso8601String()])
+            ->get(['slug', 'title', 'is_custom', 'updated_at'])
+            ->map(fn (Page $p) => ['slug' => $p->slug, 'title' => $p->title, 'custom' => (bool) $p->is_custom, 'updatedAt' => $p->updated_at?->toIso8601String()])
             ->all()));
     }
 

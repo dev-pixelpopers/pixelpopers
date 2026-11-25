@@ -37,7 +37,7 @@ function Chars({ text }: { text: string }) {
   in spinning at 1.45s and counts up to the project total, and on the way out
   it strains, wobbles and bursts into a ring and confetti.
 */
-export default function Hero({ workHero = defaultWorkHero }: { workHero?: typeof defaultWorkHero } = {}) {
+export default function Hero({ workHero = defaultWorkHero, crumb = "Work" }: { workHero?: typeof defaultWorkHero; /** Last breadcrumb (the page's name). */ crumb?: string } = {}) {
   const [l1, l2, ...rest] = workHero.lines;
   // Extra lines from the CMS join the last line rather than disappearing.
   const l3 = rest.join(" ");
@@ -133,7 +133,7 @@ export default function Hero({ workHero = defaultWorkHero }: { workHero?: typeof
 
       <div data-whero="crumb-out" className="shell pt-[clamp(1rem,2.6vw,3.125rem)]">
         <div data-whero="crumb">
-          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Work" }]} />
+          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: crumb }]} />
         </div>
       </div>
 

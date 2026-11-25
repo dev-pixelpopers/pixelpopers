@@ -7,9 +7,9 @@ import Link from "next/link";
 import BrandLogo from "@/components/ui/BrandLogo";
 import { submitForm } from "@/lib/forms";
 
-type FooterLink = { label: string; href: string; pill?: string };
+type FooterLink = { label: string; href: string; pill?: string; newTab?: boolean };
 
-/** Footer destinations: the inner pages, then each service page (passed in from the CMS). */
+/** Used only when no list is passed in (Settings → Navigation provides it). */
 const navigation: { title: string; links: FooterLink[] } = {
   title: "Navigation",
   links: [
@@ -152,6 +152,8 @@ type SiteFooterProps = {
   services?: FooterLink[];
   /** Pages switched off in the CMS (e.g. "work"); links into them are left out. */
   hiddenPages?: readonly string[];
+  /** The Navigation list, in order (Settings → Navigation); already filtered. */
+  links?: FooterLink[];
 };
 
 export default function SiteFooter({
@@ -159,11 +161,12 @@ export default function SiteFooter({
   availability = "Available for new projects",
   services = defaultServiceLinks,
   hiddenPages = [],
+  links,
 }: SiteFooterProps) {
   // "/about#studio" belongs to "about", so it goes when About is off.
   const shown = (link: FooterLink) => !hiddenPages.includes(link.href.split(/[/#?]/)[1] ?? "");
   const navGroups = [
-    { ...navigation, links: navigation.links.filter(shown) },
+    { ...navigation, links: links ?? navigation.links.filter(shown) },
     { title: "Services", links: services },
   ];
   const scrollToTop = () => {
@@ -210,8 +213,12 @@ export default function SiteFooter({
             <FooterGroup key={group.title} title={group.title}>
               <ul className="flex flex-col gap-3 pb-5 lg:pb-0">
                 {group.links.map((link) => (
-                  <li key={link.href} className="flex flex-wrap items-center gap-2">
-                    <Link href={link.href} className={`text-cream/80 hover:text-cream ${underline}`}>
+                  <li key={`${link.href}-${link.label}`} className="flex flex-wrap items-center gap-2">
+                    <Link
+                      href={link.href}
+                      className={`text-cream/80 hover:text-cream ${underline}`}
+                      {...(link.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    >
                       {link.label}
                     </Link>
                     {link.pill ? (

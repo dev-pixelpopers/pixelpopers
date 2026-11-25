@@ -33,6 +33,13 @@ class Transformers
                 'ogImage' => $page->og_image,
                 'robots' => $page->robots,
             ],
+            // Built in the CMS (Pages → New page): its sections in order, as blocks.
+            'custom' => (bool) $page->is_custom,
+            'blocks' => $page->is_custom
+                ? $page->sections->where('is_published', true)->sortBy('sort_order')
+                    ->map(fn ($section) => ['key' => $section->key, 'type' => \App\Support\SectionLibrary::typeOf($section), 'content' => $section->content])
+                    ->filter(fn ($block) => $block['type'] !== null)->values()->all()
+                : [],
             // Keyed by section, e.g. sections.hero, sections.values.
             'sections' => $page->sections
                 ->where('is_published', true)

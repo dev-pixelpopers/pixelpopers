@@ -18,6 +18,7 @@ class PageSection extends Model
     protected $fillable = [
         'page_id',
         'key',
+        'type',
         'label',
         'content',
         'schema',

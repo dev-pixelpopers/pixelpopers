@@ -118,12 +118,14 @@ export async function SiteHeadCode() {
 /**
  * Every-page snippets for the end of <body> (root layout). These go in
  * exactly as pasted — scripts and any HTML with them (a widget's container
- * <div>, an <iframe>) — like a snippet pasted before </body>.
+ * <div>, an <iframe>) — like a snippet pasted before </body>. Widgets fill
+ * their own containers as soon as they run, so React is told not to expect
+ * the markup it sent (suppressHydrationWarning).
  */
 export async function SiteBodyCode() {
   const scripts = (await getScripts()).filter((s) => everyPage(s) && s.location === "body");
   return scripts.map((s) => (
-    <div key={s.id} data-cms-code={s.id} style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: s.code }} />
+    <div key={s.id} data-cms-code={s.id} style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: s.code }} />
   ));
 }
 
@@ -153,7 +155,7 @@ export async function PageCode({ path }: { path: string }) {
         const html = markupOnly(s.code);
         const scriptTags = parseSnippet(s.code).filter((t) => t.name === "script");
         return [
-          html ? <div key={`ph-${s.id}`} data-cms-code={s.id} style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: html }} /> : null,
+          html ? <div key={`ph-${s.id}`} data-cms-code={s.id} style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: html }} /> : null,
           ...scriptTags.map((tag, i) => renderForPage(tag, `ps-${s.id}-${i}`)),
         ];
       })}

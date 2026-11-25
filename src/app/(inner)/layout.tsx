@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
-import { getHiddenPages, getServiceLinks, getSite, socialLinks } from "@/lib/content";
+import { getHiddenPages, getNavigation, getServiceLinks, getSite, socialLinks } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -13,15 +13,15 @@ export const metadata: Metadata = {
  * hand-assembled layout in app/page.tsx and is not wrapped by this group.
  */
 export default async function InnerLayout({ children }: LayoutProps<"/">) {
-  const [site, services, hiddenPages] = await Promise.all([getSite(), getServiceLinks(), getHiddenPages()]);
+  const [site, services, hiddenPages, nav] = await Promise.all([getSite(), getServiceLinks(), getHiddenPages(), getNavigation()]);
 
   return (
     <>
-      <SiteHeader ctaHref="/contact" hiddenPages={hiddenPages} email={site.company_email} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
+      <SiteHeader ctaHref="/contact" hiddenPages={hiddenPages} email={site.company_email} links={nav.main} socials={socialLinks(site).map(({ label, href }) => ({ label, href }))} />
       <main id="main" className="flex-1">
         {children}
       </main>
-      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={services} hiddenPages={hiddenPages} />
+      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={services} hiddenPages={hiddenPages} links={nav.footer} />
     </>
   );
 }

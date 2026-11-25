@@ -12,9 +12,12 @@ import PopButton from "@/components/ui/PopButton";
 
 gsap.registerPlugin(useGSAP);
 
-const links = [
+type MenuLink = { label: string; href: string; pill?: string; newTab?: boolean };
+
+/** Used only when no list is passed in (Settings → Navigation provides it). */
+const defaultLinks: MenuLink[] = [
   { label: "Home", href: "/" },
-  { label: "Work", href: "/work", count: "24" },
+  { label: "Work", href: "/work" },
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
@@ -28,6 +31,8 @@ type MenuOverlayProps = {
   hiddenPages?: readonly string[];
   /** Real profile links from Site settings → Social (none → no pills). */
   socials?: readonly { label: string; href: string }[];
+  /** The menu's links, in order (Settings → Navigation). */
+  links?: readonly MenuLink[];
   /** Site settings → Company → Email. */
   email?: string;
 };
@@ -37,8 +42,9 @@ type MenuOverlayProps = {
  * The overlay itself is `fixed` — the one place positioning is unavoidable —
  * everything inside it is plain flex/grid flow.
  */
-export default function MenuOverlay({ open, onClose, hiddenPages = [], socials = [], email = "hello@pixelpopers.com" }: MenuOverlayProps) {
-  const visibleLinks = links.filter((l) => !hiddenPages.includes(l.href.slice(1)));
+export default function MenuOverlay({ open, onClose, hiddenPages = [], socials = [], email = "hello@pixelpopers.com", links }: MenuOverlayProps) {
+  // A list from the CMS is already filtered; the built-in one drops pages switched off.
+  const visibleLinks = links ?? defaultLinks.filter((l) => !hiddenPages.includes(l.href.slice(1)));
   const root = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
@@ -112,13 +118,18 @@ export default function MenuOverlay({ open, onClose, hiddenPages = [], socials =
           <nav aria-label="Main">
             <ul>
               {visibleLinks.map((link, i) => {
-                const active =
-                  link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+                const internal = link.href.startsWith("/") && !link.href.includes("#");
+                const active = !internal
+                  ? false
+                  : link.href === "/"
+                    ? pathname === "/"
+                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
                 return (
-                  <li key={link.href} className="border-b border-cream/10">
+                  <li key={`${link.href}-${i}`} className="border-b border-cream/10">
                     <Link
                       href={link.href}
                       onClick={onClose}
+                      {...(link.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                       aria-current={active ? "page" : undefined}
                       className={`group flex items-start gap-[clamp(1rem,2.2vw,2.75rem)] py-[clamp(0.35rem,0.9vw,1rem)] ${active ? "text-lagoon" : "text-cream"} transition-colors hover:text-lagoon`}
                     >
@@ -132,9 +143,9 @@ export default function MenuOverlay({ open, onClose, hiddenPages = [], socials =
                           >
                             {link.label}
                           </span>
-                          {link.count ? (
+                          {link.pill ? (
                             <span className="self-start rounded-full bg-blush px-3 py-1 font-haas text-micro text-cream">
-                              {link.count}
+                              {link.pill}
                             </span>
                           ) : null}
                           <span

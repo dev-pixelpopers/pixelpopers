@@ -144,6 +144,100 @@ async function pageSections<S extends Record<string, unknown>>(slug: string, fal
   };
 }
 
+/* ─────────────────────────── Navigation ─────────────────────────── */
+
+/** A menu item as saved in Settings → Navigation: a page (by address) or a custom link. */
+export type NavItem = { page: string | null; url: string | null; label: string | null; pill: string | null; new_tab?: boolean };
+/** A link ready to render. */
+export type NavLink = { label: string; href: string; pill?: string; newTab?: boolean };
+
+/** The links the menus have always had — used until Settings → Navigation is saved, or without the CMS. */
+const DEFAULT_NAV: Record<"main" | "footer", NavItem[]> = {
+  main: [
+    { page: "home", url: null, label: "Home", pill: null },
+    { page: "work", url: null, label: "Work", pill: "{projects}" },
+    { page: "services", url: null, label: "Services", pill: null },
+    { page: "about", url: null, label: "About", pill: null },
+    { page: "blog", url: null, label: "Blog", pill: null },
+    { page: "contact", url: null, label: "Contact", pill: null },
+  ],
+  footer: [
+    { page: "work", url: null, label: "Work", pill: null },
+    { page: "services", url: null, label: "Services", pill: null },
+    { page: "about", url: null, label: "About", pill: null },
+    { page: null, url: "/about#studio", label: "Studio", pill: null },
+    { page: null, url: "/about#careers", label: "Careers", pill: "We’re hiring" },
+    { page: "blog", url: null, label: "Blog", pill: null },
+  ],
+};
+
+/**
+ * The main menu and the footer's Navigation list (Settings → Navigation),
+ * resolved to links. Links to pages that are switched off or deleted are
+ * left out — so is a custom link into a switched-off page (e.g. /about#studio
+ * when About is off). "{projects}" in a badge becomes the number of case studies.
+ */
+export const getNavigation = cache(async (): Promise<Record<"main" | "footer", NavLink[]>> => {
+  const [site, hidden, pagesRes] = await Promise.all([getSite(), getHiddenPages(), fromCms<{ slug: string; title: string }[]>("/pages")]);
+  const titles = new Map(pagesRes.ok ? pagesRes.data.map((p) => [p.slug, p.title]) : []);
+  const pageHref = (slug: string) => (slug === "home" ? "/" : `/${slug}`);
+  const firstSegment = (href: string) => href.split(/[/#?]/)[1] ?? "";
+
+  let projectCount: number | null = null;
+  const pill = async (text: string | null) => {
+    if (!text) return undefined;
+    if (!text.includes("{projects}")) return text;
+    projectCount ??= (await getProjects()).length;
+    return text.replaceAll("{projects}", String(projectCount));
+  };
+
+  const resolve = async (items: NavItem[], isDefault: boolean): Promise<NavLink[]> => {
+    const links = await Promise.all(
+      items.map(async (item): Promise<NavLink | null> => {
+        if (item.page) {
+          // Saved menus only link to pages the CMS lists as published; the
+          // original links only drop pages switched off in the CMS.
+          if (isDefault ? (hidden as readonly string[]).includes(item.page) : pagesRes.ok && !titles.has(item.page)) return null;
+          const label = item.label || titles.get(item.page) || item.page;
+          return { label, href: pageHref(item.page), pill: await pill(item.pill), newTab: !!item.new_tab };
+        }
+        if (!item.url || !item.label) return null;
+        if (item.url.startsWith("/") && (hidden as readonly string[]).includes(firstSegment(item.url))) return null;
+        return { label: item.label, href: item.url, pill: await pill(item.pill), newTab: !!item.new_tab };
+      }),
+    );
+    return links.filter((l): l is NavLink => l !== null);
+  };
+
+  return {
+    main: await resolve(site.nav_main ?? DEFAULT_NAV.main, !site.nav_main),
+    footer: await resolve(site.nav_footer ?? DEFAULT_NAV.footer, !site.nav_footer),
+  };
+});
+
+/* ─────────────────────────── Custom pages ─────────────────────────── */
+
+/** A page built in the CMS (Pages → New page): its SEO and its sections, in order. */
+export type CustomPage = {
+  slug: string;
+  title: string;
+  seo: PageSeo;
+  blocks: { key: string; type: string; content: unknown }[];
+};
+
+/** A CMS-built page by its address, or null (no such page, a built-in page, or no CMS). */
+export const getCustomPage = cache(async (slug: string): Promise<CustomPage | null> => {
+  const res = await fromCms<CmsPage & { custom?: boolean; blocks?: CustomPage["blocks"] }>(`/pages/${encodeURIComponent(slug)}`);
+  if (!res.ok || !res.data.custom) return null;
+  return { slug: res.data.slug, title: res.data.title, seo: res.data.seo, blocks: res.data.blocks ?? [] };
+});
+
+/** Every published CMS-built page (for the sitemap and pre-rendering). */
+export const getCustomPages = cache(async (): Promise<{ slug: string; title: string; updatedAt?: string }[]> => {
+  const list = await collection<{ slug: string; title: string; custom?: boolean; updatedAt?: string }[]>("/pages", []);
+  return list.filter((p) => p.custom);
+});
+
 /* ─────────────────────────── Collections ─────────────────────────── */
 
 export const getSite = cache(async () => {
@@ -155,6 +249,9 @@ export const getSite = cache(async () => {
     site_keywords: null as string | null,
     default_og_image: null as string | null,
     site_url: siteStatic.SITE_URL,
+    // Settings → Navigation. Empty = the menus' original links (below).
+    nav_main: null as NavItem[] | null,
+    nav_footer: null as NavItem[] | null,
     company_email: contactStatic.CONTACT_EMAIL,
     footer_tagline: "A funky creative studio making brands impossible to scroll past — from strategy to the last pixel.",
     availability_label: "Available for new projects" as string | null,

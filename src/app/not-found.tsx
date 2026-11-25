@@ -6,7 +6,7 @@ import SiteFooter from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
 import GlowOrb from "@/components/ui/GlowOrb";
 import PopButton from "@/components/ui/PopButton";
-import { getHiddenPages, getServiceLinks, getSite, socialLinks } from "@/lib/content";
+import { getHiddenPages, getNavigation, getServiceLinks, getSite, socialLinks } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -33,7 +33,7 @@ const DETOURS = [
  * only (and off under reduced motion), so the page needs no JavaScript of its own.
  */
 export default async function NotFound() {
-  const [site, services, hiddenPages] = await Promise.all([getSite(), getServiceLinks(), getHiddenPages()]);
+  const [site, services, hiddenPages, nav] = await Promise.all([getSite(), getServiceLinks(), getHiddenPages(), getNavigation()]);
   const detours = DETOURS.filter((d) => !hiddenPages.includes(d.page));
 
   return (
@@ -42,6 +42,7 @@ export default async function NotFound() {
         ctaHref="/contact"
         hiddenPages={hiddenPages}
         email={site.company_email}
+        links={nav.main}
         socials={socialLinks(site).map(({ label, href }) => ({ label, href }))}
       />
 
@@ -128,7 +129,7 @@ export default async function NotFound() {
         ) : null}
       </main>
 
-      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={services} hiddenPages={hiddenPages} />
+      <SiteFooter tagline={site.footer_tagline} availability={site.availability_label} services={services} hiddenPages={hiddenPages} links={nav.footer} />
     </>
   );
 }
