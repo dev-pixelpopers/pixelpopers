@@ -70,9 +70,15 @@ trait BuildsPageSectionFields
             ->placeholder(self::default($key));
     }
 
-    /** Keys under `copy` by default; another store (e.g. `engine`) is the key's own first part. */
+    /**
+     * Where a field saves: under `copy` by default; `headings` puts it under
+     * `headings`; any other store (e.g. `engine`) is the key's own first part.
+     */
     private static function path(string $key, string $store): string
     {
-        return $store === 'copy' ? "copy.$key" : $key;
+        return match ($store) {
+            'copy', 'headings' => "$store.$key",
+            default => $key,
+        };
     }
 }

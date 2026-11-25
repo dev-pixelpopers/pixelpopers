@@ -5,6 +5,7 @@ import SectionTitle from "@/components/inner/SectionTitle";
 import PopButton from "@/components/ui/PopButton";
 import SplitWords from "@/components/ui/SplitWords";
 import { serviceDetails as defaultServiceDetails, type Package, type ServiceDetail } from "@/lib/service-content";
+import { serviceHeadings, type PackageLabels } from "@/lib/service-headings";
 
 const chipColors = [
   "bg-grape text-white rotate-3",
@@ -15,7 +16,7 @@ const chipColors = [
 ];
 
 /** Fallback package card — the concept pages pass their own `renderPackage`. */
-function DefaultPackage({ pkg }: { pkg: Package }) {
+function DefaultPackage({ pkg, button }: { pkg: Package; button: string }) {
   return (
     <div className="flex h-full flex-col gap-4 rounded-[2rem] bg-white p-10 shadow-[0_24px_60px_rgb(34_1_40/0.15)]">
       <h3 className="font-display text-[clamp(1.75rem,1.98vw,2.375rem)] text-grape uppercase">{pkg.name}</h3>
@@ -29,7 +30,7 @@ function DefaultPackage({ pkg }: { pkg: Package }) {
         ))}
       </ul>
       <Link href="/contact" className="mt-auto rounded-full bg-ink py-4 text-center font-display text-micro text-white uppercase">
-        Get a quote
+        {button}
       </Link>
     </div>
   );
@@ -41,7 +42,7 @@ type ServiceClosingProps = {
    * Concept-specific package card (swatch, app window, film strip…). Receives
    * the package and its index; wraps nothing else, so the grid stays shared.
    */
-  renderPackage?: (pkg: Package, index: number) => ReactNode;
+  renderPackage?: (pkg: Package, index: number, labels: PackageLabels) => ReactNode;
 };
 
 /**
@@ -63,12 +64,15 @@ export default function ServiceClosing({ service, renderPackage, serviceDetails 
     })),
   };
 
+  const h = serviceHeadings(service);
+  const faqLines = h.faqs.heading.split("\n");
+
   return (
     <div className="flex flex-col gap-[clamp(5rem,6.25vw,7.5rem)] pb-[clamp(4rem,6.25vw,7.5rem)]">
       {/* ── Packages ──────────────────────────────────────────────── */}
       {show("packages") ? (
       <section aria-labelledby="packages-title" className="shell">
-        <SectionTitle align="center" eyebrow="Pick your pop" title={<span id="packages-title">Packages</span>} />
+        <SectionTitle align="center" eyebrow={h.packages.eyebrow} title={<span id="packages-title" className="whitespace-pre-line">{h.packages.heading}</span>} />
         <ul data-wm="packages" className="mt-14 grid items-start gap-8 md:grid-cols-3 md:gap-[clamp(1rem,1.77vw,2.125rem)]">
           {service.packages.map((pkg, i) => (
             <li
@@ -77,13 +81,13 @@ export default function ServiceClosing({ service, renderPackage, serviceDetails 
               data-popular={pkg.popular ? "" : undefined}
               className={`relative h-full ${pkg.popular ? "md:-mt-5" : ""}`}
             >
-              {renderPackage ? renderPackage(pkg, i) : <DefaultPackage pkg={pkg} />}
+              {renderPackage ? renderPackage(pkg, i, h.packages) : <DefaultPackage pkg={pkg} button={h.packages.button} />}
               {pkg.popular ? <Burst pieces={16} ring="border-blush" className="top-0 left-1/2 size-0" /> : null}
             </li>
           ))}
         </ul>
         <p className="mt-8 text-center font-copy text-small text-ink/60">
-          Prices are starting points — every project gets a fixed quote after a free 30-minute call.
+          {h.packages.note}
         </p>
       </section>
       ) : null}
@@ -92,11 +96,14 @@ export default function ServiceClosing({ service, renderPackage, serviceDetails 
       {show("faqs") ? (
       <section aria-labelledby="faq-title" className="shell grid gap-10 lg:grid-cols-[minmax(0,600fr)_minmax(0,900fr)] lg:gap-[clamp(3rem,4.9vw,5.875rem)]">
         <div data-wm="heading">
-          <p data-wm="eyebrow" className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush-ink uppercase">Good questions</p>
+          <p data-wm="eyebrow" className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] leading-none text-blush-ink uppercase">{h.faqs.eyebrow}</p>
           <h2 id="faq-title" className="mt-4 font-display text-[clamp(2rem,3.54vw,4.25rem)] leading-[1.18] text-grape uppercase">
-            <SplitWords text="Asked &" name="wm-words" />
-            <br />
-            <SplitWords text="answered" name="wm-words" />
+            {faqLines.map((line, i) => (
+              <span key={i}>
+                {i ? <br /> : null}
+                <SplitWords text={line} name="wm-words" />
+              </span>
+            ))}
           </h2>
         </div>
         <div data-wm="faqs" className="flex flex-col gap-3.5">
@@ -130,7 +137,7 @@ export default function ServiceClosing({ service, renderPackage, serviceDetails 
       {show("more") ? (
       <section aria-labelledby="more-title" className="shell text-center">
         <h2 id="more-title" data-reveal className="font-haas text-[clamp(1.5rem,2.5vw,3rem)] text-blush-ink uppercase">
-          More ways to pop
+          {h.more.heading}
         </h2>
         <ul data-wm="more" className="mx-auto mt-10 flex max-w-[75rem] flex-wrap justify-center gap-x-5 gap-y-8">
           {others.map((s, i) => (
@@ -152,14 +159,14 @@ export default function ServiceClosing({ service, renderPackage, serviceDetails 
       <section data-wm="cta" aria-labelledby="cta-title" className="shell">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:px-[3.75rem]">
           <div>
-            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">Ready to pop?</p>
+            <p data-wm="eyebrow" className="font-haas text-eyebrow leading-none text-blush-ink uppercase">{h.cta.eyebrow}</p>
             <h2
               id="cta-title"
-              aria-label={`Let's talk ${service.ctaHeading}`}
+              aria-label={`${h.cta.lead} ${service.ctaHeading}`}
               className="mt-3 font-display text-[clamp(2rem,3.75vw,4.5rem)] leading-[1.17] text-grape uppercase"
             >
               <span aria-hidden>
-                <Chars text="Let's talk" />
+                <Chars text={h.cta.lead} />
                 <br />
                 <Chars text={service.ctaHeading} />
               </span>
@@ -167,7 +174,7 @@ export default function ServiceClosing({ service, renderPackage, serviceDetails 
           </div>
           <div className="flex flex-col items-start gap-8">
             <p data-wm="cta-copy" className="font-copy text-body leading-[1.64] font-light">
-              Tell us where you are and where you want to be — we reply within a day with next steps.
+              {h.cta.text}
             </p>
             <div className="relative">
               <div data-wm="cta-btn">

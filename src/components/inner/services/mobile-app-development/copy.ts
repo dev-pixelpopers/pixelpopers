@@ -16,6 +16,8 @@ export const MOBILE_COPY = {
   hero: {
     badge: "iOS · Android · Cross-platform",
     phone: {
+      time: "9:41",
+      imageAlt: "Fifth Sip coffee cups, bag and menu shown inside the ordering app",
       app: "Fifth Sip",
       greeting: "Morning, Sara ☕",
       item: "Oat flat white",
@@ -24,6 +26,8 @@ export const MOBILE_COPY = {
       points: "★ 120 pts",
       tabs: [{ label: "Home" }, { label: "Menu" }, { label: "Rewards" }, { label: "Profile" }],
     },
+    /** The little timestamp on every notification on the page. */
+    notificationTime: "now",
     notifications: [
       { app: "Fifth Sip", title: "Your order is ready", body: "Pick it up at the counter 🎉" },
       { app: "App Store", title: "Fifth Sip 1.0 is live", body: "Approved and ready to download" },
@@ -36,6 +40,11 @@ export const MOBILE_COPY = {
     heading: "Everything’s\nswitched on",
     text: "Every app we build comes with the full crew behind it. Tap a setting to see what it covers.",
     screen: "Settings",
+    search: "Search",
+    /** {on} and {total} are filled in with the number of switched-on settings. */
+    sticker: "{on} / {total} on",
+    footer: "{on} of {total} switched on",
+    counter: "of",
     icons: [{ icon: "phone" }, { icon: "chip" }, { icon: "layers" }, { icon: "pen" }, { icon: "server" }, { icon: "rocket" }, { icon: "wrench" }, { icon: "store" }],
   },
   platforms: {
@@ -50,6 +59,8 @@ export const MOBILE_COPY = {
     ],
   },
   benefits: {
+    time: "9:41",
+    date: "Monday, 12 May",
     eyebrow: "Why go mobile",
     heading: "Right there on\ntheir home screen",
     text: "",
@@ -64,6 +75,7 @@ export const MOBILE_COPY = {
     eyebrow: "From idea to app store",
     heading: "Five phases.\nOne launch.",
     text: "",
+    history: "Version history",
     versions: [
       { version: "Version 0.1", when: "Week 1" },
       { version: "Version 0.3", when: "Weeks 1–3" },

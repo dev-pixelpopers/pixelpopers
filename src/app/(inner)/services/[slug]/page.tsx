@@ -68,7 +68,7 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
         <ServiceClosing
           service={service}
           serviceDetails={allServices}
-          renderPackage={(pkg, i) => <PackageCard pkg={pkg} index={i} />}
+          renderPackage={(pkg, i, labels) => <PackageCard pkg={pkg} index={i} labels={labels} />}
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </ServicePageMotion>

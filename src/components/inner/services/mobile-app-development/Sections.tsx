@@ -80,7 +80,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 data-pop
                 className={`w-full max-w-[24rem] ${lgAt} ${i === 0 ? "lg:mt-[20%] lg:ml-[0%]" : "lg:mt-[63%] lg:ml-[52%]"} lg:w-[47%] lg:max-w-none`}
               >
-                <Notification app={n.app} title={n.title} body={n.body} index={i} className={i === 0 ? "rotate-[-4deg]" : "rotate-[3deg]"} />
+                <Notification app={n.app} title={n.title} body={n.body} index={i} time={copy.hero.notificationTime} className={i === 0 ? "rotate-[-4deg]" : "rotate-[3deg]"} />
               </div>
             ))}
 
@@ -148,11 +148,11 @@ export default function Sections({ service }: { service: ServiceDetail }) {
         <div data-reveal className="@container mx-auto w-full max-w-[38rem]">
           <div className="relative overflow-hidden rounded-[8cqw] bg-dusk px-[6cqw] pt-[8cqw] pb-[7cqw] shadow-[0_30px_70px_rgb(34_1_40/0.28)]">
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_20%_10%,rgb(106_75_151/0.65),transparent_70%),radial-gradient(ellipse_55%_45%_at_90%_95%,rgb(242_119_147/0.45),transparent_70%)]" />
-            <p aria-hidden className="relative text-center font-copy text-[max(3rem,15cqw)] leading-none font-extralight text-white/90">9:41</p>
-            <p aria-hidden className="relative mt-[1.5cqw] text-center font-copy text-[max(0.75rem,3.2cqw)] font-medium text-white/60">Monday, 12 May</p>
+            <p aria-hidden className="relative text-center font-copy text-[max(3rem,15cqw)] leading-none font-extralight text-white/90">{copy.benefits.time}</p>
+            <p aria-hidden className="relative mt-[1.5cqw] text-center font-copy text-[max(0.75rem,3.2cqw)] font-medium text-white/60">{copy.benefits.date}</p>
             <ul className="relative mt-[7cqw] flex flex-col gap-[3cqw]">
               {copy.benefits.items.map((b, i) => (
-                <Notification key={i} as="li" app={b.app} title={b.title} body={b.body} index={i} />
+                <Notification key={i} as="li" app={b.app} title={b.title} body={b.body} index={i} time={copy.hero.notificationTime} />
               ))}
             </ul>
           </div>
@@ -175,7 +175,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               </span>
               <div>
                 <p className="font-copy text-[clamp(1rem,1.15vw,1.375rem)] font-extrabold text-ink">{copy.hero.phone.app}</p>
-                <p className="font-copy text-[clamp(0.8125rem,0.83vw,1rem)] text-ink/55">Version history</p>
+                <p className="font-copy text-[clamp(0.8125rem,0.83vw,1rem)] text-ink/55">{copy.process.history}</p>
               </div>
             </div>
             <ol>

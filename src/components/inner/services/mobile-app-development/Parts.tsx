@@ -27,7 +27,7 @@ export function AppPhone({
         <div className="relative flex aspect-[360/740] flex-col overflow-hidden rounded-[11cqw] bg-cream">
           {/* Status bar + dynamic island */}
           <div aria-hidden className="flex items-center justify-between px-[8cqw] pt-[4.5cqw] font-copy text-[max(0.5625rem,3.6cqw)] font-bold text-ink">
-            <span>9:41</span>
+            <span>{copy.time}</span>
             <span className="h-[6.4cqw] w-[26cqw] rounded-full bg-ink" />
             <span className="tracking-[0.1em]">●●●</span>
           </div>
@@ -46,7 +46,7 @@ export function AppPhone({
             <ServiceImage
               src="/assets/inner/fifth-sip.webp"
               slot="app-screen"
-              alt="Fifth Sip coffee cups, bag and menu shown inside the ordering app"
+              alt={copy.imageAlt}
               width={857}
               height={1200}
               priority={priority}
@@ -87,9 +87,11 @@ export function Notification({
   title,
   body,
   index = 0,
+  time = MOBILE_COPY.hero.notificationTime,
   className = "",
   as: Tag = "div",
 }: {
+  time?: string;
   app: string;
   title: string;
   body: string;
@@ -106,7 +108,7 @@ export function Notification({
         <span className="min-w-0 grow font-copy">
           <span className="flex items-baseline justify-between gap-2 text-[max(0.6875rem,3.6cqw)] font-bold text-ink/50 uppercase">
             <span className="truncate">{app}</span>
-            <span className="shrink-0 font-medium normal-case">now</span>
+            <span className="shrink-0 font-medium normal-case">{time}</span>
           </span>
           <span className="mt-[0.2em] block text-[max(0.875rem,4.8cqw)] leading-tight font-extrabold text-ink">{title}</span>
           <span className="mt-[0.25em] block text-[max(0.8125rem,4.2cqw)] leading-[1.45] text-ink/75">{body}</span>

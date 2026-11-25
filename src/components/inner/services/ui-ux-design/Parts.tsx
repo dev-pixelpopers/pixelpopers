@@ -1,6 +1,7 @@
 import Image from "@/components/inner/services/ServiceImage";
 import type { ReactNode } from "react";
 import { owners as defaultOwners } from "@/lib/site-content";
+import { UX_COPY, type UxCopy } from "./copy";
 
 /*
   Building blocks for the UI/UX design-tool canvas page (Figma 367:78).
@@ -99,28 +100,29 @@ function Cell({ label, children }: { label: string; children: ReactNode }) {
 
 const pill = "grid place-items-center rounded-full font-haas leading-none";
 
-export function ComponentLibrary({ owners = defaultOwners }: { owners?: typeof defaultOwners } = {}) {
+export function ComponentLibrary({ owners = defaultOwners, copy = UX_COPY.system }: { owners?: typeof defaultOwners; copy?: UxCopy["system"] } = {}) {
+  const cell = (i: number) => copy.cells[i].label;
   return (
     <div data-reveal className={`rounded-[clamp(1.5rem,2.08vw,2.5rem)] bg-white p-[clamp(1rem,2.08vw,2.5rem)] ${cardShadow}`}>
-      <ul aria-label="Component library" className="grid gap-[clamp(0.75rem,1.04vw,1.25rem)] md:grid-cols-2 lg:grid-cols-3">
-        <Cell label="Button / Primary · Secondary · Ghost">
+      <ul aria-label={copy.library} className="grid gap-[clamp(0.75rem,1.04vw,1.25rem)] md:grid-cols-2 lg:grid-cols-3">
+        <Cell label={cell(0)}>
           <div className="mt-[7.55cqw] flex items-center gap-[2.86cqw] text-[3.67cqw]">
-            <span className={`${pill} h-[11.4cqw] w-[36.7cqw] bg-blush text-white`}>Get started</span>
-            <span className={`${pill} h-[11.4cqw] w-[30.6cqw] border-[0.41cqw] border-grape text-grape`}>Learn more</span>
-            <span className="ml-[0.8cqw] font-haas text-ink/60">Skip →</span>
+            <span className={`${pill} h-[11.4cqw] w-[36.7cqw] bg-blush text-white`}>{copy.buttons.primary}</span>
+            <span className={`${pill} h-[11.4cqw] w-[30.6cqw] border-[0.41cqw] border-grape text-grape`}>{copy.buttons.secondary}</span>
+            <span className="ml-[0.8cqw] font-haas text-ink/60">{copy.buttons.ghost}</span>
           </div>
-          <span className={`${pill} mt-[4.08cqw] h-[11.4cqw] w-[36.7cqw] bg-blush/50 text-[3.67cqw] text-white`}>Disabled</span>
+          <span className={`${pill} mt-[4.08cqw] h-[11.4cqw] w-[36.7cqw] bg-blush/50 text-[3.67cqw] text-white`}>{copy.buttons.disabled}</span>
         </Cell>
 
-        <Cell label="Input / Default · Focused">
-          <span className="mt-[3.06cqw] font-haas text-[2.86cqw] text-ink/70">Email</span>
-          <span className="mt-[1.43cqw] flex h-[10.6cqw] items-center rounded-[2.86cqw] border border-[#d9d2dc] bg-white px-[4.08cqw] font-copy text-[3.47cqw] text-ink/45">you@brand.com</span>
+        <Cell label={cell(1)}>
+          <span className="mt-[3.06cqw] font-haas text-[2.86cqw] text-ink/70">{copy.input.label}</span>
+          <span className="mt-[1.43cqw] flex h-[10.6cqw] items-center rounded-[2.86cqw] border border-[#d9d2dc] bg-white px-[4.08cqw] font-copy text-[3.47cqw] text-ink/45">{copy.input.placeholder}</span>
           <span className="mt-[3.67cqw] flex h-[10.6cqw] items-center rounded-[2.86cqw] border-[0.41cqw] border-lagoon bg-white px-[4.08cqw] font-copy text-[3.47cqw] text-ink">
-            barry@pixelpopers.com<span className="ml-px h-[4cqw] w-px animate-pulse bg-ink" />
+            {copy.input.value}<span className="ml-px h-[4cqw] w-px animate-pulse bg-ink" />
           </span>
         </Cell>
 
-        <Cell label="Toggle · Checkbox · Radio">
+        <Cell label={cell(2)}>
           <div className="mt-[7.55cqw] flex gap-[4.08cqw]">
             <span className="flex h-[9cqw] w-[16.3cqw] items-center justify-end rounded-full bg-blush p-[0.82cqw]">
               <span className="size-[7.35cqw] rounded-full bg-white" />
@@ -131,24 +133,24 @@ export function ComponentLibrary({ owners = defaultOwners }: { owners?: typeof d
           </div>
           <div className="mt-[5.3cqw] flex items-center font-copy text-[3.47cqw] font-medium text-ink">
             <span className="grid size-[7.35cqw] place-items-center rounded-[2cqw] bg-grape font-haas text-[4.08cqw] text-white">✓</span>
-            <span className="ml-[2.45cqw] w-[38.4cqw]">Remember me</span>
+            <span className="ml-[2.45cqw] w-[38.4cqw]">{copy.toggles.checkbox}</span>
             <span className="grid size-[7.35cqw] place-items-center rounded-full bg-lagoon">
               <span className="size-[3.27cqw] rounded-full bg-white" />
             </span>
-            <span className="ml-[2.45cqw]">Monthly</span>
+            <span className="ml-[2.45cqw]">{copy.toggles.radio}</span>
           </div>
         </Cell>
 
-        <Cell label="Tags / Chips">
+        <Cell label={cell(3)}>
           <div className="mt-[9.6cqw] flex gap-[2.45cqw] text-[3.06cqw]">
-            <span className={`${pill} h-[8.16cqw] w-[15.5cqw] bg-blush text-white`}>New</span>
-            <span className={`${pill} h-[8.16cqw] w-[25.3cqw] bg-lagoon text-white`}>Popular</span>
-            <span className={`${pill} h-[8.16cqw] w-[18cqw] bg-sunbeam text-ink`}>Sale</span>
-            <span className={`${pill} h-[8.16cqw] w-[18cqw] bg-grape text-white`}>Beta</span>
+            <span className={`${pill} h-[8.16cqw] w-[15.5cqw] bg-blush text-white`}>{copy.tags[0].label}</span>
+            <span className={`${pill} h-[8.16cqw] w-[25.3cqw] bg-lagoon text-white`}>{copy.tags[1].label}</span>
+            <span className={`${pill} h-[8.16cqw] w-[18cqw] bg-sunbeam text-ink`}>{copy.tags[2].label}</span>
+            <span className={`${pill} h-[8.16cqw] w-[18cqw] bg-grape text-white`}>{copy.tags[3].label}</span>
           </div>
         </Cell>
 
-        <Cell label="Avatar group">
+        <Cell label={cell(4)}>
           <div className="mt-[7.55cqw] flex">
             {owners.map((o, i) => (
               <Image
@@ -161,68 +163,62 @@ export function ComponentLibrary({ owners = defaultOwners }: { owners?: typeof d
                 className={`size-[14.7cqw] rounded-full border-[0.82cqw] border-white ${["bg-sunbeam", "bg-lagoon", "bg-blush"][i]} ${i ? "-ml-[4.9cqw]" : ""}`}
               />
             ))}
-            <span className={`${pill} -ml-[4.9cqw] size-[14.7cqw] bg-grape text-[3.67cqw] text-white`}>+12</span>
+            <span className={`${pill} -ml-[4.9cqw] size-[14.7cqw] bg-grape text-[3.67cqw] text-white`}>{copy.avatarsMore}</span>
           </div>
         </Cell>
 
-        <Cell label="Slider · Progress">
+        <Cell label={cell(5)}>
           <div className="mt-[9.2cqw] grid w-[89.8cqw]">
             <span className="col-start-1 row-start-1 h-[1.63cqw] self-center rounded-full bg-[#d9d2dc]" />
             <span className="col-start-1 row-start-1 h-[1.63cqw] w-[63.6%] self-center rounded-full bg-blush" />
             <span className="col-start-1 row-start-1 ml-[60%] size-[6.53cqw] self-center rounded-full border-[0.82cqw] border-blush bg-white" />
           </div>
-          <span className="mt-[2.5cqw] w-[89.8cqw] text-right font-haas text-[3.06cqw] text-ink">75%</span>
+          <span className="mt-[2.5cqw] w-[89.8cqw] text-right font-haas text-[3.06cqw] text-ink">{copy.progress}</span>
           <span className="mt-[1.6cqw] grid h-[2.86cqw] w-[89.8cqw] rounded-full bg-[#d9d2dc]">
             <span className="w-3/4 rounded-full bg-lagoon" />
           </span>
         </Cell>
 
-        <Cell label="Tooltip">
+        <Cell label={cell(6)}>
           <span className="mt-[7.6cqw] flex h-[11.4cqw] w-[51cqw] items-center rounded-[2.45cqw] bg-ink px-[3.67cqw] font-copy text-[3.27cqw] font-medium text-white">
-            Saved to favourites ✓
+            {copy.tooltip}
           </span>
           <span className="ml-[12.2cqw] h-[2.45cqw] w-[4.08cqw] bg-ink [clip-path:polygon(0_0,100%_0,50%_100%)]" />
           <span className="mt-[2.45cqw] ml-[8.2cqw] grid size-[9.8cqw] place-items-center rounded-full bg-blush font-haas text-[4.5cqw] text-white">♥</span>
         </Cell>
 
-        <Cell label="Card / Product">
+        <Cell label={cell(7)}>
           <div className="mt-[3.47cqw] flex gap-[4.08cqw]">
             <Image
               slot="library-product"
               src="/assets/inner/brand-identity/fifth-sip-packaging.webp"
-              alt="Fifth Sip coffee beans product shot"
+              alt={copy.product.alt}
               width={980}
               height={640}
               sizes="10vw"
               className="size-[30.6cqw] rounded-[3.27cqw] object-cover"
             />
             <div className="flex grow flex-col pt-[2.86cqw]">
-              <span className="font-haas text-[4.08cqw] text-ink">Fifth Sip Beans</span>
-              <span className="mt-[1.4cqw] font-copy text-[3.27cqw] text-ink/60">Medium roast · 250g</span>
+              <span className="font-haas text-[4.08cqw] text-ink">{copy.product.name}</span>
+              <span className="mt-[1.4cqw] font-copy text-[3.27cqw] text-ink/60">{copy.product.meta}</span>
               <span className="mt-[3.5cqw] flex items-center justify-between">
-                <span className="font-haas text-[5.3cqw] text-blush-ink">$18</span>
-                <span className={`${pill} h-[8.16cqw] w-[30.6cqw] bg-grape text-[3.06cqw] text-white`}>Add to bag</span>
+                <span className="font-haas text-[5.3cqw] text-blush-ink">{copy.product.price}</span>
+                <span className={`${pill} h-[8.16cqw] w-[30.6cqw] bg-grape text-[3.06cqw] text-white`}>{copy.product.button}</span>
               </span>
             </div>
           </div>
         </Cell>
 
-        <Cell label="Tokens">
+        <Cell label={cell(8)}>
           <div className="mt-[4.9cqw] flex gap-[3.67cqw]">
-            {[
-              ["bg-blush", "pink"],
-              ["bg-grape", "grape"],
-              ["bg-lagoon", "fizz"],
-              ["bg-sunbeam", "sunny"],
-              ["bg-ink", "ink"],
-            ].map(([bg, name]) => (
-              <span key={name} className="flex flex-col gap-[2cqw]">
+            {["bg-blush", "bg-grape", "bg-lagoon", "bg-sunbeam", "bg-ink"].map((bg, i) => (
+              <span key={bg} className="flex flex-col gap-[2cqw]">
                 <span className={`size-[14.7cqw] rounded-[3.27cqw] ${bg}`} />
-                <span className="font-copy text-[2.86cqw] font-medium text-ink/70">{name}</span>
+                <span className="font-copy text-[2.86cqw] font-medium text-ink/70">{copy.tokens[i].name}</span>
               </span>
             ))}
           </div>
-          <span className="mt-[2.4cqw] font-haas text-[2.86cqw] text-grape">radius 8 · 16 · 28 · full</span>
+          <span className="mt-[2.4cqw] font-haas text-[2.86cqw] text-grape">{copy.radius}</span>
         </Cell>
       </ul>
     </div>
@@ -230,16 +226,19 @@ export function ComponentLibrary({ owners = defaultOwners }: { owners?: typeof d
 }
 
 /* ── User flow board (1588 × 640) ─────────────────────────────────── */
-const nodes = [
-  { title: "Landing", sub: "Home page", cls: "bg-blush text-white", pos: "ml-[4.41%] mt-[17.51%] w-[13.85%]" },
-  { title: "Log in", sub: "1 field + magic link", cls: "bg-lagoon text-white", pos: "ml-[45.97%] mt-[7.43%] w-[13.85%]" },
-  { title: "Sign up", sub: "Email or Google", cls: "bg-lagoon text-white", pos: "ml-[45.97%] mt-[27.58%] w-[13.85%]" },
-  { title: "Onboarding", sub: "3 quick questions", cls: "bg-lav text-white", pos: "ml-[64.86%] mt-[27.58%] w-[13.85%]" },
-  { title: "Dashboard", sub: "Personalised home", cls: "bg-grape text-white", pos: "ml-[64.86%] mt-[7.43%] w-[13.85%]" },
-  { title: "Aha! ✦", sub: "First win", cls: "border-[0.19cqw] border-[#2ec27e] bg-white text-ink", pos: "ml-[84.38%] mt-[7.43%] w-[11.34%]" },
+/** Node looks by position; their words come from the page copy (flow.nodes). The last node is the goal. */
+const nodeLooks = [
+  { cls: "bg-blush text-white", pos: "ml-[4.41%] mt-[17.51%] w-[13.85%]" },
+  { cls: "bg-lagoon text-white", pos: "ml-[45.97%] mt-[7.43%] w-[13.85%]" },
+  { cls: "bg-lagoon text-white", pos: "ml-[45.97%] mt-[27.58%] w-[13.85%]" },
+  { cls: "bg-lav text-white", pos: "ml-[64.86%] mt-[27.58%] w-[13.85%]" },
+  { cls: "bg-grape text-white", pos: "ml-[64.86%] mt-[7.43%] w-[13.85%]" },
+  { cls: "border-[0.19cqw] border-[#2ec27e] bg-white text-ink", pos: "ml-[84.38%] mt-[7.43%] w-[11.34%]" },
 ];
 
-export function FlowBoard() {
+export function FlowBoard({ copy = UX_COPY.flow }: { copy?: UxCopy["flow"] }) {
+  const nodes = nodeLooks.map((look, i) => ({ ...look, ...copy.nodes[i] }));
+  const question = copy.question.split("\n");
   return (
     <>
       {/* Desktop board: a FigJam-style canvas. */}
@@ -273,60 +272,56 @@ export function FlowBoard() {
           </g>
         </svg>
 
-        <figcaption className={`${layer} mt-[1.89%] ml-[2.52%] font-display text-[0.88cqw] text-grape/70 uppercase`}>Flow 01 — first-time user</figcaption>
+        <figcaption className={`${layer} mt-[1.89%] ml-[2.52%] font-display text-[0.88cqw] text-grape/70 uppercase`}>{copy.caption}</figcaption>
 
         <span aria-hidden className={`${layer} mt-[16.5%] ml-[27.83%] aspect-square w-[7.3%] rotate-45 rounded-[0.88cqw] bg-sunbeam shadow-[0_10px_24px_rgb(34_1_40/0.15)]`} />
-        <span className={`${layer} relative mt-[18.77%] ml-[27.08%] w-[8.82%] text-center font-display text-[0.945cqw] leading-[1.45] text-ink uppercase`}>
-          Has an
-          <br />
-          account?
+        <span className={`${layer} relative mt-[18.77%] ml-[27.08%] w-[8.82%] text-center font-display text-[0.945cqw] leading-[1.45] text-ink uppercase whitespace-pre-line`}>
+          {question.join("\n")}
         </span>
-        <span className={`${layer} mt-[14.23%] ml-[32.37%] grid h-[1.76cqw] w-[3.53%] place-items-center rounded-full bg-[#2ec27e]/15 font-display text-[0.82cqw] text-[#2ec27e]`}>YES</span>
-        <span className={`${layer} mt-[24.43%] ml-[32.37%] grid h-[1.76cqw] w-[3.53%] place-items-center rounded-full bg-blush/15 font-display text-[0.82cqw] text-blush-ink`}>NO</span>
+        <span className={`${layer} mt-[14.23%] ml-[32.37%] grid h-[1.76cqw] w-[3.53%] place-items-center rounded-full bg-[#2ec27e]/15 font-display text-[0.82cqw] text-[#2ec27e]`}>{copy.yes}</span>
+        <span className={`${layer} mt-[24.43%] ml-[32.37%] grid h-[1.76cqw] w-[3.53%] place-items-center rounded-full bg-blush/15 font-display text-[0.82cqw] text-blush-ink`}>{copy.no}</span>
 
-        {nodes.map((n) => (
-          <div key={n.title} className={`${layer} ${n.pos} flex aspect-[220/84] flex-col items-center justify-center rounded-[1.26cqw] shadow-[0_10px_24px_rgb(34_1_40/0.15)] ${n.cls} ${n.title.startsWith("Aha") ? "aspect-[180/84]" : ""}`}>
+        {nodes.map((n, i) => (
+          <div key={i} className={`${layer} ${n.pos} flex aspect-[220/84] flex-col items-center justify-center rounded-[1.26cqw] shadow-[0_10px_24px_rgb(34_1_40/0.15)] ${n.cls} ${i === nodes.length - 1 ? "aspect-[180/84]" : ""}`}>
             <span className="font-display text-[1.26cqw] leading-[1.25] uppercase">{n.title}</span>
             <span className="mt-[0.3cqw] font-copy text-[0.88cqw] font-medium opacity-80">{n.sub}</span>
           </div>
         ))}
-        <span className={`${layer} mt-[13.6%] ml-[84.38%] flex w-[11.34%] justify-center font-display whitespace-nowrap text-[0.82cqw] text-blush-ink`}>avg. 3 taps to first win</span>
+        <span className={`${layer} mt-[13.6%] ml-[84.38%] flex w-[11.34%] justify-center font-display whitespace-nowrap text-[0.82cqw] text-blush-ink`}>{copy.goalNote}</span>
 
         <div className="col-start-1 row-start-1 mb-[2cqw] flex items-center justify-between self-end px-[2.52cqw] pr-[9.2cqw] font-copy text-[0.945cqw] font-medium text-ink/70">
           <span className="flex items-center gap-[2.3cqw]">
             <span className="flex items-center gap-[0.63cqw]">
-              <span className="size-[1.13cqw] rounded-[0.31cqw] bg-lagoon" /> Screen
+              <span className="size-[1.13cqw] rounded-[0.31cqw] bg-lagoon" /> {copy.legendScreen}
             </span>
             <span className="flex items-center gap-[0.63cqw]">
-              <span className="size-[1.13cqw] rotate-45 rounded-[0.13cqw] bg-sunbeam" /> Decision
+              <span className="size-[1.13cqw] rotate-45 rounded-[0.13cqw] bg-sunbeam" /> {copy.legendDecision}
             </span>
             <span className="flex items-center gap-[0.63cqw]">
-              <span className="size-[1.13cqw] rounded-[0.13cqw] border-[0.13cqw] border-[#2ec27e] bg-white" /> Goal
+              <span className="size-[1.13cqw] rounded-[0.13cqw] border-[0.13cqw] border-[#2ec27e] bg-white" /> {copy.legendGoal}
             </span>
           </span>
-          <span className="text-ink/50">Mapped in FigJam · tested with 5 users</span>
+          <span className="text-ink/50">{copy.footnote}</span>
         </div>
       </figure>
 
       {/* Small screens: the same journey as a readable vertical flow. */}
       <ol data-reveal className={`rounded-[1.75rem] bg-white p-5 lg:hidden ${cardShadow}`}>
-        <li className="font-display text-[0.75rem] text-grape/70 uppercase">Flow 01 — first-time user</li>
+        <li className="font-display text-[0.75rem] text-grape/70 uppercase">{copy.caption}</li>
         <FlowStep {...nodes[0]} />
         <FlowArrow />
         <li className="mx-auto grid size-28 rotate-45 place-items-center rounded-xl bg-sunbeam">
-          <span className="-rotate-45 text-center font-display text-[0.8125rem] leading-snug uppercase">
-            Has an
-            <br />
-            account?
+          <span className="-rotate-45 text-center font-display text-[0.8125rem] leading-snug whitespace-pre-line uppercase">
+            {question.join("\n")}
           </span>
         </li>
         <li className="mt-6 grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-2">
-            <span className="mx-auto rounded-full bg-[#2ec27e]/15 px-3 py-1 font-display text-[0.6875rem] text-[#2ec27e]">YES</span>
+            <span className="mx-auto rounded-full bg-[#2ec27e]/15 px-3 py-1 font-display text-[0.6875rem] text-[#2ec27e]">{copy.yes}</span>
             <FlowNode {...nodes[1]} />
           </div>
           <div className="flex flex-col gap-2">
-            <span className="mx-auto rounded-full bg-blush/15 px-3 py-1 font-display text-[0.6875rem] text-blush-deep">NO</span>
+            <span className="mx-auto rounded-full bg-blush/15 px-3 py-1 font-display text-[0.6875rem] text-blush-deep">{copy.no}</span>
             <FlowNode {...nodes[2]} />
             <span aria-hidden className="text-center text-[#B5A7C4]">↓</span>
             <FlowNode {...nodes[3]} />
@@ -336,7 +331,7 @@ export function FlowBoard() {
         <FlowStep {...nodes[4]} />
         <FlowArrow />
         <FlowStep {...nodes[5]} />
-        <li className="mt-2 text-center font-display text-[0.6875rem] text-blush-deep">avg. 3 taps to first win</li>
+        <li className="mt-2 text-center font-display text-[0.6875rem] text-blush-deep">{copy.goalNote}</li>
       </ol>
     </>
   );
@@ -368,18 +363,20 @@ function FlowArrow() {
 }
 
 /* ── Process artboards (380 × 440) ─────────────────────────────────── */
-export function ArtboardResearch() {
+type ArtboardProps = { copy?: UxCopy["artboards"] };
+
+export function ArtboardResearch({ copy = UX_COPY.artboards }: ArtboardProps) {
   const notes = [
-    { t: "Users hate\nlong forms", c: "bg-sunbeam", p: "ml-[6.01%] mt-[12.36%] rotate-[6deg]" },
-    { t: "Price is\nunclear", c: "bg-blush", p: "ml-[51.42%] mt-[14.12%] rotate-[-5deg]" },
-    { t: "Love the\ncolours!", c: "bg-lagoon", p: "ml-[16.94%] mt-[51.3%] rotate-[-4deg]" },
-    { t: "Where is\nsupport?", c: "bg-lav", p: "ml-[54.03%] mt-[59.14%] rotate-[4deg]" },
+    { c: "bg-sunbeam", p: "ml-[6.01%] mt-[12.36%] rotate-[6deg]" },
+    { c: "bg-blush", p: "ml-[51.42%] mt-[14.12%] rotate-[-5deg]" },
+    { c: "bg-lagoon", p: "ml-[16.94%] mt-[51.3%] rotate-[-4deg]" },
+    { c: "bg-lav", p: "ml-[54.03%] mt-[59.14%] rotate-[4deg]" },
   ];
   return (
     <div className="grid h-full">
-      {notes.map((n) => (
-        <span key={n.t} className={`${layer} ${n.p} aspect-[140/130] w-[36.84%] rounded-[1.05cqw] px-[3.7cqw] pt-[4.2cqw] font-haas text-[4.2cqw] leading-[1.35] whitespace-pre-line text-ink shadow-[0_6px_14px_rgb(34_1_40/0.12)] ${n.c}`}>
-          {n.t}
+      {notes.map((n, i) => (
+        <span key={i} className={`${layer} ${n.p} aspect-[140/130] w-[36.84%] rounded-[1.05cqw] px-[3.7cqw] pt-[4.2cqw] font-haas text-[4.2cqw] leading-[1.35] whitespace-pre-line text-ink shadow-[0_6px_14px_rgb(34_1_40/0.12)] ${n.c}`}>
+          {copy.stickyNotes[i].note}
         </span>
       ))}
     </div>
@@ -400,37 +397,32 @@ export function ArtboardWireframe() {
   );
 }
 
-export function ArtboardDesign() {
+export function ArtboardDesign({ copy = UX_COPY.artboards }: ArtboardProps) {
   return (
     <div className="flex h-full flex-col p-[7.9cqw]">
       <span className="h-[7.9cqw] rounded-[1.6cqw] bg-grape" />
       <Image
         slot="artboard-design"
         src="/assets/inner/ui-shop.webp"
-        alt="Hi-fi e-commerce screens designed in Figma"
+        alt={copy.designAlt}
         width={1600}
         height={900}
         sizes="(min-width: 1024px) 18vw, 45vw"
         className="mt-[5.26cqw] h-[39.5cqw] w-full rounded-[3.16cqw] object-cover"
       />
-      <span className="mt-[5.26cqw] font-haas text-[7.37cqw] leading-none text-ink">Shop the drop</span>
-      <span className={`${pill} mt-[10.5cqw] h-[12.6cqw] w-[44.7cqw] bg-blush text-[4.47cqw] text-white`}>Buy now</span>
+      <span className="mt-[5.26cqw] font-haas text-[7.37cqw] leading-none text-ink">{copy.designTitle}</span>
+      <span className={`${pill} mt-[10.5cqw] h-[12.6cqw] w-[44.7cqw] bg-blush text-[4.47cqw] text-white`}>{copy.designButton}</span>
     </div>
   );
 }
 
-export function ArtboardTest() {
-  const tasks = [
-    ["Find a product", true],
-    ["Add to bag", true],
-    ["Checkout", true],
-    ["Track order", false],
-  ] as const;
+export function ArtboardTest({ copy = UX_COPY.artboards }: ArtboardProps) {
+  const tasks = [true, true, true, false].map((ok, i) => [copy.tasks[i].task, ok] as const);
   return (
     <div className="flex h-full flex-col px-[7.9cqw] pt-[10.5cqw]">
       <ul className="flex flex-col gap-[10.5cqw]">
-        {tasks.map(([t, ok]) => (
-          <li key={t} className="flex items-center gap-[4.7cqw] font-copy text-[5.26cqw] font-medium text-ink">
+        {tasks.map(([t, ok], i) => (
+          <li key={i} className="flex items-center gap-[4.7cqw] font-copy text-[5.26cqw] font-medium text-ink">
             <span className={`grid size-[10.5cqw] shrink-0 place-items-center rounded-[3.16cqw] font-haas text-[5.26cqw] text-white ${ok ? "bg-lagoon" : "bg-[#e8e3ea]"}`}>
               {ok ? "✓" : ""}
             </span>
@@ -438,7 +430,7 @@ export function ArtboardTest() {
           </li>
         ))}
       </ul>
-      <span className="mt-[13.2cqw] font-display text-[3.95cqw] text-blush-ink">3 / 4 tasks passed</span>
+      <span className="mt-[13.2cqw] font-display text-[3.95cqw] text-blush-ink">{copy.taskResult}</span>
     </div>
   );
 }

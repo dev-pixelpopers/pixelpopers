@@ -20,7 +20,10 @@ trait PrunesOptionalJson
         static::saving(function (self $model): void {
             foreach ($model->getCasts() as $attribute => $cast) {
                 if ($cast === 'array' && $model->isDirty($attribute) && is_array($model->{$attribute})) {
-                    $model->{$attribute} = self::prune($model->{$attribute});
+                    $value = $model->{$attribute};
+                    $pruned = self::prune($value);
+                    // An object (e.g. a page's section copy) with nothing left in it is no value at all.
+                    $model->{$attribute} = $pruned === [] && $value !== [] && ! array_is_list($value) ? null : $pruned;
                 }
             }
         });
@@ -37,9 +40,14 @@ trait PrunesOptionalJson
             if (is_array($item)) {
                 $item = self::prune($item);
             }
+            // A list whose every item came back empty (a fixed-length list in
+            // the admin nobody filled in) is absent too.
+            $allEmpty = is_array($item) && $item !== [] && array_is_list($item)
+                && array_filter($item, fn ($entry) => $entry !== []) === [];
             $absent = ! $isList && ($item === null
                 || ($item === false && in_array($key, self::$falseMeansAbsent, true))
-                || ($wasObject && $item === []));
+                || ($wasObject && $item === [])
+                || $allEmpty);
             if (! $absent) {
                 $out[$key] = $item;
             }

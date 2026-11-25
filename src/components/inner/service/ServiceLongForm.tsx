@@ -3,6 +3,7 @@ import SectionTitle from "@/components/inner/SectionTitle";
 import SplitWords from "@/components/ui/SplitWords";
 import type { ReactNode } from "react";
 import type { ServiceDetail } from "@/lib/service-content";
+import { serviceHeadings } from "@/lib/service-headings";
 
 /** Accent → utility classes. Spelled out in full so Tailwind can see them. */
 export const accentClasses = {
@@ -41,6 +42,7 @@ export default function ServiceLongForm({
   const a = accentClasses[service.accent] ?? accentClasses.blush;
   const hidden = new Set(service.hidden ?? []);
   const show = (key: string) => !hidden.has(key);
+  const h = serviceHeadings(service);
 
   return (
     <div className="shell flex flex-col gap-[clamp(5rem,8.3vw,10rem)] pb-[clamp(5rem,8.3vw,10rem)]">
@@ -68,7 +70,7 @@ export default function ServiceLongForm({
             ))}
           </dl>
           <div>
-            <p className="font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">Tools we love</p>
+            <p className="font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">{h.tools}</p>
             <ul data-wm="tools" className="mt-3 flex flex-wrap gap-2.5">
               {service.tools.map((t) => (
                 <li key={t} data-wm="tool" className="rounded-full bg-white px-5 py-2.5 font-copy text-[clamp(0.9375rem,0.94vw,1.125rem)] font-medium">
@@ -99,7 +101,7 @@ export default function ServiceLongForm({
       {show("included") && included ? included : null}
       {show("included") && !included ? (
       <section aria-labelledby="included-title">
-        <SectionTitle eyebrow="What's included" title={<span id="included-title">Everything in the box</span>} />
+        <SectionTitle eyebrow={h.included.eyebrow} title={<span id="included-title" className="whitespace-pre-line">{h.included.heading}</span>} />
         <ul data-wm="included" className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {service.included.map((item, i) => (
             <li key={item.title} data-wm="inc-card" className="flex flex-col gap-[1.125rem] rounded-3xl bg-white p-[clamp(1.75rem,2.1vw,2.5rem)]">
@@ -118,7 +120,7 @@ export default function ServiceLongForm({
       {/* ── Step by step ───────────────────────────────────────────── */}
       {hideProcess || !show("process") ? null : (
       <section aria-labelledby="steps-title">
-        <SectionTitle eyebrow="Step by step" title={<span id="steps-title">How the work gets done</span>} />
+        <SectionTitle eyebrow={h.process.eyebrow} title={<span id="steps-title" className="whitespace-pre-line">{h.process.heading}</span>} />
         <ol data-wm="steps" className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {service.process.map((step, i) => (
             <li key={step.title} data-wm="step" className={`flex flex-col gap-4 border-t-4 pt-7 ${a.border}`}>
@@ -138,7 +140,7 @@ export default function ServiceLongForm({
       {/* ── Who it's for ───────────────────────────────────────────── */}
       {show("audience") ? (
       <section aria-labelledby="audience-title">
-        <SectionTitle eyebrow="Who it's for" title={<span id="audience-title">Made for brands like yours</span>} />
+        <SectionTitle eyebrow={h.audience.eyebrow} title={<span id="audience-title" className="whitespace-pre-line">{h.audience.heading}</span>} />
         <ul data-wm="aud" className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {service.audience.map((item, i) => (
             <li key={item.title} data-wm="aud-card" className={`flex flex-col gap-3.5 rounded-3xl p-9 ${audienceCards[i % 4]}`}>
@@ -154,7 +156,7 @@ export default function ServiceLongForm({
       {/* ── Good to know ───────────────────────────────────────────── */}
       {show("insights") ? (
       <section aria-labelledby="guide-title">
-        <SectionTitle eyebrow="Good to know" title={<span id="guide-title">The short guide</span>} />
+        <SectionTitle eyebrow={h.insights.eyebrow} title={<span id="guide-title" className="whitespace-pre-line">{h.insights.heading}</span>} />
         <div data-wm="guides" className="mt-14 grid gap-12 md:grid-cols-3">
           {service.insights.map((item, i) => (
             <article key={item.title} data-wm="guide" className="flex flex-col gap-4 border-t-2 border-ink pt-7">

@@ -62,6 +62,7 @@ export default function Included({ service }: { service: ServiceDetail }) {
   if (!items.length) return null;
   const current = items[Math.min(active, items.length - 1)];
   const icon = (i: number) => copy.icons[i % copy.icons.length].icon;
+  const fill = (t: string) => t.replace("{on}", String(onCount)).replace("{total}", String(items.length));
 
   return (
     <section aria-labelledby="included-title" className="grid items-start gap-x-[clamp(2rem,5vw,6rem)] gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
@@ -85,14 +86,14 @@ export default function Included({ service }: { service: ServiceDetail }) {
               </span>
               <span className="flex items-baseline gap-2 opacity-45">
                 <span className="font-pop text-[clamp(3rem,4.17vw,5rem)] leading-[0.8]">{pad(active + 1)}</span>
-                <span className="font-display text-[clamp(0.875rem,1.04vw,1.25rem)]">of {pad(items.length)}</span>
+                <span className="font-display text-[clamp(0.875rem,1.04vw,1.25rem)]">{copy.counter} {pad(items.length)}</span>
               </span>
             </div>
             <p className="mt-[clamp(1.5rem,2.08vw,2.5rem)] font-display text-[clamp(1.5rem,1.98vw,2.375rem)] leading-[1.15] uppercase">{current.title}</p>
             <p className="mt-3 font-copy text-[clamp(1rem,1.04vw,1.25rem)] leading-[1.6] opacity-90">{current.body}</p>
           </div>
           <span className="absolute -top-5 -right-4 rotate-[8deg] rounded-full bg-sunbeam px-5 py-2.5 font-display text-[clamp(0.75rem,0.83vw,1rem)] text-ink uppercase shadow-[0_10px_24px_rgb(34_1_40/0.15)]">
-            {onCount} / {items.length} on
+            {fill(copy.sticker)}
           </span>
         </div>
       </div>
@@ -102,13 +103,13 @@ export default function Included({ service }: { service: ServiceDetail }) {
         <div className="rounded-[12cqw] bg-ink p-[3cqw] shadow-[0_30px_70px_rgb(34_1_40/0.25)]">
           <div className="overflow-hidden rounded-[9.5cqw] bg-[#f4eef2] pb-[6cqw]">
             <div aria-hidden className="flex items-center justify-between px-[7cqw] pt-[4cqw] font-copy text-[max(0.6875rem,3.2cqw)] font-bold text-ink">
-              <span>9:41</span>
+              <span>{mobileCopy(service).hero.phone.time}</span>
               <span className="h-[6cqw] w-[24cqw] rounded-full bg-ink" />
               <span className="tracking-[0.1em]">●●●</span>
             </div>
             <p className="px-[6cqw] pt-[6cqw] font-copy text-[max(1.5rem,8.5cqw)] leading-none font-extrabold text-ink">{copy.screen}</p>
             <div aria-hidden className="mx-[5cqw] mt-[4cqw] flex h-[9cqw] items-center gap-[2cqw] rounded-[2.6cqw] bg-ink/8 px-[3cqw] font-copy text-[max(0.75rem,3.6cqw)] text-ink/40">
-              ⌕ <span>Search</span>
+              ⌕ <span>{copy.search}</span>
             </div>
 
             <ul className="mx-[5cqw] mt-[5cqw] overflow-hidden rounded-[4.5cqw] bg-white">
@@ -155,7 +156,7 @@ export default function Included({ service }: { service: ServiceDetail }) {
             </ul>
 
             <p aria-hidden className="mt-[4cqw] text-center font-copy text-[max(0.6875rem,3cqw)] text-ink/45">
-              {onCount} of {items.length} switched on
+              {fill(copy.footer)}
             </p>
           </div>
         </div>

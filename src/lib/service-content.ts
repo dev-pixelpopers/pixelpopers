@@ -65,6 +65,8 @@ export type ServiceDetail = {
   engine?: (SectionCopy & { center?: string | null; channels?: { name?: string; note?: string }[] }) | null;
   /** A service page's design-section copy, by section (Digital Marketing → Page sections); empty fields keep the design's words. */
   copy?: Record<string, unknown> | null;
+  /** Headings of the shared blocks (long copy, packages, FAQs, CTA) — see lib/service-headings.ts. */
+  headings?: Record<string, unknown> | null;
 };
 
 /** Editable copy for a design section: eyebrow, heading (line breaks kept) and an optional paragraph. */

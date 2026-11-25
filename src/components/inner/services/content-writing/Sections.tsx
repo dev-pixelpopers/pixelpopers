@@ -7,6 +7,8 @@ import { serif } from "@/lib/inner-fonts";
 import type { ServiceDetail } from "@/lib/service-content";
 import ContentFx from "./ContentFx";
 import HeroSubheading from "@/components/inner/service/HeroSubheading";
+import SectionText from "@/components/inner/service/SectionText";
+import { contentCopy, type ContentCopy } from "./copy";
 
 /*
   Concept: editorial paper. Figma frame 381:21 "03.6 — Service: CONTENT
@@ -32,51 +34,55 @@ const strike = (color: string, thickness: string): CSSProperties => ({
   backgroundSize: `100% ${thickness}`,
 });
 
-const sliders = [
-  { from: "Formal", to: "Casual", value: 78, fill: "bg-blush", ring: "border-blush" },
-  { from: "Serious", to: "Playful", value: 70, fill: "bg-lagoon", ring: "border-lagoon" },
-  { from: "Respectful", to: "Cheeky", value: 55, fill: "bg-grape", ring: "border-grape" },
-  { from: "Matter-of-fact", to: "Enthusiastic", value: 82, fill: "bg-sunbeam", ring: "border-sunbeam" },
+/* Looks by position; every word on this page comes from copy.ts / the CMS (contentCopy). */
+const sliderLooks = [
+  { fill: "bg-blush", ring: "border-blush" },
+  { fill: "bg-lagoon", ring: "border-lagoon" },
+  { fill: "bg-grape", ring: "border-grape" },
+  { fill: "bg-sunbeam", ring: "border-sunbeam" },
 ];
 
-const issue = [
-  { title: "Website copy", page: "p.2", tone: "text-blush-ink" },
-  { title: "Blog articles", page: "p.4", tone: "text-lagoon" },
-  { title: "SEO content", page: "p.6", tone: "text-sunbeam" },
-  { title: "Social captions", page: "p.8", tone: "text-blush-ink" },
-  { title: "Video scripts", page: "p.10", tone: "text-lagoon" },
-  { title: "Email newsletters", page: "p.12", tone: "text-lav" },
-  { title: "Tone-of-voice guides", page: "p.14", tone: "text-sunbeam" },
-  { title: "Product descriptions", page: "p.16", tone: "text-blush-ink" },
+const issueTones = ["text-blush-ink", "text-lagoon", "text-sunbeam", "text-blush-ink", "text-lagoon", "text-lav", "text-sunbeam", "text-blush-ink"];
+
+const keywordLooks = [
+  { tone: "bg-blush text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.9375rem,1.51vw,1.8125rem)]" },
+  { tone: "bg-lagoon text-white", tilt: "rotate-[-3deg]", size: "text-[clamp(0.875rem,1.25vw,1.5rem)]" },
+  { tone: "bg-grape text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.875rem,1.33vw,1.59375rem)]" },
+  { tone: "bg-sunbeam text-ink", tilt: "rotate-[-3deg]", size: "text-[clamp(0.8125rem,1.06vw,1.275rem)]" },
+  { tone: "bg-blush text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.8125rem,1.06vw,1.275rem)]" },
+  { tone: "bg-lagoon text-white", tilt: "rotate-[-3deg]", size: "text-[clamp(0.75rem,0.97vw,1.17rem)]" },
+  { tone: "bg-grape text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.75rem,0.97vw,1.17rem)]" },
 ];
 
-const columns = [
-  "When Fifth Sip asked for “a few words for the website”, nobody expected the café’s homepage to become the most-shared link in the neighbourhood group chat. The secret? Copy that sounds like an actual person.",
-  "“We stopped describing ourselves as a provider of coffee solutions,” says the founder. “Now we just say what we are: the place that makes your Saturday.” Bookings are up, and so is the brunch queue.",
-  "Pixel Popers’ writers spent a week listening before writing a single line — interviews, customer reviews, even the chalkboard specials. The result: a voice guide, 12 pages of web copy and a blog people actually finish.",
+const stickyLooks = [
+  { tone: "bg-sunbeam text-ink", tilt: "rotate-[4deg]" },
+  { tone: "bg-blush text-white", tilt: "rotate-[-3deg]" },
+  { tone: "bg-lagoon text-white", tilt: "rotate-[2deg]" },
+  { tone: "bg-lav text-ink", tilt: "rotate-[-4deg]" },
 ];
 
-const keywords = [
-  { term: "specialty coffee", volume: "12K/mo", tone: "bg-blush text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.9375rem,1.51vw,1.8125rem)]" },
-  { term: "brunch near me", volume: "8.1K/mo", tone: "bg-lagoon text-white", tilt: "rotate-[-3deg]", size: "text-[clamp(0.875rem,1.25vw,1.5rem)]" },
-  { term: "flat white", volume: "5.4K/mo", tone: "bg-grape text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.875rem,1.33vw,1.59375rem)]" },
-  { term: "coffee beans online", volume: "3.2K/mo", tone: "bg-sunbeam text-ink", tilt: "rotate-[-3deg]", size: "text-[clamp(0.8125rem,1.06vw,1.275rem)]" },
-  { term: "best café in town", volume: "2.9K/mo", tone: "bg-blush text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.8125rem,1.06vw,1.275rem)]" },
-  { term: "single origin", volume: "1.8K/mo", tone: "bg-lagoon text-white", tilt: "rotate-[-3deg]", size: "text-[clamp(0.75rem,0.97vw,1.17rem)]" },
-  { term: "coffee subscription", volume: "1.2K/mo", tone: "bg-grape text-white", tilt: "rotate-[3deg]", size: "text-[clamp(0.75rem,0.97vw,1.17rem)]" },
-];
+const keywordTones = ["text-blush-ink", "text-grape", "text-lagoon"];
 
-const stickies = [
-  { value: "1,500", label: "Words per blog", tone: "bg-sunbeam text-ink", tilt: "rotate-[4deg]" },
-  { value: "48h", label: "To a first draft", tone: "bg-blush text-white", tilt: "rotate-[-3deg]" },
-  { value: "2", label: "Rounds of edits", tone: "bg-lagoon text-white", tilt: "rotate-[2deg]" },
-  { value: "500+", label: "Articles written", tone: "bg-lav text-ink", tilt: "rotate-[-4deg]" },
-];
+/** Text with [[keywords]] marked: the marked words are highlighted, in rotating colours. */
+function withKeywords(text: string) {
+  return text.split(/(\[\[[^\]]+\]\])/).map((part, i) => {
+    const m = part.match(/^\[\[([^\]]+)\]\]$/);
+    return m ? (
+      <Kw key={i} tone={keywordTones[Math.floor(i / 2) % keywordTones.length]}>
+        {m[1]}
+      </Kw>
+    ) : (
+      part
+    );
+  });
+}
 
 export default function Sections({ service }: { service: ServiceDetail }) {
   const [l1, l2, ...rest] = service.heroLines;
   // Extra lines from the CMS join the last line rather than disappearing.
   const l3 = rest.join(" ");
+  // The design sections' words (Services → Content Writing → Page sections in the CMS).
+  const copy = contentCopy(service);
 
   return (
     <ContentFx className="flex flex-col pb-[clamp(5rem,12.5vw,15rem)]">
@@ -103,33 +109,34 @@ export default function Sections({ service }: { service: ServiceDetail }) {
 
           {/* Clips the oversized mobile desk at the viewport edge (the shell padding is undone, then re-applied). */}
           <div className="-mx-[clamp(1.25rem,8.65vw,10.375rem)] overflow-x-clip px-[clamp(1.25rem,8.65vw,10.375rem)] lg:mx-0 lg:overflow-x-visible lg:px-0">
-            <DraftDesk />
+            <DraftDesk copy={copy.hero} />
           </div>
         </div>
       </section>
 
       {/* ── The rewrite (before / after) ───────────────────────────── */}
       <section aria-labelledby="rewrite-title" className="shell mt-[clamp(4rem,9.74vw,11.75rem)]">
-        <SectionTitle align="center" eyebrow="The rewrite" title={<span id="rewrite-title">Same brand. Better words.</span>} />
+        <SectionTitle align="center" eyebrow={copy.rewrite.eyebrow} title={<span id="rewrite-title" className="whitespace-pre-line">{copy.rewrite.heading}</span>} />
+        <SectionText text={copy.rewrite.text} center />
         <div className={`grid ${headingGap}`}>
           <div className="col-start-1 row-start-1 grid gap-y-[7.5rem] lg:grid-cols-2 lg:gap-x-[3.54vw]">
             <article data-edit data-reveal className="flex min-h-[clamp(18rem,23.96vw,28.75rem)] flex-col rounded-[clamp(1.5rem,1.67vw,2rem)] bg-[#E6E0DD] p-[clamp(1.5rem,2.08vw,2.5rem)] pb-[clamp(2rem,3.2vw,3.875rem)]">
               <h3 className="grid h-[clamp(2.125rem,2.08vw,2.5rem)] w-[clamp(7.5rem,7.29vw,8.75rem)] place-items-center rounded-full bg-white font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-[#8C8784]">
-                BEFORE
+                {copy.rewrite.beforeLabel}
               </h3>
               <p className="mt-[clamp(1.5rem,2.08vw,2.5rem)] font-copy text-[clamp(1.25rem,1.67vw,2rem)] leading-[1.44] text-[#8C8784]">
                 <span data-strike="0.07em" className="[box-decoration-break:slice]" style={strike("#8C8784", "0.07em")}>
-                  We are a leading provider of innovative, best-in-class solutions for all of your coffee-related needs and requirements.
+                  {copy.rewrite.before}
                 </span>
               </p>
-              <p className="mt-auto pt-6 font-copy text-[clamp(0.875rem,0.885vw,1.0625rem)] font-medium text-[#8C8784]">38 words of nothing&nbsp; ·&nbsp; 0 personality</p>
+              <p className="mt-auto pt-6 font-copy text-[clamp(0.875rem,0.885vw,1.0625rem)] font-medium whitespace-pre-wrap text-[#8C8784]">{copy.rewrite.beforeNote}</p>
             </article>
             <article data-reveal className={`flex min-h-[clamp(18rem,23.96vw,28.75rem)] flex-col rounded-[clamp(1.5rem,1.67vw,2rem)] bg-blush p-[clamp(1.5rem,2.08vw,2.5rem)] pb-[clamp(2rem,3.2vw,3.875rem)] text-white ${paperShadow}`}>
               <h3 className="grid h-[clamp(2.125rem,2.08vw,2.5rem)] w-[clamp(7.5rem,7.29vw,8.75rem)] place-items-center rounded-full bg-white font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-blush-deep">
-                AFTER
+                {copy.rewrite.afterLabel}
               </h3>
-              <p className="mt-[clamp(1.5rem,2.08vw,2.5rem)] max-w-[34rem] font-display text-[clamp(1.75rem,2.71vw,3.25rem)] leading-[1.19] uppercase">Coffee that tastes like Saturday. Every day.</p>
-              <p className="mt-auto pt-6 font-copy text-[clamp(0.875rem,0.885vw,1.0625rem)] font-medium">8 words&nbsp; ·&nbsp; 100% you</p>
+              <p className="mt-[clamp(1.5rem,2.08vw,2.5rem)] max-w-[34rem] font-display text-[clamp(1.75rem,2.71vw,3.25rem)] leading-[1.19] uppercase">{copy.rewrite.after}</p>
+              <p className="mt-auto pt-6 font-copy text-[clamp(0.875rem,0.885vw,1.0625rem)] font-medium whitespace-pre-wrap">{copy.rewrite.afterNote}</p>
             </article>
           </div>
           <span
@@ -137,12 +144,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             data-float="6"
             className={`col-start-1 row-start-1 grid size-[clamp(6.5rem,9.375vw,11.25rem)] rotate-[10deg] place-items-center place-self-center rounded-full bg-sunbeam text-center font-display text-[clamp(1rem,1.35vw,1.625rem)] leading-[1.38] text-ink ${paperShadow}`}
           >
-            <span>
-              RE
-              <br />
-              WRITE
-              <br />→
-            </span>
+            <span className="whitespace-pre-line">{copy.rewrite.sticker}</span>
           </span>
         </div>
       </section>
@@ -151,35 +153,38 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       <section aria-labelledby="tone-title" className="shell mt-[clamp(4rem,9.375vw,11.25rem)] grid items-start gap-y-10 lg:grid-cols-[minmax(0,648fr)_minmax(0,940fr)]">
         <div>
           <SectionTitle
-            eyebrow="Tone of voice"
+            eyebrow={copy.tone.eyebrow}
             title={
-              <span id="tone-title">
-                Find your
-                <br />
-                voice
+              <span id="tone-title" className="whitespace-pre-line">
+                {copy.tone.heading}
               </span>
             }
           />
-          <p data-reveal className="mt-[clamp(1.25rem,1.98vw,2.375rem)] max-w-[32.5rem] font-copy text-body leading-[1.64] font-light">
-            Every brand sits somewhere on these dials. We find your spot, write it down, and make sure every word — from homepage to error message — sounds like you.
-          </p>
+          {copy.tone.text ? (
+            <p data-reveal className="mt-[clamp(1.25rem,1.98vw,2.375rem)] max-w-[32.5rem] font-copy text-body leading-[1.64] font-light whitespace-pre-line">
+              {copy.tone.text}
+            </p>
+          ) : null}
         </div>
         <div data-reveal className={`rounded-[clamp(1.5rem,1.875vw,2.25rem)] bg-white px-[clamp(1.25rem,2.5vw,3rem)] pt-[clamp(1.5rem,2.08vw,2.5rem)] pb-[clamp(2rem,3.9vw,4.75rem)] ${cardShadow}`}>
-          <h3 className="font-display text-[clamp(0.75rem,0.83vw,1rem)] text-grape uppercase">Fifth Sip — voice profile</h3>
+          <h3 className="font-display text-[clamp(0.75rem,0.83vw,1rem)] text-grape uppercase">{copy.tone.profile}</h3>
           <ul className="mt-[clamp(1.75rem,2.6vw,3.125rem)] flex flex-col gap-[clamp(1.75rem,2.3vw,2.75rem)]">
-            {sliders.map((s) => (
-              <li key={s.from} data-slider={s.value} style={{ "--v": s.value } as CSSProperties}>
+            {copy.tone.sliders.map((s, i) => {
+              const look = sliderLooks[i % sliderLooks.length];
+              const value = Math.max(0, Math.min(100, parseInt(s.value, 10) || 0));
+              return (
+              <li key={i} data-slider={value} style={{ "--v": value } as CSSProperties}>
                 <p className="flex justify-between font-copy text-[clamp(0.9375rem,1.04vw,1.25rem)] font-bold">
                   <span className="text-ink/60">{s.from}</span>
-                  <span className="sr-only">to</span>
+                  <span className="sr-only">{copy.tone.toWord}</span>
                   <span className="text-ink">{s.to}</span>
-                  <span className="sr-only">: {s.value}% of the way</span>
+                  <span className="sr-only">: {value}{copy.tone.ofTheWay}</span>
                 </p>
                 <div aria-hidden className="mt-[clamp(0.5rem,0.68vw,0.8125rem)] grid h-[clamp(1.75rem,2.08vw,2.5rem)] items-center">
                   <span className="col-start-1 row-start-1 h-[clamp(0.625rem,0.73vw,0.875rem)] rounded-full bg-[#D9D2DC]/60" />
-                  <span className={`col-start-1 row-start-1 h-[clamp(0.625rem,0.73vw,0.875rem)] justify-self-start rounded-full ${s.fill}`} style={{ width: "calc(var(--v) * 1%)" }} />
+                  <span className={`col-start-1 row-start-1 h-[clamp(0.625rem,0.73vw,0.875rem)] justify-self-start rounded-full ${look.fill}`} style={{ width: "calc(var(--v) * 1%)" }} />
                   <span
-                    className={`col-start-1 row-start-1 aspect-square h-full justify-self-start rounded-full border-[clamp(4px,0.31vw,6px)] bg-white ${s.ring}`}
+                    className={`col-start-1 row-start-1 aspect-square h-full justify-self-start rounded-full border-[clamp(4px,0.31vw,6px)] bg-white ${look.ring}`}
                     style={{ marginLeft: "calc(var(--v) * 1% - clamp(0.875rem, 1.04vw, 1.25rem))" }}
                   />
                 </div>
@@ -189,7 +194,8 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                   ))}
                 </span>
               </li>
-            ))}
+              );
+            })}
           </ul>
         </div>
       </section>
@@ -199,21 +205,21 @@ export default function Sections({ service }: { service: ServiceDetail }) {
         <div className="grid">
           <article data-reveal className={`col-start-1 row-start-1 rotate-[1deg] rounded-[6px] border-[3px] border-ink ${paper} px-[clamp(1rem,2.08vw,2.5rem)] pt-[clamp(1rem,1.56vw,1.875rem)] pb-[clamp(1.25rem,2.08vw,2.5rem)] ${cardShadow}`}>
             <p className="flex flex-wrap justify-between gap-x-6 gap-y-1 font-display text-[clamp(0.5625rem,0.73vw,0.875rem)] text-ink/60 uppercase lg:pr-[6.15vw]">
-              <span>Vol. 7 &nbsp;·&nbsp; October 2026 &nbsp;·&nbsp; Price: one good idea</span>
-              <span>Weather: 100% chance of pop</span>
+              <span className="whitespace-pre-wrap">{copy.post.masthead}</span>
+              <span>{copy.post.weather}</span>
             </p>
             <h2 id="post-title" className={`${serif.className} mt-[clamp(0.25rem,0.42vw,0.5rem)] text-center text-[clamp(2.25rem,6.25vw,7.5rem)] leading-[1.3] font-black text-ink`}>
-              The Poppin’ Post
+              {copy.post.title}
             </h2>
             <span aria-hidden className="block h-[3px] bg-ink lg:h-1" />
             <span aria-hidden className="mt-1.5 block h-px bg-ink" />
 
             <div className="mt-[clamp(1.25rem,1.3vw,1.5625rem)] grid gap-x-[1.46vw] gap-y-8 lg:grid-cols-[minmax(0,1060fr)_minmax(0,420fr)]">
               <div className="flex flex-col">
-                <h3 className={`${serif.className} text-[clamp(1.375rem,2.6vw,3.125rem)] leading-[1.16] font-bold text-ink`}>LOCAL CAFÉ’S WEBSITE COPY SO GOOD, CUSTOMERS READ IT TWICE</h3>
-                <p className={`${serif.className} mt-[clamp(0.75rem,1.46vw,1.75rem)] text-[clamp(1rem,1.25vw,1.5rem)] text-blush-ink`}>Experts baffled as “About Us” page outperforms the brunch menu.</p>
+                <h3 className={`${serif.className} text-[clamp(1.375rem,2.6vw,3.125rem)] leading-[1.16] font-bold text-ink`}>{copy.post.headline}</h3>
+                <p className={`${serif.className} mt-[clamp(0.75rem,1.46vw,1.75rem)] text-[clamp(1rem,1.25vw,1.5rem)] text-blush-ink`}>{copy.post.standfirst}</p>
                 <div className="mt-[clamp(1rem,1.46vw,1.75rem)] grid gap-y-4 md:min-h-[19.8vw] md:grid-cols-3 md:divide-x md:divide-ink/30">
-                  {columns.map((text, i) => (
+                  {copy.post.columns.map(({ text }, i) => (
                     <p key={i} className={`${serif.className} text-[clamp(0.9375rem,0.94vw,1.125rem)] leading-[1.67] text-ink md:px-[0.78vw] md:first:pl-0 md:last:pr-0`}>
                       {text}
                     </p>
@@ -222,7 +228,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 <Image
                   slot="post-photo"
                   src="/assets/inner/writing.webp"
-                  alt="A writer at a café table with a laptop and an iced latte"
+                  alt={copy.post.photoAlt}
                   width={698}
                   height={611}
                   sizes="(min-width: 1024px) 55vw, 90vw"
@@ -230,13 +236,13 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 />
               </div>
 
-              <nav aria-label="In this issue" className="bg-ink px-[clamp(1.25rem,1.56vw,1.875rem)] pt-[clamp(1.25rem,1.56vw,1.875rem)] pb-8">
-                <p className="font-display text-[clamp(0.875rem,1.04vw,1.25rem)] text-sunbeam uppercase">In this issue</p>
+              <nav aria-label={copy.post.issueTitle} className="bg-ink px-[clamp(1.25rem,1.56vw,1.875rem)] pt-[clamp(1.25rem,1.56vw,1.875rem)] pb-8">
+                <p className="font-display text-[clamp(0.875rem,1.04vw,1.25rem)] text-sunbeam uppercase">{copy.post.issueTitle}</p>
                 <ul className="mt-[clamp(0.5rem,0.5vw,0.6rem)]">
-                  {issue.map((item) => (
-                    <li key={item.title} className="flex items-center justify-between gap-4 border-b border-white/15 py-[clamp(0.75rem,1.15vw,1.375rem)] pr-[clamp(0.25rem,1.2vw,1.4rem)]">
+                  {copy.post.issue.map((item, i) => (
+                    <li key={i} className="flex items-center justify-between gap-4 border-b border-white/15 py-[clamp(0.75rem,1.15vw,1.375rem)] pr-[clamp(0.25rem,1.2vw,1.4rem)]">
                       <span className={`${serif.className} text-[clamp(1.0625rem,1.25vw,1.5rem)] leading-[1.33] font-bold text-white`}>{item.title}</span>
-                      <span className={`font-display text-[clamp(0.75rem,0.83vw,1rem)] ${item.tone}`}>{item.page}</span>
+                      <span className={`font-display text-[clamp(0.75rem,0.83vw,1rem)] ${issueTones[i % issueTones.length]}`}>{item.page}</span>
                     </li>
                   ))}
                 </ul>
@@ -248,11 +254,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             data-float="6"
             className={`col-start-1 row-start-1 -mt-[3.78%] -mr-[2%] grid aspect-square w-[max(6.5rem,13.85%)] rotate-[-12deg] place-items-center self-start justify-self-end rounded-full bg-blush text-center font-display text-[clamp(0.9375rem,1.67vw,2rem)] leading-[1.375] text-white lg:-mr-[5.42%] ${cardShadow}`}
           >
-            <span>
-              EXTRA!
-              <br />
-              EXTRA!
-            </span>
+            <span className="whitespace-pre-line">{copy.post.sticker}</span>
           </span>
         </div>
       </section>
@@ -260,37 +262,37 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       {/* ── SEO content ────────────────────────────────────────────── */}
       <section aria-labelledby="seo-title" className="shell mt-[clamp(4rem,10.4vw,12.5rem)]">
         <SectionTitle
-          eyebrow="SEO content"
+          eyebrow={copy.seo.eyebrow}
           title={
-            <span id="seo-title">
-              Words that rank
-              <br />
-              (and read nicely)
+            <span id="seo-title" className="whitespace-pre-line">
+              {copy.seo.heading}
             </span>
           }
         />
+        <SectionText text={copy.seo.text} />
         <div className="mt-[clamp(2rem,2.8vw,3.375rem)] grid items-start gap-y-12 lg:grid-cols-[minmax(0,820fr)_minmax(0,694fr)] lg:gap-x-[3.85vw]">
           <article data-reveal className={`flex min-h-[clamp(16rem,26vw,31.25rem)] flex-col rounded-[clamp(0.75rem,0.83vw,1rem)] ${paper} p-[clamp(1.25rem,2.08vw,2.5rem)] ${cardShadow}`}>
             <p className={`${serif.className} text-[clamp(1.0625rem,1.25vw,1.5rem)] leading-[1.75] text-ink`}>
-              Looking for the best <Kw tone="text-blush-ink">specialty coffee</Kw> near you? Fifth Sip roasts <Kw tone="text-grape">single-origin beans</Kw> in-house every morning, pairs them with an{" "}
-              <Kw tone="text-lagoon">all-day brunch</Kw> menu and serves the <Kw tone="text-blush-ink">flat white</Kw> locals queue for. <Kw tone="text-grape">Order online</Kw>, book a table, or grab a bag of{" "}
-              <Kw tone="text-lagoon">freshly roasted beans</Kw> to brew at home.
+              {withKeywords(copy.seo.sample)}
             </p>
-            <p className="mt-auto pt-8 font-display text-[clamp(0.6875rem,0.73vw,0.875rem)] text-grape/70">6 keywords · readability: easy · 52 words</p>
+            <p className="mt-auto pt-8 font-display text-[clamp(0.6875rem,0.73vw,0.875rem)] text-grape/70">{copy.seo.sampleStats}</p>
           </article>
-          <ul aria-label="Target keywords and monthly searches" data-reveal-stagger className="flex flex-wrap items-start gap-x-[clamp(0.75rem,0.83vw,1rem)] gap-y-[clamp(1.25rem,2.08vw,2.5rem)] lg:pt-2.5">
-            {keywords.map((k) => (
-              <li key={k.term} className={`rounded-[clamp(1rem,1.25vw,1.5rem)] px-[clamp(0.875rem,1.46vw,1.75rem)] pt-[clamp(0.75rem,0.83vw,1rem)] pb-[clamp(0.75rem,0.78vw,0.9375rem)] shadow-[0_10px_24px_rgb(34_1_40/0.12)] ${k.tone} ${k.tilt}`}>
-                <span className={`block font-display leading-[1.27] ${k.size}`}>{k.term}</span>
+          <ul aria-label={copy.seo.keywordsLabel} data-reveal-stagger className="flex flex-wrap items-start gap-x-[clamp(0.75rem,0.83vw,1rem)] gap-y-[clamp(1.25rem,2.08vw,2.5rem)] lg:pt-2.5">
+            {copy.seo.keywords.map((k, i) => {
+              const look = keywordLooks[i % keywordLooks.length];
+              return (
+              <li key={i} className={`rounded-[clamp(1rem,1.25vw,1.5rem)] px-[clamp(0.875rem,1.46vw,1.75rem)] pt-[clamp(0.75rem,0.83vw,1rem)] pb-[clamp(0.75rem,0.78vw,0.9375rem)] shadow-[0_10px_24px_rgb(34_1_40/0.12)] ${look.tone} ${look.tilt}`}>
+                <span className={`block font-display leading-[1.27] ${look.size}`}>{k.term}</span>
                 <span className="mt-1 block font-copy text-[clamp(0.75rem,0.73vw,0.875rem)] font-bold opacity-80">{k.volume}</span>
               </li>
-            ))}
+              );
+            })}
           </ul>
         </div>
 
         <ul data-reveal-stagger className="mt-[clamp(4rem,12vw,14.375rem)] grid grid-cols-2 gap-[clamp(1.25rem,2.19vw,2.625rem)] lg:grid-cols-4">
-          {stickies.map((s) => (
-            <li key={s.label} className={`@container grid aspect-square rounded-[6px] ${s.tone} ${s.tilt} ${cardShadow}`}>
+          {copy.seo.stickies.map((s, i) => (
+            <li key={i} className={`@container grid aspect-square rounded-[6px] ${stickyLooks[i % stickyLooks.length].tone} ${stickyLooks[i % stickyLooks.length].tilt} ${cardShadow}`}>
               <span aria-hidden className="col-start-1 row-start-1 -mt-[2.2cqw] h-[9.4cqw] w-[33.3cqw] self-start justify-self-center bg-white/60" />
               <p className="col-start-1 row-start-1 flex flex-col items-center self-start pt-[22.2cqw] text-center">
                 <span className="font-pop text-[33.3cqw] leading-[38.9cqw]">{s.value}</span>
@@ -309,7 +311,7 @@ function Kw({ tone, children }: { tone: string; children: string }) {
 }
 
 /** Figma hero desk: "Paper back" (381:44), "Draft paper" (381:63), three margin notes and the pencil. 1000 Figma px wide. */
-function DraftDesk() {
+function DraftDesk({ copy }: { copy: ContentCopy["hero"] }) {
   return (
     <div className="@container -ml-[15.5%] grid w-[140%] md:-ml-[4%] md:w-[115%] lg:-mr-[clamp(1.1rem,7.6vw,9.125rem)] lg:ml-0 lg:w-auto">
       {/* Paper behind: 660 × 800, Figma 5° → CSS -5deg. */}
@@ -328,34 +330,35 @@ function DraftDesk() {
         />
         <span aria-hidden className="col-start-1 row-start-1 ml-[5.6cqw] w-[0.2cqw] justify-self-start bg-blush/50" />
         <div className="col-start-1 row-start-1 flex flex-col self-start pt-[3cqw] pl-[8cqw]">
-          <span className="font-copy text-[1.4cqw] font-medium text-ink/45">homepage_hero_v3.doc</span>
-          <span className={`${serif.className} mt-[2.5cqw] w-[52cqw] text-[4.4cqw] leading-[5.2cqw] font-bold text-ink`}>Coffee that tastes like Saturday morning.</span>
+          <span className="font-copy text-[1.4cqw] font-medium text-ink/45">{copy.file}</span>
+          <span className={`${serif.className} mt-[2.5cqw] w-[52cqw] text-[4.4cqw] leading-[5.2cqw] font-bold text-ink`}>{copy.headline}</span>
           <span className={`${serif.className} mt-[2.6cqw] w-[50cqw] text-[2.2cqw] leading-[3.6cqw] text-ink`}>
-            Fifth Sip{" "}
+            {copy.lead}{" "}
             <span data-strike="0.08em" className="text-[#8C8784] [box-decoration-break:slice]" style={strike("#F27793", "0.08em")}>
-              is a leading provider of premium coffee solutions
+              {copy.struck}
             </span>{" "}
             <strong data-insert className="inline-block font-bold text-blush-ink">
-              the neighbourhood café
+              {copy.inserted}
             </strong>{" "}
-            where every cup is roasted in-house, poured with care and served with a smile. Come for the{" "}
-            <strong className="font-bold text-grape underline decoration-[0.06em] underline-offset-[0.2em]">specialty coffee</strong>, stay for the brunch.
+            {copy.body}{" "}
+            <strong className="font-bold text-grape underline decoration-[0.06em] underline-offset-[0.2em]">{copy.keyword}</strong>
+            {copy.ending}
           </span>
-          <span className="mt-[14cqw] font-display text-[1.6cqw] text-grape">¶&nbsp; Tone: warm · witty · local</span>
-          <span className="mt-[1.6cqw] font-copy text-[1.6cqw] font-medium text-ink/60">Words: 42&nbsp; ·&nbsp; Reading level: easy&nbsp; ·&nbsp; SEO: ✓</span>
+          <span className="mt-[14cqw] font-display text-[1.6cqw] whitespace-pre-wrap text-grape">{copy.tone}</span>
+          <span className="mt-[1.6cqw] font-copy text-[1.6cqw] font-medium whitespace-pre-wrap text-ink/60">{copy.stats}</span>
           <span aria-hidden className="mt-[4.7cqw] flex flex-col gap-[2cqw]">
             {[50, 42, 46].map((w) => (
               <span key={w} className="h-[1.4cqw] rounded-full bg-ink/8" style={{ width: `${w}cqw` }} />
             ))}
           </span>
         </div>
-        <figcaption className="sr-only">A homepage draft with a red-pen edit: “a leading provider of premium coffee solutions” becomes “the neighbourhood café”.</figcaption>
+        <figcaption className="sr-only">{copy.caption}</figcaption>
       </figure>
 
       {/* Margin notes (Figma 381:93 / 95 / 97). */}
-      <Note className="mt-[23.13%] ml-[62%] rotate-[-6deg] bg-blush lg:ml-[66.16%]">Too corporate! ✕</Note>
-      <Note className="mt-[36.45%] ml-[68%] rotate-[4deg] bg-grape lg:ml-[73.84%]">Keyword ✓</Note>
-      <Note className="-mt-[2%] ml-[16%] rotate-[6deg] bg-lagoon lg:mt-[7.1%] lg:-ml-[0.27%]">Punchier headline 🔥</Note>
+      <Note className="mt-[23.13%] ml-[62%] rotate-[-6deg] bg-blush lg:ml-[66.16%]">{copy.notes[0].note}</Note>
+      <Note className="mt-[36.45%] ml-[68%] rotate-[4deg] bg-grape lg:ml-[73.84%]">{copy.notes[1].note}</Note>
+      <Note className="-mt-[2%] ml-[16%] rotate-[6deg] bg-lagoon lg:mt-[7.1%] lg:-ml-[0.27%]">{copy.notes[2].note}</Note>
 
       {/* Pencil: 420 × 36, Figma -35° → CSS 35deg. */}
       <span aria-hidden data-float="6" className={`${layer} mt-[89.72%] ml-[49.17%] w-[42%] rotate-[35deg]`}>

@@ -55,6 +55,8 @@ class MobileAppSections
         'hero' => [
             'badge' => 'iOS · Android · Cross-platform',
             'phone' => [
+                'time' => '9:41',
+                'imageAlt' => 'Fifth Sip coffee cups, bag and menu shown inside the ordering app',
                 'app' => 'Fifth Sip',
                 'greeting' => 'Morning, Sara ☕',
                 'item' => 'Oat flat white',
@@ -76,6 +78,7 @@ class MobileAppSections
                     ],
                 ],
             ],
+            'notificationTime' => 'now',
             'notifications' => [
                 [
                     'app' => 'Fifth Sip',
@@ -100,6 +103,10 @@ class MobileAppSections
 switched on',
             'text' => 'Every app we build comes with the full crew behind it. Tap a setting to see what it covers.',
             'screen' => 'Settings',
+            'search' => 'Search',
+            'sticker' => '{on} / {total} on',
+            'footer' => '{on} of {total} switched on',
+            'counter' => 'of',
             'icons' => [
                 [
                     'icon' => 'phone',
@@ -156,6 +163,8 @@ Every app store.',
             ],
         ],
         'benefits' => [
+            'time' => '9:41',
+            'date' => 'Monday, 12 May',
             'eyebrow' => 'Why go mobile',
             'heading' => 'Right there on
 their home screen',
@@ -188,6 +197,7 @@ their home screen',
             'heading' => 'Five phases.
 One launch.',
             'text' => '',
+            'history' => 'Version history',
             'versions' => [
                 [
                     'version' => 'Version 0.1',
@@ -354,6 +364,8 @@ before you spend',
 
             self::section('Hero — phone app & notifications', [
                 self::input('hero.badge', 'Badge under the button')->columnSpanFull(),
+                self::input('hero.phone.time', 'Status bar time'),
+                self::input('hero.phone.imageAlt', 'Phone photo description (alt text)'),
                 self::input('hero.phone.app', 'App name'),
                 self::input('hero.phone.greeting', 'Greeting'),
                 self::input('hero.phone.item', 'Product name'),
@@ -361,6 +373,7 @@ before you spend',
                 self::input('hero.phone.button', 'Button'),
                 self::input('hero.phone.points', 'Points badge'),
                 ...self::items('hero.phone.tabs', 4, 'Tab', ['label' => 'Label']),
+                self::input('hero.notificationTime', 'Notification timestamp (all notifications)'),
                 ...self::items('hero.notifications', 2, 'Notification', ['app' => 'App', 'title' => 'Title', 'body' => 'Message']),
                 self::input('hero.rating.value', 'Rating sticker: number'),
                 self::input('hero.rating.label', 'Rating sticker: label'),
@@ -370,6 +383,10 @@ before you spend',
             self::section('What’s included — Settings screen', [
                 ...self::titleFields('included'),
                 self::input('included.screen', 'Screen title'),
+                self::input('included.search', 'Search box'),
+                self::input('included.sticker', 'Sticker')->helperText('{on} and {total} become the numbers.'),
+                self::input('included.footer', 'Line under the list')->helperText('{on} and {total} become the numbers.'),
+                self::input('included.counter', 'Word in “01 of 08”'),
                 SchemaComponents\Text::make('The settings themselves are the What’s included list (Included tab). Pick each row’s icon, top to bottom:')->columnSpanFull(),
                 ...array_map(fn ($i) => self::icon("included.icons.$i.icon", 'Setting '.($i + 1).' icon'), range(0, 7)),
             ], collapsed: true),
@@ -381,11 +398,14 @@ before you spend',
 
             self::section('Benefits — lock screen notifications', [
                 ...self::titleFields('benefits'),
+                self::input('benefits.time', 'Lock screen time'),
+                self::input('benefits.date', 'Lock screen date'),
                 ...self::items('benefits.items', 4, 'Notification', ['app' => 'Label', 'title' => 'Title', 'body' => 'Message']),
             ]),
 
             self::section('Process — version history', [
                 ...self::titleFields('process'),
+                self::input('process.history', 'Card subtitle'),
                 SchemaComponents\Text::make('Each step’s title and text come from the Process tab; set its version label and timing here.')->columnSpanFull(),
                 ...self::items('process.versions', 5, 'Step', ['version' => 'Version label', 'when' => 'Timing']),
             ]),

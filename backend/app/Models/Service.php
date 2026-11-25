@@ -44,6 +44,7 @@ class Service extends Model
         'screens',
         'engine',
         'copy',
+        'headings',
         'og_image',
         'is_published',
         'sort_order',
@@ -72,6 +73,7 @@ class Service extends Model
      */
     public const IMAGE_SLOTS = [
         'brand-identity' => [
+            'book-logo' => ['/assets/logo-pixelpopers.png', 'Logo on the brand book cover (transparent PNG or SVG)', 'Hero'],
             'hero' => ['/assets/inner/brand-identity/fifth-sip-packaging.webp', 'Photo card in the collage', 'Hero'],
             'wild-packaging' => ['/assets/inner/brand-identity/fifth-sip-packaging.webp', 'Large photo (“Packaging”)', 'Brand in the wild'],
             'wild-merch' => ['/assets/inner/brand-identity/fifth-sip-merch.webp', 'Top-right photo (“Merch”)', 'Brand in the wild'],
@@ -174,6 +176,7 @@ class Service extends Model
         'screens' => 'array',
         'engine' => 'array',
         'copy' => 'array',
+        'headings' => 'array',
         'is_published' => 'boolean',
         'sort_order' => 'integer',
     ];

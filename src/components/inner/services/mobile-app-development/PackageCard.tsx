@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Package } from "@/lib/service-content";
+import { SERVICE_HEADINGS, type PackageLabels } from "@/lib/service-headings";
 
 const tones = [
   { icon: "bg-lagoon text-white", tick: "text-lagoon" },
@@ -8,7 +9,7 @@ const tones = [
 ] as const;
 
 /** Mobile app packages, each styled as an app-store listing with a "Get" button. */
-export default function PackageCard({ pkg, index }: { pkg: Package; index: number }) {
+export default function PackageCard({ pkg, index, labels = SERVICE_HEADINGS.packages }: { pkg: Package; index: number; labels?: PackageLabels }) {
   const tone = tones[index % tones.length];
 
   return (
@@ -26,11 +27,11 @@ export default function PackageCard({ pkg, index }: { pkg: Package; index: numbe
 
         <dl className="mt-[clamp(1.25rem,1.46vw,1.75rem)] grid grid-cols-2 divide-x divide-ink/10 rounded-[clamp(0.875rem,1.04vw,1.25rem)] bg-paper py-3 text-center font-copy">
           <div>
-            <dt className="text-[clamp(0.6875rem,0.68vw,0.8125rem)] font-bold text-ink/50 uppercase">Price</dt>
+            <dt className="text-[clamp(0.6875rem,0.68vw,0.8125rem)] font-bold text-ink/50 uppercase">{labels.price}</dt>
             <dd className="mt-0.5 text-[clamp(0.9375rem,0.99vw,1.1875rem)] font-extrabold">{pkg.price}</dd>
           </div>
           <div>
-            <dt className="text-[clamp(0.6875rem,0.68vw,0.8125rem)] font-bold text-ink/50 uppercase">Timeline</dt>
+            <dt className="text-[clamp(0.6875rem,0.68vw,0.8125rem)] font-bold text-ink/50 uppercase">{labels.timeline}</dt>
             <dd className="mt-0.5 text-[clamp(0.9375rem,0.99vw,1.1875rem)] font-extrabold">{pkg.timeline}</dd>
           </div>
         </dl>
@@ -48,16 +49,16 @@ export default function PackageCard({ pkg, index }: { pkg: Package; index: numbe
 
         <Link
           href="/contact"
-          aria-label={`Get a quote for the ${pkg.name} mobile app package`}
+          aria-label={`${labels.button}: ${pkg.name} mobile app package`}
           className={`mt-auto flex h-[clamp(3.25rem,3.125vw,3.75rem)] items-center justify-center rounded-full font-display text-[clamp(0.875rem,0.885vw,1.0625rem)] uppercase transition-transform duration-300 hover:scale-[1.03] ${pkg.popular ? "bg-blush text-white" : "bg-grape/10 text-grape"}`}
         >
-          Get a quote
+          {labels.button}
         </Link>
       </article>
 
       {pkg.popular ? (
         <span className="col-start-1 row-start-1 -mt-[clamp(1rem,1.77vw,2.125rem)] -mr-[clamp(0.25rem,1.04vw,1.25rem)] self-start justify-self-end rotate-[-8deg] rounded-full bg-sunbeam px-[clamp(1.25rem,1.98vw,2.375rem)] py-[clamp(0.75rem,1.04vw,1.25rem)] font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-ink uppercase shadow-[0_10px_24px_rgb(34_1_40/0.15)]">
-          Most popular
+          {labels.popular}
         </span>
       ) : null}
     </div>

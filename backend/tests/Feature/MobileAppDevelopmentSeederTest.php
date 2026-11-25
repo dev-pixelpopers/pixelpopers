@@ -61,6 +61,9 @@ class MobileAppDevelopmentSeederTest extends TestCase
                 'copy.plan.button' => 'Plan my app',
                 'copy.features.items.2.icon' => 'shield',
                 'copy.included.heading' => 'All switched on',
+                'copy.included.sticker' => '{on} of {total} live',
+                'copy.benefits.date' => 'Friday, 1 May',
+                'copy.hero.phone.imageAlt' => 'Our app on a phone',
             ])
             ->call('save')
             ->assertHasNoFormErrors();
@@ -72,5 +75,8 @@ class MobileAppDevelopmentSeederTest extends TestCase
         $this->assertSame('Plan my app', $copy['plan']['button']);
         $this->assertSame('shield', $copy['features']['items'][2]['icon']);
         $this->assertSame('All switched on', $copy['included']['heading']);
+        $this->assertSame('{on} of {total} live', $copy['included']['sticker']);
+        $this->assertSame('Friday, 1 May', $copy['benefits']['date']);
+        $this->assertSame('Our app on a phone', $copy['hero']['phone']['imageAlt']);
     }
 }

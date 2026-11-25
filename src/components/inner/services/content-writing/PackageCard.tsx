@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Package } from "@/lib/service-content";
+import { SERVICE_HEADINGS, type PackageLabels } from "@/lib/service-headings";
 import { serif } from "@/lib/inner-fonts";
 
 /** Per-card look from Figma: tilt (Figma −2° / 1° / 2°, flipped for CSS), title and pencil colours. */
@@ -10,7 +11,7 @@ const looks = [
 ];
 
 /** Figma "Package — STARTER / GROWTH / FULL POP" on 03.6 Content Writing: a taped sheet of lined paper. */
-export default function PackageCard({ pkg, index }: { pkg: Package; index: number }) {
+export default function PackageCard({ pkg, index, labels = SERVICE_HEADINGS.packages }: { pkg: Package; index: number; labels?: PackageLabels }) {
   const look = looks[index % looks.length];
 
   return (
@@ -44,10 +45,10 @@ export default function PackageCard({ pkg, index }: { pkg: Package; index: numbe
 
           <Link
             href="/contact"
-            aria-label={`Get a quote for the ${pkg.name} content writing package`}
+            aria-label={`${labels.button}: ${pkg.name} content writing package`}
             className={`mt-auto flex h-[clamp(3.25rem,3.125vw,3.75rem)] items-center justify-center rounded-full font-display text-[clamp(0.875rem,0.885vw,1.0625rem)] text-white uppercase transition-transform duration-300 hover:scale-[1.03] ${pkg.popular ? "bg-blush" : "bg-ink"}`}
           >
-            Get a quote
+            {labels.button}
           </Link>
         </div>
       </article>
@@ -57,7 +58,7 @@ export default function PackageCard({ pkg, index }: { pkg: Package; index: numbe
 
       {pkg.popular ? (
         <span className="col-start-1 row-start-1 -mt-[clamp(1rem,1.77vw,2.125rem)] -mr-[clamp(0.25rem,1.04vw,1.25rem)] w-[42.3%] rotate-[-7deg] self-start justify-self-end rounded-full bg-sunbeam py-[clamp(0.75rem,1.04vw,1.25rem)] text-center font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-ink uppercase shadow-[0_10px_24px_rgb(34_1_40/0.15)]">
-          Most popular
+          {labels.popular}
         </span>
       ) : null}
     </div>

@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import type { Package, ServiceDetail, ServiceSlug } from "@/lib/service-content";
+import type { PackageLabels } from "@/lib/service-headings";
 
 import BrandSections from "./brand-identity/Sections";
 import BrandPackage from "./brand-identity/PackageCard";
@@ -22,7 +23,7 @@ export type ServiceConcept = {
   /** Hero + the page's own concept sections (everything above the long-form copy). */
   Sections: ComponentType<{ service: ServiceDetail }>;
   /** Package card styled to the page's concept. */
-  PackageCard: ComponentType<{ pkg: Package; index: number }>;
+  PackageCard: ComponentType<{ pkg: Package; index: number; labels?: PackageLabels }>;
   /** The concept section already shows the process (hover/tap cards), so the long-form skips it. */
   processInConcept?: boolean;
   /** The page's own "What's included" design, in place of the standard cards. */

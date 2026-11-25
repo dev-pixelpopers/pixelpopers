@@ -95,6 +95,7 @@ class Transformers
             // Digital marketing: the "One brand. Six channels." section.
             'engine' => $s->engine ? (object) $s->engine : null,
             'copy' => $s->copy ? (object) $s->copy : null,
+            'headings' => $s->headings ? (object) $s->headings : null,
             'updatedAt' => $s->updated_at?->toIso8601String(),
         ];
     }

@@ -2,6 +2,7 @@
 
 import Image, { useServiceMedia } from "@/components/inner/services/ServiceImage";
 import { useState, type CSSProperties } from "react";
+import { BRAND_COPY, type BrandCopy } from "./copy";
 
 /**
  * "The glow-up" comparison card. The after-photo is clipped to the right of
@@ -10,7 +11,7 @@ import { useState, type CSSProperties } from "react";
  * replaced in the CMS (slots "before" / "after"); until a before-photo is
  * uploaded, that side shows the plain-text "generic logo" placeholder.
  */
-export default function BeforeAfter() {
+export default function BeforeAfter({ copy = BRAND_COPY.glow }: { copy?: BrandCopy["glow"] }) {
   const [pos, setPos] = useState(50);
   const before = useServiceMedia("", "before");
 
@@ -20,7 +21,7 @@ export default function BeforeAfter() {
       {before ? (
         <Image
           src={before}
-          alt="The brand before the redesign"
+          alt={copy.beforeAlt}
           width={1588}
           height={640}
           sizes="(min-width: 1024px) 83vw, 100vw"
@@ -28,8 +29,8 @@ export default function BeforeAfter() {
         />
       ) : (
         <div className="col-start-1 row-start-1 grid w-1/2 place-content-center gap-[0.6em] px-4 text-center text-[#8c8784]">
-          <p className="font-copy text-[clamp(1.125rem,3.27cqw,3.25rem)] leading-tight">fifth sip coffee co.</p>
-          <p className="font-copy text-[clamp(0.75rem,1.26cqw,1.25rem)]">(generic font, no system, no story)</p>
+          <p className="font-copy text-[clamp(1.125rem,3.27cqw,3.25rem)] leading-tight">{copy.placeholder}</p>
+          <p className="font-copy text-[clamp(0.75rem,1.26cqw,1.25rem)]">{copy.placeholderNote}</p>
         </div>
       )}
 
@@ -41,7 +42,7 @@ export default function BeforeAfter() {
         <Image
           slot="after"
           src="/assets/inner/brand-identity/fifth-sip-packaging.webp"
-          alt="Fifth Sip coffee identity applied to cups, a tray, a bag, a coffee pouch and menus"
+          alt={copy.afterAlt}
           width={980}
           height={640}
           sizes="(min-width: 1024px) 83vw, 100vw"
@@ -59,14 +60,14 @@ export default function BeforeAfter() {
       </div>
 
       <span className="pointer-events-none relative col-start-1 row-start-1 m-[clamp(0.875rem,2.52cqw,2.5rem)] self-start justify-self-start rounded-full bg-white px-[1.4em] py-[0.7em] font-display text-[clamp(0.6875rem,1cqw,1rem)] leading-none text-[#8c8784] uppercase">
-        Before
+        {copy.beforeLabel}
       </span>
       <span className="pointer-events-none relative col-start-1 row-start-1 m-[clamp(0.875rem,2.52cqw,2.5rem)] self-start justify-self-end rounded-full bg-blush px-[1.6em] py-[0.7em] font-display text-[clamp(0.6875rem,1cqw,1rem)] leading-none text-white uppercase">
-        After
+        {copy.afterLabel}
       </span>
 
       <label className="relative col-start-1 row-start-1 grid">
-        <span className="sr-only">Drag to compare the old and new Fifth Sip branding</span>
+        <span className="sr-only">{copy.sliderLabel}</span>
         <input
           type="range"
           min={0}
@@ -77,7 +78,7 @@ export default function BeforeAfter() {
         />
       </label>
       <figcaption className="sr-only">
-        Before and after: a generic text logo for Fifth Sip Coffee Co. next to the finished identity system on packaging.
+        {copy.caption}
       </figcaption>
     </figure>
   );

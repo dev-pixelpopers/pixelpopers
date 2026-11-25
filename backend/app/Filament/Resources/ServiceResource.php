@@ -26,6 +26,11 @@ class ServiceResource extends Resource
     private const PAGE_SECTIONS = [
         'digital-marketing' => \App\Filament\Support\DigitalMarketingSections::class,
         'mobile-app-development' => \App\Filament\Support\MobileAppSections::class,
+        'brand-identity' => \App\Filament\Support\BrandIdentitySections::class,
+        'ui-ux-design' => \App\Filament\Support\UiUxSections::class,
+        'web-development' => \App\Filament\Support\WebDevelopmentSections::class,
+        'motion-graphic' => \App\Filament\Support\MotionGraphicSections::class,
+        'content-writing' => \App\Filament\Support\ContentWritingSections::class,
     ];
 
     protected static ?string $model = Service::class;
@@ -257,6 +262,8 @@ class ServiceResource extends Resource
                             ]),
                         ]),
                     ]),
+                SchemaComponents\Tabs\Tab::make('Section headings')->icon('heroicon-o-bars-3-bottom-left')
+                    ->schema(\App\Filament\Support\ServiceHeadings::schema()),
                 SchemaComponents\Tabs\Tab::make('Images')->icon('heroicon-o-photo')->schema(fn (?Service $record) => self::imageSlots($record)),
                 SchemaComponents\Tabs\Tab::make('SEO')->icon('heroicon-o-magnifying-glass')->schema([
                     Fields::seo('meta_title', 'meta_description'),

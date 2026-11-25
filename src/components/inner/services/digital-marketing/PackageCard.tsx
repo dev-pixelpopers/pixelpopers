@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Package } from "@/lib/service-content";
+import { SERVICE_HEADINGS, type PackageLabels } from "@/lib/service-headings";
 
 /** Each package carries a little growth chart in its own colour: lagoon, grape, pop pink. */
 const tones = [
@@ -15,9 +16,11 @@ const bars = [33.3, 58.3, 45.8, 75, 100];
 export default function PackageCard({
   pkg,
   index,
+  labels = SERVICE_HEADINGS.packages,
 }: {
   pkg: Package;
   index: number;
+  labels?: PackageLabels;
 }) {
   const tone = tones[index % tones.length];
 
@@ -71,16 +74,16 @@ export default function PackageCard({
 
         <Link
           href="/contact"
-          aria-label={`Get a quote for the ${pkg.name} digital marketing package`}
+          aria-label={`${labels.button}: ${pkg.name} digital marketing package`}
           className={`mt-auto flex h-[clamp(3.25rem,3.125vw,3.75rem)] items-center justify-center rounded-full font-display text-[clamp(0.875rem,0.885vw,1.0625rem)] text-white uppercase transition-transform duration-300 hover:scale-[1.03] ${pkg.popular ? "bg-blush" : "bg-ink"}`}
         >
-          Get a quote
+          {labels.button}
         </Link>
       </article>
 
       {pkg.popular ? (
         <span className="col-start-1 row-start-1 -mt-[clamp(1rem,1.77vw,2.125rem)] -mr-[clamp(0.25rem,1.04vw,1.25rem)] self-start justify-self-end rotate-[-8deg] rounded-full bg-sunbeam px-[clamp(1.25rem,1.98vw,2.375rem)] py-[clamp(0.75rem,1.04vw,1.25rem)] font-display text-[clamp(0.75rem,0.78vw,0.9375rem)] leading-none text-ink uppercase shadow-[0_10px_24px_rgb(34_1_40/0.15)]">
-          Most popular
+          {labels.popular}
         </span>
       ) : null}
     </div>

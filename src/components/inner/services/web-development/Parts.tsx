@@ -2,6 +2,7 @@ import Image from "@/components/inner/services/ServiceImage";
 import type { StackKeyTone, StackSection } from "@/lib/service-content";
 import type { ReactNode } from "react";
 import { mono } from "@/lib/inner-fonts";
+import { WEB_COPY, type WebCopy } from "./copy";
 
 /*
   UI mock-ups for the code + browser page (Figma 374:21). Each mock-up is an
@@ -34,24 +35,26 @@ const T = "text-lagoon";
 const P = "text-[#8c7a99]";
 const A = "text-lav";
 
-const code: [string, string][][] = [
+/** The editor's code; the title, vibe and closing comment are the page copy's words. */
+const codeFor = (copy: WebCopy["hero"]): [string, string][][] => [
   [["import ", K], ["{ Hero } ", W], ["from ", K], ["'@/components'", S]],
   [["import ", K], ["{ pop } ", W], ["from ", K], ["'@pixel/popers'", S]],
   [],
   [["export default function ", K], ["Home", T], ["() {", W]],
   [["  return (", W]],
   [["    <", P], ["Hero", T]],
-  [["      title", A], ["=", W], ["\"We make your website poppin’\"", S]],
+  [["      title", A], ["=", W], [`"${copy.codeTitle}"`, S]],
   [["      speed", A], ["={", W], ["pop.fast", T], ["}", W]],
-  [["      vibe", A], ["=", W], ["\"funky\"", S]],
+  [["      vibe", A], ["=", W], [`"${copy.codeVibe}"`, S]],
   [["    />", P]],
   [["  )", W]],
   [["}", W]],
   [],
-  [["// lighthouse: 98 · a11y: 100 · seo: 100 ✨", P]],
+  [[copy.codeComment, P]],
 ];
 
-export function CodeEditor({ className = "" }: { className?: string }) {
+export function CodeEditor({ className = "", copy = WEB_COPY.hero }: { className?: string; copy?: WebCopy["hero"] }) {
+  const code = codeFor(copy);
   return (
     <div className={`@container ${className}`}>
       <div className={`${mono.className} overflow-hidden rounded-[2.56cqw] bg-code ${deepShadow}`}>
@@ -60,9 +63,9 @@ export function CodeEditor({ className = "" }: { className?: string }) {
             <Dots size="size-[max(0.375rem,1.54cqw)]" gap="gap-[1.28cqw]" />
           </span>
           <span className="ml-[2.05cqw] flex gap-[1.28cqw] text-[max(0.5rem,1.79cqw)]">
-            <span className="flex h-[4.87cqw] w-[17.95cqw] items-center rounded-t-[1.03cqw] bg-code px-[1.79cqw] text-white/90">page.tsx</span>
-            <span className="flex h-[4.87cqw] w-[17.95cqw] items-center rounded-t-[1.03cqw] px-[1.79cqw] text-white/45">hero.tsx</span>
-            <span className="hidden h-[4.87cqw] w-[17.95cqw] items-center rounded-t-[1.03cqw] px-[1.79cqw] whitespace-nowrap text-white/45 sm:flex">pop.config.ts</span>
+            <span className="flex h-[4.87cqw] w-[17.95cqw] items-center rounded-t-[1.03cqw] bg-code px-[1.79cqw] text-white/90">{copy.tabs[0].name}</span>
+            <span className="flex h-[4.87cqw] w-[17.95cqw] items-center rounded-t-[1.03cqw] px-[1.79cqw] text-white/45">{copy.tabs[1].name}</span>
+            <span className="hidden h-[4.87cqw] w-[17.95cqw] items-center rounded-t-[1.03cqw] px-[1.79cqw] whitespace-nowrap text-white/45 sm:flex">{copy.tabs[2].name}</span>
           </span>
         </div>
         <ol
@@ -94,21 +97,21 @@ export function CodeEditor({ className = "" }: { className?: string }) {
 
 /* ── Browser preview (620 × 430) ──────────────────────────────────────── */
 
-export function BrowserPreview({ className = "", priority = false }: { className?: string; priority?: boolean }) {
+export function BrowserPreview({ className = "", priority = false, copy = WEB_COPY.hero }: { className?: string; priority?: boolean; copy?: WebCopy["hero"] }) {
   return (
     <div className={`@container ${className}`}>
       <div className={`overflow-hidden rounded-[3.23cqw] bg-white ${deepShadow}`}>
         <div className="flex h-[7.1cqw] min-h-6 items-center bg-[#f3e6ee] px-[2.9cqw]">
           <Dots size="size-[max(0.375rem,1.94cqw)]" gap="gap-[1.61cqw]" />
           <span className="ml-[7.42cqw] flex h-[4.19cqw] min-h-4 w-[61.3cqw] items-center rounded-full bg-white px-[2.58cqw] font-copy text-[max(0.5625rem,2.26cqw)] font-medium text-ink/60">
-            🔒 yourbrand.com
+            {copy.url}
           </span>
         </div>
         <Image
           natural
           slot="hero-browser"
           src="/assets/inner/elevate.webp"
-          alt="The Elevate website — “Drop your design” — on a laptop and phone"
+          alt={copy.browserAlt}
           width={1600}
           height={951}
           sizes="(min-width: 1024px) 33vw, 85vw"
@@ -183,10 +186,10 @@ const keyTone: Record<StackKeyTone, string> = {
   sunbeam: "bg-sunbeam text-ink",
 };
 
-export function Keyboard({ className = "", keys = defaultStackKeys }: { className?: string; keys?: StackKey[] }) {
+export function Keyboard({ className = "", keys = defaultStackKeys, label = WEB_COPY.stack.keyboardLabel }: { className?: string; keys?: StackKey[]; label?: string }) {
   return (
     <div className={`@container ${className}`}>
-      <ul data-keys aria-label="Our tech stack" className="grid grid-cols-3 gap-x-[2.5cqw] gap-y-[2.9cqw] rounded-[4cqw] bg-ink p-[4cqw] shadow-[0_24px_60px_rgb(34_1_40/0.18)] sm:grid-cols-4">
+      <ul data-keys aria-label={label} className="grid grid-cols-3 gap-x-[2.5cqw] gap-y-[2.9cqw] rounded-[4cqw] bg-ink p-[4cqw] shadow-[0_24px_60px_rgb(34_1_40/0.18)] sm:grid-cols-4">
         {keys.map((k, i) => (
           <li
             key={`${k.label}-${i}`}
@@ -226,7 +229,7 @@ function SizeTag({ children, className }: { children: ReactNode; className: stri
   );
 }
 
-export function Devices({ className = "" }: { className?: string }) {
+export function Devices({ className = "", copy = WEB_COPY.devices }: { className?: string; copy?: WebCopy["devices"] }) {
   return (
     <figure className={`@container grid aspect-[1430/800] ${className}`}>
       {/* Laptop + stand. An uploaded screenshot sets the screen's shape, so the stand follows the screen. */}
@@ -236,7 +239,7 @@ export function Devices({ className = "" }: { className?: string }) {
             natural
             slot="devices-laptop"
             src="/assets/inner/elevate.webp"
-            alt="Elevate website at desktop width"
+            alt={copy.laptopAlt}
             width={1600}
             height={951}
             sizes="(min-width: 1024px) 50vw, 65vw"
@@ -251,7 +254,7 @@ export function Devices({ className = "" }: { className?: string }) {
           natural
           slot="devices-tablet"
           src="/assets/inner/liquidity.webp"
-          alt="Liquidity landing page at tablet width"
+          alt={copy.tabletAlt}
           width={736}
           height={552}
           sizes="(min-width: 1024px) 18vw, 25vw"
@@ -263,45 +266,38 @@ export function Devices({ className = "" }: { className?: string }) {
           natural
           slot="devices-phone"
           src="/assets/inner/ui-shop.webp"
-          alt="Online shop design at phone width"
+          alt={copy.phoneAlt}
           width={1600}
           height={900}
           sizes="(min-width: 1024px) 11vw, 16vw"
           className="aspect-[210/450] w-full rounded-[1.96cqw] object-cover"
         />
       </div>
-      <SizeTag className="ml-[4.2%] bg-lagoon text-white">1440px</SizeTag>
-      <SizeTag className="mt-[13.99%] ml-[64.34%] bg-sunbeam text-ink">768px</SizeTag>
-      <SizeTag className="mt-[20.98%] ml-[86.71%] bg-blush text-white">390px</SizeTag>
-      <figcaption className="sr-only">The same website shown on a 1440px desktop, a 768px tablet and a 390px phone.</figcaption>
+      <SizeTag className="ml-[4.2%] bg-lagoon text-white">{copy.sizes[0].label}</SizeTag>
+      <SizeTag className="mt-[13.99%] ml-[64.34%] bg-sunbeam text-ink">{copy.sizes[1].label}</SizeTag>
+      <SizeTag className="mt-[20.98%] ml-[86.71%] bg-blush text-white">{copy.sizes[2].label}</SizeTag>
+      <figcaption className="sr-only">{copy.caption}</figcaption>
     </figure>
   );
 }
 
 /* ── Deploy terminal (1000 × 520) ─────────────────────────────────────── */
 
-const termLines: [string, string][] = [
-  ["$ git push origin main", "text-white"],
-  ["→ Building yourbrand.com…", "text-lav"],
-  ["✓ 214 modules compiled in 41s", green],
-  ["✓ 0 errors · 0 warnings", green],
-  ["✓ Lighthouse: 98 / 100 / 100 / 100", green],
-  ["✓ Deployed to production 🚀", "text-sunbeam"],
-  ["→ https://yourbrand.com", "text-lagoon"],
-];
+/** Terminal line colours by position; the lines themselves are the page copy's. */
+const termTones = ["text-white", "text-lav", green, green, green, "text-sunbeam", "text-lagoon"];
 
-export function Terminal({ className = "" }: { className?: string }) {
+export function Terminal({ className = "", copy = WEB_COPY.ship }: { className?: string; copy?: WebCopy["ship"] }) {
   return (
     <figure className={`@container ${className}`}>
       <div className="overflow-hidden rounded-[2cqw] bg-code shadow-[0_24px_60px_rgb(34_1_40/0.18)]">
         <figcaption className="flex h-[4.4cqw] min-h-6 items-center bg-[#2a0a33] px-[1.8cqw]">
           <Dots size="size-[max(0.375rem,1.2cqw)]" gap="gap-[1cqw]" />
-          <span className="ml-[2.2cqw] font-copy text-[max(0.625rem,1.5cqw)] font-medium text-white/55">zsh — deploy</span>
+          <span className="ml-[2.2cqw] font-copy text-[max(0.625rem,1.5cqw)] font-medium text-white/55">{copy.terminalTitle}</span>
         </figcaption>
         <ol data-term className={`${mono.className} px-[3.2cqw] pt-[1.9cqw] pb-[4.1cqw] text-[max(0.5625rem,2cqw)] leading-[2.6] whitespace-pre`}>
-          {termLines.map(([t, c]) => (
-            <li key={t} data-line className={c}>
-              {t}
+          {copy.terminal.map((t, i) => (
+            <li key={i} data-line className={termTones[i % termTones.length]}>
+              {t.line}
             </li>
           ))}
           <li data-line className="text-white">
@@ -318,34 +314,28 @@ export function Terminal({ className = "" }: { className?: string }) {
 
 /* ── CMS editor (1588 × 700) ──────────────────────────────────────────── */
 
-const nav = [
-  { icon: "📄", label: "Pages", active: true },
-  { icon: "📝", label: "Blog posts" },
-  { icon: "🛍", label: "Products" },
-  { icon: "🖼", label: "Media" },
-  { icon: "⚙️", label: "Settings" },
-];
+const navIcons = ["📄", "📝", "🛍", "🖼", "⚙️"];
 
 const fieldLabel = "block font-copy text-[max(0.75rem,1.01cqw)] font-bold text-ink/70";
 const panelHead = "font-display text-[max(0.625rem,0.88cqw)] text-grape uppercase";
 
-export function CmsEditor({ className = "" }: { className?: string }) {
+export function CmsEditor({ className = "", copy = WEB_COPY.cms }: { className?: string; copy?: WebCopy["cms"] }) {
   return (
     <figure className={`@container ${className}`}>
       <div className={`overflow-hidden rounded-[max(1rem,1.26cqw)] bg-white ${cardShadow}`}>
         <div className="flex h-[2.77cqw] min-h-7 items-center bg-[#f3e6ee] px-[1.13cqw]">
           <Dots size="size-[max(0.375rem,0.76cqw)]" gap="gap-[0.63cqw]" />
-          <span className="ml-[1.39cqw] font-copy text-[max(0.6875rem,0.94cqw)] font-medium text-ink/55">yourbrand.com / admin</span>
+          <span className="ml-[1.39cqw] font-copy text-[max(0.6875rem,0.94cqw)] font-medium text-ink/55">{copy.url}</span>
         </div>
         <div className="font-copy text-ink lg:grid lg:grid-cols-[18.89cqw_1fr]">
           <nav aria-label="CMS sections (illustration)" className="bg-paper px-[max(0.75rem,1cqw)] py-[max(0.75rem,1.64cqw)]">
             <ul className="flex flex-wrap gap-[max(0.375rem,0.76cqw)] lg:flex-col">
-              {nav.map((n) => (
+              {copy.nav.map((n, i) => (
                 <li
-                  key={n.label}
-                  className={`flex h-[max(2.25rem,2.77cqw)] items-center gap-[0.6em] rounded-[max(0.5rem,0.76cqw)] px-[max(0.75rem,1cqw)] text-[max(0.8125rem,1.13cqw)] ${n.active ? "bg-grape font-bold text-white" : "font-medium"}`}
+                  key={i}
+                  className={`flex h-[max(2.25rem,2.77cqw)] items-center gap-[0.6em] rounded-[max(0.5rem,0.76cqw)] px-[max(0.75rem,1cqw)] text-[max(0.8125rem,1.13cqw)] ${i === 0 ? "bg-grape font-bold text-white" : "font-medium"}`}
                 >
-                  <span aria-hidden>{n.icon}</span>
+                  <span aria-hidden>{navIcons[i % navIcons.length]}</span>
                   {n.label}
                 </li>
               ))}
@@ -353,85 +343,76 @@ export function CmsEditor({ className = "" }: { className?: string }) {
           </nav>
           <div className="grid items-start gap-x-[3.78cqw] gap-y-6 px-[max(1rem,2.52cqw)] pt-[max(1rem,1.64cqw)] pb-[max(1.25rem,4.41cqw)] lg:grid-cols-[minmax(0,720fr)_minmax(0,420fr)] lg:pr-[3.02cqw]">
             <div>
-              <p className="mt-[0.38cqw] text-[max(0.75rem,1.01cqw)] font-medium text-ink/50">Home&nbsp;&nbsp;›&nbsp;&nbsp;Hero section</p>
-              <span className={`mt-[1.7cqw] ${fieldLabel}`}>Headline</span>
+              <p className="mt-[0.38cqw] text-[max(0.75rem,1.01cqw)] font-medium whitespace-pre text-ink/50">{copy.breadcrumb}</p>
+              <span className={`mt-[1.7cqw] ${fieldLabel}`}>{copy.headlineLabel}</span>
               <span className="mt-[0.57cqw] flex h-[max(2.75rem,3.78cqw)] items-center rounded-[max(0.625rem,0.88cqw)] border-2 border-lagoon px-[max(0.875rem,1.39cqw)] text-[max(0.875rem,1.26cqw)] font-medium">
                 <span data-type-field className="whitespace-nowrap">
-                  We make your website poppin’
+                  {copy.headline}
                 </span>
                 <span data-blink aria-hidden className="ml-px font-light">
                   |
                 </span>
               </span>
-              <span className={`mt-[1.51cqw] ${fieldLabel}`}>Subheading</span>
+              <span className={`mt-[1.51cqw] ${fieldLabel}`}>{copy.subheadingLabel}</span>
               <span className="mt-[0.57cqw] block min-h-[max(4.5rem,6.93cqw)] rounded-[max(0.625rem,0.88cqw)] border border-[#d9d2dc] px-[max(0.875rem,1.39cqw)] pt-[max(0.75rem,1.13cqw)] text-[max(0.8125rem,1.13cqw)] leading-[1.56]">
-                A funky creative studio making brands impossible to scroll past.
+                {copy.subheading}
               </span>
-              <span className={`mt-[1.51cqw] ${fieldLabel}`}>Hero image</span>
+              <span className={`mt-[1.51cqw] ${fieldLabel}`}>{copy.imageLabel}</span>
               <span className="mt-[0.57cqw] grid grid-cols-[340fr_360fr] gap-[1.26cqw]">
                 <Image
                   slot="cms-preview"
                   src="/assets/inner/elevate.webp"
-                  alt="Current hero image: the Elevate website on a laptop"
+                  alt={copy.imageAlt}
                   width={1600}
                   height={951}
                   sizes="(min-width: 1024px) 18vw, 45vw"
                   className="aspect-[340/200] w-full rounded-[max(0.625rem,0.88cqw)] object-cover"
                 />
                 <span className="grid place-items-center rounded-[max(0.625rem,0.88cqw)] border border-dashed border-grape/40 px-2 text-center text-[max(0.75rem,1.07cqw)] font-medium text-grape">
-                  ＋ Drop a new image
+                  {copy.dropLabel}
                 </span>
               </span>
             </div>
 
             <div className="rounded-[max(0.875rem,1.26cqw)] bg-paper px-[max(1rem,1.76cqw)] pt-[max(1rem,1.76cqw)] pb-[max(1rem,1.89cqw)]">
-              <p className={panelHead}>Status</p>
+              <p className={panelHead}>{copy.statusLabel}</p>
               <p className="mt-[1.01cqw] flex items-center gap-[1.01cqw] text-[max(0.8125rem,1.13cqw)] font-bold">
                 <span aria-hidden className="flex h-[max(1.5rem,2.52cqw)] w-[max(2.75rem,4.53cqw)] justify-end rounded-full bg-[#2ec27e] p-[max(0.1875rem,0.25cqw)]">
                   <span className="aspect-square h-full rounded-full bg-white" />
                 </span>
-                Published
+                {copy.status}
               </p>
-              <p className={`mt-[2.39cqw] ${panelHead}`}>Schedule</p>
+              <p className={`mt-[2.39cqw] ${panelHead}`}>{copy.scheduleLabel}</p>
               <p className="mt-[0.76cqw] flex h-[max(2.5rem,3.27cqw)] items-center rounded-[max(0.5rem,0.76cqw)] bg-white px-[max(0.75rem,1.13cqw)] text-[max(0.8125rem,1.07cqw)] font-medium">
-                Mon, 12 Oct · 09:00
+                {copy.schedule}
               </p>
-              <p className={`mt-[1.76cqw] ${panelHead}`}>SEO preview</p>
-              <p className="mt-[0.88cqw] text-[max(0.6875rem,0.88cqw)] text-ink/60">yourbrand.com</p>
-              <p className="mt-[0.44cqw] text-[max(0.8125rem,1.07cqw)] font-bold text-grape">We make your website poppin’ | Pixel Popers</p>
-              <p className="mt-[1.89cqw] text-[max(0.75rem,0.94cqw)] leading-[1.47] text-ink/70">A funky creative studio making brands impossible to scroll past.</p>
+              <p className={`mt-[1.76cqw] ${panelHead}`}>{copy.seoLabel}</p>
+              <p className="mt-[0.88cqw] text-[max(0.6875rem,0.88cqw)] text-ink/60">{copy.seoUrl}</p>
+              <p className="mt-[0.44cqw] text-[max(0.8125rem,1.07cqw)] font-bold text-grape">{copy.seoTitle}</p>
+              <p className="mt-[1.89cqw] text-[max(0.75rem,0.94cqw)] leading-[1.47] text-ink/70">{copy.subheading}</p>
               <span className="mt-[4.66cqw] flex h-[max(2.75rem,3.78cqw)] items-center justify-center rounded-full bg-blush font-display text-[max(0.75rem,1.01cqw)] text-white uppercase">
-                Publish changes
+                {copy.button}
               </span>
             </div>
           </div>
         </div>
       </div>
-      <figcaption className="sr-only">A headless CMS editing screen: page list, headline and subheading fields, hero image and a publish panel with SEO preview.</figcaption>
+      <figcaption className="sr-only">{copy.caption}</figcaption>
     </figure>
   );
 }
 
 /* ── Launch checklist (760 × 700) + Ready sticker ─────────────────────── */
 
-const checks = [
-  "SSL & security headers",
-  "SEO meta + sitemap",
-  "Analytics & conversion tracking",
-  "Forms tested end-to-end",
-  "301 redirects from old site",
-  "Speed score above 90",
-  "Accessibility (WCAG AA)",
-];
-
-export function Checklist({ className = "" }: { className?: string }) {
+export function Checklist({ className = "", copy = WEB_COPY.launch }: { className?: string; copy?: WebCopy["launch"] }) {
+  const checks = copy.checks.map((c) => c.label);
   return (
     <div className={`@container ${className}`}>
       <div className={`rounded-[4.21cqw] bg-white px-[5.26cqw] pt-[4.74cqw] pb-[7.5cqw] ${cardShadow}`}>
-        <p className="font-display text-[max(0.875rem,3.16cqw)] text-grape uppercase">Launch checklist</p>
+        <p className="font-display text-[max(0.875rem,3.16cqw)] text-grape uppercase">{copy.checklistTitle}</p>
         <ul data-checks className="mt-[3.82cqw] font-copy text-[max(0.8125rem,2.76cqw)] font-medium text-ink">
           {[...checks, null].map((c, i) => (
-            <li key={c ?? "pending"} className={`flex items-center gap-[2.63cqw] border-b border-ink/6 pb-[2.1cqw] ${i ? "pt-[1.84cqw]" : ""} ${c ? "" : "text-ink/50"}`}>
+            <li key={i} className={`flex items-center gap-[2.63cqw] border-b border-ink/6 pb-[2.1cqw] ${i ? "pt-[1.84cqw]" : ""} ${c ? "" : "text-ink/50"}`}>
               {c ? (
                 <span data-tick aria-hidden className="grid size-[max(1.5rem,5.26cqw)] shrink-0 place-items-center rounded-[1.58cqw] bg-[#2ec27e] text-[max(0.8125rem,2.63cqw)] font-bold text-white">
                   ✓
@@ -441,12 +422,13 @@ export function Checklist({ className = "" }: { className?: string }) {
               )}
               {c ? (
                 <>
-                  <span className="sr-only">Done: </span>
+                  <span className="sr-only">{copy.doneLabel} </span>
                   {c}
                 </>
               ) : (
                 <>
-                  <span className="sr-only">Still to do: </span>Backups &amp; uptime monitoring
+                  <span className="sr-only">{copy.todoLabel} </span>
+                  {copy.pending}
                 </>
               )}
             </li>
