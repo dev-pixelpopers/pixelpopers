@@ -92,6 +92,9 @@ class Transformers
             'stack' => $s->stack ? (object) $s->stack : null,
             // Web development: the "One site. Every screen." section.
             'screens' => $s->screens ? (object) $s->screens : null,
+            // Digital marketing: the "One brand. Six channels." section.
+            'engine' => $s->engine ? (object) $s->engine : null,
+            'copy' => $s->copy ? (object) $s->copy : null,
             'updatedAt' => $s->updated_at?->toIso8601String(),
         ];
     }

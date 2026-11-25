@@ -42,4 +42,19 @@ class ServiceHeroAndScreensTest extends TestCase
             ->fillForm(['hero_subheading' => 'Brand identity design'])->call('save')->assertHasNoFormErrors();
         $this->assertSame('Brand identity design', $brand->fresh()->hero_subheading);
     }
+
+    public function test_growth_engine_copy_is_saved_and_served(): void
+    {
+        $this->actingAs(User::first());
+        $dm = Service::where('slug', 'digital-marketing')->firstOrFail();
+
+        Livewire::test(EditService::class, ['record' => $dm->getRouteKey()])
+            ->fillForm(['engine' => ['heading' => 'One brand. Six channels.', 'text' => 'Six channels, one strategy.']])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->getJson('/api/v1/services/digital-marketing')
+            ->assertJsonPath('data.engine.text', 'Six channels, one strategy.')
+            ->assertJsonPath('data.screens', null);
+    }
 }

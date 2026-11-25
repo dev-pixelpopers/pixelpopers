@@ -225,6 +225,9 @@ class ServiceResource extends Resource
                                 ->placeholder('As a web development agency, we build responsive websites that adapt seamlessly to desktops, tablets and smartphones. Every layout is designed to maintain its visual appeal, functionality and ease of use, no matter the screen size.'),
                         ]),
                     ]),
+                SchemaComponents\Tabs\Tab::make('Page sections')->icon('heroicon-o-sparkles')
+                    ->visible(fn (?Service $record) => $record?->slug === 'digital-marketing')
+                    ->schema(\App\Filament\Support\DigitalMarketingSections::schema()),
                 SchemaComponents\Tabs\Tab::make('Social account')->icon('heroicon-o-at-symbol')
                     ->visible(fn (?Service $record) => $record?->slug === 'digital-marketing')
                     ->schema([

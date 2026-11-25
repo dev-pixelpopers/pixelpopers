@@ -16,6 +16,7 @@ import {
   type Story,
 } from "./Parts";
 import HeroSubheading from "@/components/inner/service/HeroSubheading";
+import { dmCopy } from "./copy";
 
 /*
   Concept: the page is a growth dashboard. Figma frame 371:21 "03.3 — Service:
@@ -36,27 +37,24 @@ const sectionGap = "mt-[clamp(4.5rem,9.375vw,11.25rem)]";
 const lgAt =
   "lg:col-start-1 lg:row-start-1 lg:self-start lg:justify-self-start";
 
+/* Looks by position; every word on this page comes from copy.ts / the CMS (dmCopy). */
 const toasts = [
   {
-    label: "♥  12.4K",
     tone: "bg-blush text-white",
     tilt: "rotate-[6deg]",
     at: "lg:mt-[67.99%] lg:ml-[35.49%]",
   },
   {
-    label: "●  New lead: Sarah from Lahore",
     tone: "bg-white text-ink",
     tilt: "rotate-[-3deg]",
     at: "lg:mt-[59.15%] lg:ml-[50.64%]",
   },
   {
-    label: "ROAS 3.2×",
     tone: "bg-sunbeam text-ink",
     tilt: "rotate-[4deg]",
     at: "lg:mt-[71.02%] lg:ml-[79.81%]",
   },
   {
-    label: "CTR 4.8%",
     tone: "bg-lagoon text-white",
     tilt: "rotate-[-5deg]",
     at: "lg:mt-[48.89%] lg:ml-[86.51%]",
@@ -66,43 +64,31 @@ const toasts = [
 /* Orbit planets, clockwise from the top. Positions are % of the 1048-unit orbit box. */
 const planets = [
   {
-    name: "Social",
-    note: "+48% followers",
     bg: "bg-blush",
     tone: "text-white",
     at: "md:ml-[40.46%] md:mt-0",
   },
   {
-    name: "SEO",
-    note: "Page 1 rankings",
     bg: "bg-lagoon",
     tone: "text-white",
     at: "md:ml-[80.92%] md:mt-[23.38%]",
   },
   {
-    name: "Paid ads",
-    note: "3.2× ROAS",
     bg: "bg-sunbeam",
     tone: "text-ink",
     at: "md:ml-[80.92%] md:mt-[70.13%]",
   },
   {
-    name: "Email",
-    note: "42% open rate",
     bg: "bg-lav",
     tone: "text-white",
     at: "md:ml-[40.46%] md:mt-[93.51%]",
   },
   {
-    name: "Content",
-    note: "Reels & posts",
     bg: "bg-blush",
     tone: "text-white",
     at: "md:ml-0 md:mt-[70.13%]",
   },
   {
-    name: "Analytics",
-    note: "Monthly reports",
     bg: "bg-lagoon",
     tone: "text-white",
     at: "md:ml-0 md:mt-[23.38%]",
@@ -112,45 +98,30 @@ const planets = [
 
 const funnel = [
   {
-    stage: "Awareness",
-    how: "Reels, collabs & paid reach",
-    result: "1.2M reached",
     bar: "bg-blush text-white",
     value: "text-blush-ink",
     cols: "lg:grid-cols-[1fr_67.71%_1fr]",
     w: "w-full",
   },
   {
-    stage: "Interest",
-    how: "Content, SEO & retargeting",
-    result: "86K visits",
     bar: "bg-grape text-white",
     value: "text-grape",
     cols: "lg:grid-cols-[1fr_56.25%_1fr]",
     w: "w-[92%]",
   },
   {
-    stage: "Consideration",
-    how: "Reviews, email & landing pages",
-    result: "12K leads",
     bar: "bg-lagoon text-white",
     value: "text-lagoon",
     cols: "lg:grid-cols-[1fr_44.79%_1fr]",
     w: "w-[84%]",
   },
   {
-    stage: "Conversion",
-    how: "Offers, checkout & ads",
-    result: "3.4K sales",
     bar: "bg-sunbeam text-ink",
     value: "text-[#d9a12f] lg:text-sunbeam",
     cols: "lg:grid-cols-[1fr_33.33%_1fr]",
     w: "w-[76%]",
   },
   {
-    stage: "Loyalty",
-    how: "Email flows & community",
-    result: "42% repeat",
     bar: "bg-ink text-white",
     value: "text-grape",
     cols: "lg:grid-cols-[1fr_21.88%_1fr]",
@@ -160,20 +131,14 @@ const funnel = [
 
 const kpiStickers = [
   {
-    value: "+160%",
-    label: "Revenue in 6 months",
     tone: "bg-blush text-white",
     tilt: "rotate-[-2deg]",
   },
   {
-    value: "4.8%",
-    label: "Avg. click-through",
     tone: "bg-lagoon text-white",
     tilt: "rotate-[1deg]",
   },
   {
-    value: "−38%",
-    label: "Cost per lead",
     tone: "bg-sunbeam text-ink",
     tilt: "rotate-[-1deg]",
   },
@@ -234,6 +199,8 @@ export default function Sections({ service }: { service: ServiceDetail }) {
   const [l1, l2, ...rest] = service.heroLines;
   // Extra lines from the CMS join the last line rather than disappearing.
   const l3 = rest.join(" ");
+  // The design sections' words (Services → Digital Marketing → Page sections in the CMS).
+  const copy = dmCopy(service);
 
   return (
     <GrowthMotion className="flex flex-col pb-[clamp(5rem,9.9vw,11.875rem)]">
@@ -285,6 +252,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             className="@container flex flex-col items-center gap-6 lg:-mt-[0.52vw] lg:-mr-[clamp(1.25rem,5vw,6rem)] lg:grid lg:aspect-[950/1023] lg:gap-0"
           >
             <Dashboard
+              copy={copy.hero.dashboard}
               className={`w-full ${lgAt} lg:ml-[10.53%] lg:w-[86.32%]`}
             />
             <PostPhone
@@ -292,17 +260,17 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               className={`-mt-16 w-[62%] max-w-[20rem] self-start rotate-[5deg] sm:ml-[8%] ${lgAt} lg:mt-[40.29%] lg:ml-[0.16%] lg:w-[33.68%] lg:max-w-none`}
             />
             <div className="flex flex-wrap justify-center gap-3 lg:contents">
-              {toasts.map((t) => (
+              {toasts.map((t, i) => (
                 <span
-                  key={t.label}
+                  key={i}
                   data-pop
                   className={`w-fit ${lgAt} ${t.at}`}
                 >
                   <span
                     data-float="6"
-                    className={`block rounded-[max(0.875rem,1.89cqw)] px-[max(1rem,2.1cqw)] py-[max(0.6rem,1.47cqw)] font-copy text-[max(0.8125rem,1.89cqw)] leading-none font-bold whitespace-nowrap shadow-[0_12px_30px_rgb(34_1_40/0.18)] ${t.tone} ${t.tilt}`}
+                    className={`block rounded-[max(0.875rem,1.89cqw)] px-[max(1rem,2.1cqw)] py-[max(0.6rem,1.47cqw)] font-copy text-[max(0.8125rem,1.89cqw)] leading-none font-bold whitespace-pre shadow-[0_12px_30px_rgb(34_1_40/0.18)] ${t.tone} ${t.tilt}`}
                   >
-                    {t.label}
+                    {copy.hero.toasts[i].label}
                   </span>
                 </span>
               ))}
@@ -318,8 +286,12 @@ export default function Sections({ service }: { service: ServiceDetail }) {
       >
         <SectionTitle
           align="center"
-          eyebrow="The growth engine"
-          title={<span id="engine-title">One brand. Six channels.</span>}
+          eyebrow={copy.engine.eyebrow}
+          title={
+            <span id="engine-title" className="whitespace-pre-line">
+              {copy.engine.heading}
+            </span>
+          }
         />
         <div className="@container mx-auto mt-[clamp(2rem,3.44vw,4.125rem)] flex flex-col items-center gap-8 md:grid md:aspect-[1048/1180] md:w-[80%] md:gap-0 lg:w-[66%]">
           <span
@@ -340,31 +312,30 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             data-reveal
             className={`grid aspect-square w-[60%] max-w-[16rem] place-items-center rounded-full bg-grape text-center font-display text-[max(1.5rem,3.82cqw)] leading-[1.15] text-white uppercase md:col-start-1 md:row-start-1 md:mt-[41.98%] md:ml-[35.69%] md:w-[28.63%] md:max-w-none md:self-start md:justify-self-start ${cardShadow}`}
           >
-            Your
-            <br />
-            brand
+            <span className="whitespace-pre-line">{copy.engine.center}</span>
           </p>
           <ul
             data-reveal-stagger
             className="grid w-full grid-cols-2 justify-items-center gap-5 sm:grid-cols-3 md:contents"
           >
-            {planets.map((p) => (
+            {planets.map((p, i) => (
               <li
-                key={p.name}
+                key={i}
                 className={`@container flex aspect-square w-full max-w-[10rem] flex-col items-center justify-center rounded-full text-center md:col-start-1 md:row-start-1 md:w-[19.08%] md:max-w-none md:self-start md:justify-self-start ${p.bg} ${p.tone} ${p.at} ${cardShadow}`}
               >
                 <h3
                   className={`font-display uppercase ${p.small ? "text-[max(0.75rem,10cqw)]" : "text-[max(0.875rem,13cqw)]"} leading-[1.2]`}
                 >
-                  {p.name}
+                  {copy.engine.channels[i].name}
                 </h3>
                 <p className="mt-[4cqw] font-copy text-[max(0.6875rem,7.5cqw)] font-medium opacity-90">
-                  {p.note}
+                  {copy.engine.channels[i].note}
                 </p>
               </li>
             ))}
           </ul>
         </div>
+        <Description text={copy.engine.text} center />
       </section>
 
       {/* ── The funnel ─────────────────────────────────────────────── */}
@@ -376,9 +347,9 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           <SectionTitle
             align="center"
             size="md"
-            eyebrow="The funnel, fixed"
+            eyebrow={copy.funnel.eyebrow}
             title={
-              <span id="funnel-title">From “who?” to “where do I pay?”</span>
+              <span id="funnel-title" className="whitespace-pre-line">{copy.funnel.heading}</span>
             }
           />
         </div>
@@ -386,29 +357,32 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           data-reveal-stagger
           className="mx-auto mt-[clamp(2rem,4.58vw,5.5rem)] flex w-full max-w-[1920px] flex-col gap-[clamp(1.25rem,1.04vw,1.25rem)] px-5 lg:px-0"
         >
-          {funnel.map((f) => (
+          {funnel.map((f, i) => (
             <li
-              key={f.stage}
+              key={i}
               className={`flex flex-col items-center lg:grid lg:items-center ${f.cols}`}
             >
               <h3
                 className={`flex h-[clamp(3.25rem,5.21vw,6.25rem)] items-center justify-center rounded-full font-display text-[clamp(1rem,1.5625vw,1.875rem)] uppercase shadow-[0_12px_24px_rgb(34_1_40/0.12)] lg:col-start-2 lg:row-start-1 lg:w-full ${f.w} ${f.bar}`}
               >
-                {f.stage}
+                {copy.funnel.stages[i].stage}
               </h3>
               <div className="mt-2 flex flex-wrap items-baseline justify-center gap-x-3 text-center lg:contents">
                 <p className="font-copy text-[clamp(0.8125rem,0.9375vw,1.125rem)] font-medium text-ink/75 lg:col-start-1 lg:row-start-1 lg:pr-[2.6vw] lg:text-right">
-                  {f.how}
+                  {copy.funnel.stages[i].how}
                 </p>
                 <p
                   className={`font-copy text-[clamp(1rem,1.46vw,1.75rem)] font-extrabold lg:col-start-3 lg:row-start-1 lg:pl-[1.56vw] lg:text-left ${f.value}`}
                 >
-                  {f.result}
+                  {copy.funnel.stages[i].result}
                 </p>
               </div>
             </li>
           ))}
         </ol>
+        <div className="shell">
+          <Description text={copy.funnel.text} center />
+        </div>
       </section>
 
       {/* ── Social media: profile grid + content calendar ──────────── */}
@@ -424,24 +398,22 @@ export default function Sections({ service }: { service: ServiceDetail }) {
         </div>
         <div>
           <SectionTitle
-            eyebrow="Social media"
+            eyebrow={copy.social.eyebrow}
             title={
-              <span id="social-title">
-                Feeds that
-                <br />
-                actually pop
+              <span id="social-title" className="whitespace-pre-line">
+                {copy.social.heading}
               </span>
             }
           />
           <p
             data-reveal
-            className="mt-[clamp(1.25rem,1.46vw,1.75rem)] max-w-[40rem] font-copy text-body leading-[1.64] font-light"
+            className="mt-[clamp(1.25rem,1.46vw,1.75rem)] max-w-[40rem] font-copy text-body leading-[1.64] font-light whitespace-pre-line"
           >
-            We plan, shoot, design and post — a consistent feed with a clear
-            look, a steady rhythm and content people save and share.
+            {copy.social.intro}
           </p>
-          <ContentCalendar className="mt-[clamp(2rem,4.58vw,5.5rem)] lg:w-[90.54%]" />
+          <ContentCalendar title={copy.social.calendar} className="mt-[clamp(2rem,4.58vw,5.5rem)] lg:w-[90.54%]" />
         </div>
+        <Description text={copy.social.text} className="order-3 lg:order-none lg:col-span-2" />
       </section>
 
       {/* ── Results: before / after bars + KPI stickers ────────────── */}
@@ -450,19 +422,19 @@ export default function Sections({ service }: { service: ServiceDetail }) {
         className="shell mt-[clamp(4.5rem,11.46vw,13.75rem)]"
       >
         <SectionTitle
-          eyebrow="Results, not vanity"
-          title={<span id="results-title">Watch the bars go up</span>}
+          eyebrow={copy.results.eyebrow}
+          title={<span id="results-title" className="whitespace-pre-line">{copy.results.heading}</span>}
         />
         <div
           className={`grid items-start gap-[clamp(1.5rem,2.81vw,3.375rem)] lg:grid-cols-[minmax(0,1100fr)_minmax(0,420fr)] ${headingGap}`}
         >
-          <ResultsChart className="w-full" />
+          <ResultsChart copy={copy.results} className="w-full" />
           <ul
             data-reveal-stagger
             className="grid gap-[clamp(1rem,1.5625vw,1.875rem)] sm:grid-cols-3 lg:grid-cols-1"
           >
-            {kpiStickers.map((k) => (
-              <li key={k.label} className={`@container ${k.tilt}`}>
+            {kpiStickers.map((k, i) => (
+              <li key={i} className={`@container ${k.tilt}`}>
                 <p
                   className={`flex aspect-[420/180] flex-col rounded-[7.62cqw] px-[7.62cqw] pt-[3.33cqw] ${k.tone} ${cardShadow}`}
                 >
@@ -470,30 +442,31 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                     data-count
                     className="font-pop text-[22.86cqw] leading-[1.146]"
                   >
-                    {k.value}
+                    {copy.results.stickers[i].value}
                   </span>
                   <span className="font-display text-[max(0.625rem,3.81cqw)] uppercase">
-                    {k.label}
+                    {copy.results.stickers[i].label}
                   </span>
                 </p>
               </li>
             ))}
           </ul>
         </div>
+        <Description text={copy.results.text} />
       </section>
 
       {/* ── SEO: the #1 search result ──────────────────────────────── */}
       <section aria-labelledby="seo-title" className={`shell ${sectionGap}`}>
         <SectionTitle
           align="center"
-          eyebrow="SEO"
-          title={<span id="seo-title">Be the first thing they find</span>}
+          eyebrow={copy.seo.eyebrow}
+          title={<span id="seo-title" className="whitespace-pre-line">{copy.seo.heading}</span>}
         />
         <div
           data-reveal
           className={`@container mx-auto grid w-full lg:w-[75.57%] ${headingGap}`}
         >
-          <SearchResults className="col-start-1 row-start-1" />
+          <SearchResults copy={copy.seo} className="col-start-1 row-start-1" />
           <span
             aria-hidden
             data-float="10"
@@ -502,12 +475,13 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             #1
           </span>
         </div>
+        <Description heading={copy.seo.subheading} text={copy.seo.text} center />
       </section>
 
       {/* ── Process as story ads — hover / tap skips to the next frame ── */}
       {service.hidden?.includes("process") ? null : (
       <section aria-labelledby="ads-title" className={`shell ${sectionGap}`}>
-        <SectionTitle eyebrow="How we do it" title={<span id="ads-title">Four stories to growth</span>} />
+        <SectionTitle eyebrow={copy.ads.eyebrow} title={<span id="ads-title" className="whitespace-pre-line">{copy.ads.heading}</span>} />
         <p className="mt-5 font-haas text-[clamp(0.9375rem,0.94vw,1.125rem)] text-blush-deep uppercase">
           <span className="hidden [@media(hover:hover)]:inline">Hover</span>
           <span className="[@media(hover:hover)]:hidden">Tap</span> a story to skip to the next frame&nbsp;&nbsp;↘
@@ -517,7 +491,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
           className="mt-[clamp(2rem,3.6vw,4.375rem)] grid items-start gap-x-[clamp(1rem,3.125vw,3.75rem)] gap-y-8 sm:grid-cols-2 lg:w-[96.98%] lg:grid-cols-4"
         >
           {service.process.map((step, i) => {
-            const s = stories[i % stories.length];
+            const s = { ...stories[i % stories.length], ...copy.ads.stories[i % stories.length] };
             const next = service.process[i + 1];
             const n = String(i + 1).padStart(2, "0");
             const light = s.frame === "bg-sunbeam";
@@ -556,8 +530,40 @@ export default function Sections({ service }: { service: ServiceDetail }) {
             );
           })}
         </ol>
+        <Description text={copy.ads.text} />
       </section>
       )}
     </GrowthMotion>
+  );
+}
+
+/**
+ * A section's description under its visual, from the CMS: an optional
+ * heading (h3) and paragraph. Renders nothing while both are empty.
+ */
+function Description({
+  heading = "",
+  text,
+  center = false,
+  className = "",
+}: {
+  heading?: string;
+  text: string;
+  center?: boolean;
+  className?: string;
+}) {
+  if (!heading.trim() && !text.trim()) return null;
+  return (
+    <div
+      data-reveal
+      className={`mt-[clamp(2rem,3.13vw,3.75rem)] max-w-[60rem] ${center ? "mx-auto text-center" : ""} ${className}`}
+    >
+      {heading.trim() ? (
+        <h3 className="font-display text-[clamp(1.25rem,1.82vw,2.1875rem)] leading-[1.2] text-grape uppercase">{heading}</h3>
+      ) : null}
+      {text.trim() ? (
+        <p className={`${heading.trim() ? "mt-3" : ""} font-copy text-body leading-[1.64] font-light whitespace-pre-line text-ink/85`}>{text}</p>
+      ) : null}
+    </div>
   );
 }

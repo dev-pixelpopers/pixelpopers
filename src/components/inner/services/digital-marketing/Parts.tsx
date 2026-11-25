@@ -1,6 +1,7 @@
 import Image from "@/components/inner/services/ServiceImage";
 import { Avatar, TextTile } from "./SocialMedia";
 import type { SocialAccount } from "@/lib/service-content";
+import { DM_COPY, type DmCopy } from "./copy";
 
 /*
   UI mock-ups for the growth-dashboard page (Figma 371:21). Every mock-up is
@@ -16,23 +17,15 @@ const green = "text-[#2ec27e]";
 
 /* ── Campaign dashboard (820 × 520) ───────────────────────────────────── */
 
+/* KPI tile colours by position; their words come from the page copy. */
 const kpis = [
   {
-    label: "Reach",
-    value: "1.2M",
-    delta: "+212%",
     tone: "bg-blush/12 text-blush-ink",
   },
   {
-    label: "Clicks",
-    value: "48.3K",
-    delta: "+87%",
     tone: "bg-lagoon/12 text-lagoon",
   },
   {
-    label: "Sales",
-    value: "$86K",
-    delta: "+64%",
     tone: "bg-grape/12 text-grape",
   },
 ];
@@ -42,7 +35,13 @@ const linePoints =
 const prevPoints =
   "8,316 78,286 148,298 218,256 288,266 358,216 428,231 498,176 568,146 638,126 708,86 758,72";
 
-export function Dashboard({ className = "" }: { className?: string }) {
+export function Dashboard({
+  className = "",
+  copy = DM_COPY.hero.dashboard,
+}: {
+  className?: string;
+  copy?: DmCopy["hero"]["dashboard"];
+}) {
   return (
     <div className={`@container ${className}`}>
       <div
@@ -51,10 +50,10 @@ export function Dashboard({ className = "" }: { className?: string }) {
         <div className="flex items-start justify-between gap-3 px-[3.9cqw] pt-[3.17cqw]">
           <div>
             <p className="font-copy text-[max(0.875rem,2.68cqw)] leading-[1.1] font-extrabold text-ink">
-              Campaign overview
+              {copy.title}
             </p>
             <p className="mt-[1cqw] font-copy text-[max(0.6875rem,1.83cqw)] text-ink/55">
-              Last 30 days
+              {copy.period}
             </p>
           </div>
           <span className="flex h-[max(1.75rem,4.63cqw)] w-[max(5.5rem,18.3cqw)] items-center gap-[1.22cqw] rounded-full bg-[#2ec27e]/15 pl-[1.95cqw]">
@@ -68,9 +67,11 @@ export function Dashboard({ className = "" }: { className?: string }) {
         </div>
 
         <dl className="mt-[2.68cqw] grid grid-cols-3 gap-[2.44cqw] px-[3.9cqw]">
-          {kpis.map((k) => (
+          {kpis.map((t, i) => {
+            const k = { ...t, ...copy.kpis[i] };
+            return (
             <div
-              key={k.label}
+              key={i}
               className={`min-h-[13.4cqw] rounded-[2.2cqw] px-[2.2cqw] pt-[1.7cqw] pb-[1.5cqw] ${k.tone.split(" ")[0]}`}
             >
               <dt
@@ -87,7 +88,8 @@ export function Dashboard({ className = "" }: { className?: string }) {
                 ▲ {k.delta}
               </dd>
             </div>
-          ))}
+            );
+          })}
         </dl>
 
         <div className="mt-[0.98cqw] grid">
@@ -325,14 +327,20 @@ const weeks: Day[][] = [
   ],
 ];
 
-export function ContentCalendar({ className = "" }: { className?: string }) {
+export function ContentCalendar({
+  className = "",
+  title = DM_COPY.social.calendar,
+}: {
+  className?: string;
+  title?: string;
+}) {
   return (
     <figure className={`@container ${className}`}>
       <div
         className={`rounded-[max(1.25rem,3.11cqw)] bg-white px-[3.11cqw] pt-[2.44cqw] pb-[2.67cqw] ${cardShadow}`}
       >
         <figcaption className="font-display text-[max(0.625rem,1.67cqw)] text-grape uppercase">
-          Content calendar · October
+          {title}
         </figcaption>
         <div className="mt-[2.33cqw] grid grid-cols-7 gap-x-[1.11cqw] font-copy text-[max(0.5rem,1.44cqw)] font-bold text-ink/50">
           {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
@@ -379,7 +387,13 @@ const months = [
   { m: "Oct", before: 41.67, after: 108.33 },
 ];
 
-export function ResultsChart({ className = "" }: { className?: string }) {
+export function ResultsChart({
+  className = "",
+  copy = DM_COPY.results,
+}: {
+  className?: string;
+  copy?: DmCopy["results"];
+}) {
   return (
     <figure className={`@container ${className}`}>
       <div
@@ -387,16 +401,16 @@ export function ResultsChart({ className = "" }: { className?: string }) {
       >
         <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
           <figcaption className="font-copy text-[max(0.875rem,2cqw)] font-extrabold text-ink">
-            Monthly revenue from digital channels
+            {copy.chartTitle}
           </figcaption>
           <ul className="flex gap-[5.18cqw] font-copy text-[max(0.6875rem,1.45cqw)] font-medium text-ink lg:mr-[7.18cqw]">
             <li className="flex items-center gap-[0.73cqw]">
               <span className="size-[max(0.625rem,1.45cqw)] rounded-[0.36cqw] bg-[#d9d2dc]" />
-              Before
+              {copy.before}
             </li>
             <li className="flex items-center gap-[0.73cqw]">
               <span className="size-[max(0.625rem,1.45cqw)] rounded-[0.36cqw] bg-blush" />
-              With Pixel Popers
+              {copy.after}
             </li>
           </ul>
         </div>
@@ -427,7 +441,7 @@ export function ResultsChart({ className = "" }: { className?: string }) {
                 <li
                   key={m.m}
                   className="flex items-end justify-center gap-[0.73cqw]"
-                  aria-label={`${m.m}: before vs with Pixel Popers`}
+                  aria-label={`${m.m}: ${copy.before} vs ${copy.after}`}
                 >
                   <span
                     data-bar
@@ -443,13 +457,13 @@ export function ResultsChart({ className = "" }: { className?: string }) {
               ))}
             </ul>
             <p className="col-start-1 row-start-1 -mt-[3.64cqw] w-[max(7.5rem,18.18cqw)] self-start justify-self-end rounded-[1.27cqw] bg-ink px-[1.64cqw] pt-[1.09cqw] pb-[1.4cqw] font-copy font-bold">
-              <span className="block text-[max(0.625rem,1.45cqw)] text-white">
-                OCT&nbsp;&nbsp;·&nbsp;&nbsp;$38.6K
+              <span className="block text-[max(0.625rem,1.45cqw)] whitespace-pre-wrap text-white">
+                {copy.highlight}
               </span>
               <span
                 className={`mt-[0.82cqw] block text-[max(0.5625rem,1.27cqw)] ${green}`}
               >
-                ▲ 160% vs May
+                {copy.highlightNote}
               </span>
             </p>
           </div>
@@ -495,7 +509,13 @@ function FadedResult({
   );
 }
 
-export function SearchResults({ className = "" }: { className?: string }) {
+export function SearchResults({
+  className = "",
+  copy = DM_COPY.seo,
+}: {
+  className?: string;
+  copy?: DmCopy["seo"];
+}) {
   return (
     <div className={`@container ${className}`}>
       <div
@@ -512,32 +532,31 @@ export function SearchResults({ className = "" }: { className?: string }) {
             data-type
             className="text-[max(0.8125rem,1.83cqw)] font-medium whitespace-nowrap text-ink"
           >
-            best specialty coffee near me
+            {copy.query}
           </span>
         </div>
         <article className="mt-[3cqw] rounded-[1.67cqw] border-[max(2px,0.25cqw)] border-blush px-[2.33cqw] pt-[2cqw] pb-[3.9cqw] font-copy shadow-[0_10px_30px_rgb(242_119_147/0.25)]">
           <p className="text-[max(0.6875rem,1.33cqw)] text-ink/60">
-            fifthsip.cafe › menu
+            {copy.result.url}
           </p>
           <h3 className="mt-[0.92cqw] text-[max(0.9375rem,2cqw)] leading-tight font-bold text-grape">
-            Fifth Sip — Specialty Coffee &amp; Brunch | Order Online
+            {copy.result.title}
           </h3>
-          <p className="mt-[1.33cqw] text-[max(0.75rem,1.42cqw)] leading-[1.53] text-ink/80">
-            <span className="text-sunbeam">★★★★★</span> 4.9
-            (1,204)&nbsp;&nbsp;·&nbsp;&nbsp;Open
-            now&nbsp;&nbsp;·&nbsp;&nbsp;Freshly roasted beans, brunch all day
-            and the best flat white in town.
+          <p className="mt-[1.33cqw] text-[max(0.75rem,1.42cqw)] leading-[1.53] whitespace-pre-wrap text-ink/80">
+            <span className="text-sunbeam">★★★★★</span> {copy.result.rating}
+            {"  ·  "}
+            {copy.result.description}
           </p>
         </article>
         <FadedResult
           className="mt-[2.5cqw]"
-          url="anothercafe.com › about"
-          title="Another Café — Coffee Shop"
+          url={copy.others[0].url}
+          title={copy.others[0].title}
         />
         <FadedResult
           className="mt-[3.83cqw]"
-          url="directory.com › coffee"
-          title="Top 10 Coffee Shops (2026)"
+          url={copy.others[1].url}
+          title={copy.others[1].title}
         />
       </div>
     </div>

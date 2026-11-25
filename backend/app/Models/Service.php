@@ -42,6 +42,8 @@ class Service extends Model
         'social',
         'stack',
         'screens',
+        'engine',
+        'copy',
         'og_image',
         'is_published',
         'sort_order',
@@ -167,6 +169,8 @@ class Service extends Model
         'social' => 'array',
         'stack' => 'array',
         'screens' => 'array',
+        'engine' => 'array',
+        'copy' => 'array',
         'is_published' => 'boolean',
         'sort_order' => 'integer',
     ];

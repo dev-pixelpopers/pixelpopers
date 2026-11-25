@@ -60,8 +60,15 @@ export type ServiceDetail = {
   /** Optional <h2> under the hero headline (empty = none). */
   heroSubheading?: string | null;
   /** Web development: the "One site. Every screen." section (any field may be left out). */
-  screens?: { eyebrow?: string | null; heading?: string | null; text?: string | null } | null;
+  screens?: SectionCopy | null;
+  /** Digital marketing: the "One brand. Six channels." section — heading, paragraph, centre and channels (any field may be left out). */
+  engine?: (SectionCopy & { center?: string | null; channels?: { name?: string; note?: string }[] }) | null;
+  /** A service page's design-section copy, by section (Digital Marketing → Page sections); empty fields keep the design's words. */
+  copy?: Record<string, unknown> | null;
 };
+
+/** Editable copy for a design section: eyebrow, heading (line breaks kept) and an optional paragraph. */
+export type SectionCopy = { eyebrow?: string | null; heading?: string | null; text?: string | null };
 
 export type StackKeyTone = "white" | "lagoon" | "grape" | "blush" | "sunbeam";
 
