@@ -1,4 +1,5 @@
 import ServiceImage from "@/components/inner/services/ServiceImage";
+import { AppGlyph } from "./AppGlyph";
 import { MOBILE_COPY, type MobileCopy } from "./copy";
 
 /*
@@ -117,16 +118,26 @@ export function Notification({
 
 /* ── Home-screen app icon ───────────────────────────────────────────── */
 
-const iconTone = ["bg-blush", "bg-grape", "bg-lagoon", "bg-sunbeam", "bg-lav", "bg-ink"] as const;
+const iconTone = [
+  "bg-blush text-white",
+  "bg-grape text-white",
+  "bg-lagoon text-white",
+  "bg-sunbeam text-ink",
+  "bg-lav text-ink",
+  "bg-ink text-sunbeam",
+] as const;
 
+/** One feature as a home-screen app: an SVG glyph (by name, see AppGlyph) on a glossy coloured tile. */
 export function AppIcon({ icon, name, index }: { icon: string; name: string; index: number }) {
   return (
-    <li className="@container flex flex-col items-center gap-[clamp(0.5rem,0.73vw,0.875rem)] text-center">
+    <li className="flex flex-col items-center gap-[clamp(0.5rem,0.73vw,0.875rem)] text-center">
       <span
         aria-hidden
-        className={`grid aspect-square w-full place-items-center rounded-[24cqw] text-[42cqw] leading-none shadow-[0_12px_26px_rgb(34_1_40/0.16)] ${iconTone[index % iconTone.length]}`}
+        className={`relative grid aspect-square w-full max-w-[7.5rem] place-items-center overflow-hidden rounded-[24%] shadow-[0_12px_26px_rgb(34_1_40/0.16)] transition-transform duration-300 hover:-translate-y-1 hover:rotate-[-4deg] ${iconTone[index % iconTone.length]}`}
       >
-        {icon}
+        {/* Gloss: a soft light from the top-left, like a real app icon. */}
+        <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgb(255_255_255/0.35),transparent_55%)]" />
+        <AppGlyph name={icon} className="relative w-[46%]" />
       </span>
       <span className="font-copy text-[clamp(0.75rem,0.83vw,1rem)] leading-tight font-bold text-ink">{name}</span>
     </li>

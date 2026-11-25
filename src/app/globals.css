@@ -155,6 +155,18 @@ body {
   --text-micro: clamp(0.8125rem, 0.83vw, 1rem); /* 16 */
 }
 
+/* Mobile app page, "What's included": the open setting's card pops in. */
+@keyframes inc-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Contact chat: a message bubble popping in. */
 @keyframes chat-pop {
   from {

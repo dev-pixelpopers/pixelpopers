@@ -15,6 +15,7 @@ import ContentSections from "./content-writing/Sections";
 import ContentPackage from "./content-writing/PackageCard";
 import MobileSections from "./mobile-app-development/Sections";
 import MobilePackage from "./mobile-app-development/PackageCard";
+import MobileIncluded from "./mobile-app-development/Included";
 import GenericSections from "./generic/Sections";
 
 export type ServiceConcept = {
@@ -24,6 +25,8 @@ export type ServiceConcept = {
   PackageCard: ComponentType<{ pkg: Package; index: number }>;
   /** The concept section already shows the process (hover/tap cards), so the long-form skips it. */
   processInConcept?: boolean;
+  /** The page's own "What's included" design, in place of the standard cards. */
+  Included?: ComponentType<{ service: ServiceDetail }>;
   /** Page background, when it differs from the site cream. */
   pageClassName?: string;
 };
@@ -40,7 +43,7 @@ export const serviceConcepts: Record<ServiceSlug | "mobile-app-development", Ser
   "web-development": { Sections: WebSections, PackageCard: WebPackage },
   "motion-graphic": { Sections: MotionSections, PackageCard: MotionPackage },
   "content-writing": { Sections: ContentSections, PackageCard: ContentPackage },
-  "mobile-app-development": { Sections: MobileSections, PackageCard: MobilePackage, processInConcept: true },
+  "mobile-app-development": { Sections: MobileSections, PackageCard: MobilePackage, Included: MobileIncluded, processInConcept: true },
 };
 
 /**

@@ -1,6 +1,7 @@
 import { Burst } from "@/components/inner/motion/bits";
 import SectionTitle from "@/components/inner/SectionTitle";
 import SplitWords from "@/components/ui/SplitWords";
+import type { ReactNode } from "react";
 import type { ServiceDetail } from "@/lib/service-content";
 
 /** Accent → utility classes. Spelled out in full so Tailwind can see them. */
@@ -29,8 +30,11 @@ const pad = (n: number) => String(n).padStart(2, "0");
 export default function ServiceLongForm({
   service,
   hideProcess = false,
+  included,
 }: {
   service: ServiceDetail;
+  /** A bespoke page's own "What's included" design, shown in place of the standard cards. */
+  included?: ReactNode;
   /** Pages whose concept section already tells the process (hover cards) skip the text version. */
   hideProcess?: boolean;
 }) {
@@ -92,7 +96,8 @@ export default function ServiceLongForm({
       ) : null}
 
       {/* ── What's included ────────────────────────────────────────── */}
-      {show("included") ? (
+      {show("included") && included ? included : null}
+      {show("included") && !included ? (
       <section aria-labelledby="included-title">
         <SectionTitle eyebrow="What's included" title={<span id="included-title">Everything in the box</span>} />
         <ul data-wm="included" className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

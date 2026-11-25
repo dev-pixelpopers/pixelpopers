@@ -41,7 +41,7 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
   const [service, allServices, site] = await Promise.all([getServiceDetail(slug), getServiceDetails(), getSite()]);
   if (!service) notFound();
 
-  const { Sections, PackageCard, pageClassName = "", processInConcept = false } = conceptFor(service.slug);
+  const { Sections, PackageCard, Included, pageClassName = "", processInConcept = false } = conceptFor(service.slug);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -64,7 +64,7 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
         <ServiceMediaProvider images={service.images}>
           <Sections service={service} />
         </ServiceMediaProvider>
-        <ServiceLongForm service={service} hideProcess={processInConcept} />
+        <ServiceLongForm service={service} hideProcess={processInConcept} included={Included ? <Included service={service} /> : undefined} />
         <ServiceClosing
           service={service}
           serviceDetails={allServices}

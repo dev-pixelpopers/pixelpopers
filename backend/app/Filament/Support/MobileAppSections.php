@@ -2,6 +2,7 @@
 
 namespace App\Filament\Support;
 
+use Filament\Forms;
 use Filament\Schemas\Components as SchemaComponents;
 
 /**
@@ -17,6 +18,38 @@ use Filament\Schemas\Components as SchemaComponents;
 class MobileAppSections
 {
     use BuildsPageSectionFields;
+
+    /** The page's SVG icons (frontend mobile-app-development/AppGlyph.tsx), name => label. */
+    public const ICONS = [
+        'sparkles' => 'Sparkles',
+        'face-id' => 'Face ID',
+        'bell' => 'Bell',
+        'cloud-sync' => 'Cloud download',
+        'card' => 'Card',
+        'pin' => 'Map pin',
+        'chat' => 'Chat bubble',
+        'search' => 'Search',
+        'camera' => 'Camera',
+        'link' => 'Link',
+        'chart' => 'Chart',
+        'globe' => 'Globe',
+        'moon' => 'Moon',
+        'users' => 'People',
+        'update' => 'Update arrow',
+        'lifebuoy' => 'Lifebuoy',
+        'star' => 'Star',
+        'accessibility' => 'Accessibility',
+        'phone' => 'Phone',
+        'chip' => 'Chip',
+        'layers' => 'Layers',
+        'pen' => 'Pen',
+        'server' => 'Server',
+        'rocket' => 'Rocket',
+        'wrench' => 'Wrench',
+        'store' => 'Store',
+        'shield' => 'Shield',
+        'code' => 'Code',
+    ];
 
     public const DEFAULTS = [
         'hero' => [
@@ -60,6 +93,39 @@ class MobileAppSections
                 'label' => 'Store rating',
             ],
             'toast' => '✓ Build 1.0.4 shipped',
+        ],
+        'included' => [
+            'eyebrow' => 'What\'s included',
+            'heading' => 'Everything’s
+switched on',
+            'text' => 'Every app we build comes with the full crew behind it. Tap a setting to see what it covers.',
+            'screen' => 'Settings',
+            'icons' => [
+                [
+                    'icon' => 'phone',
+                ],
+                [
+                    'icon' => 'chip',
+                ],
+                [
+                    'icon' => 'layers',
+                ],
+                [
+                    'icon' => 'pen',
+                ],
+                [
+                    'icon' => 'server',
+                ],
+                [
+                    'icon' => 'rocket',
+                ],
+                [
+                    'icon' => 'wrench',
+                ],
+                [
+                    'icon' => 'store',
+                ],
+            ],
         ],
         'platforms' => [
             'eyebrow' => 'Every platform',
@@ -151,75 +217,75 @@ One launch.',
             'text' => '',
             'items' => [
                 [
-                    'icon' => '👋',
+                    'icon' => 'sparkles',
                     'name' => 'Onboarding',
                 ],
                 [
-                    'icon' => '🔐',
+                    'icon' => 'face-id',
                     'name' => 'Face ID login',
                 ],
                 [
-                    'icon' => '🔔',
+                    'icon' => 'bell',
                     'name' => 'Push alerts',
                 ],
                 [
-                    'icon' => '📶',
+                    'icon' => 'cloud-sync',
                     'name' => 'Offline sync',
                 ],
                 [
-                    'icon' => '💳',
+                    'icon' => 'card',
                     'name' => 'Payments',
                 ],
                 [
-                    'icon' => '📍',
+                    'icon' => 'pin',
                     'name' => 'Live maps',
                 ],
                 [
-                    'icon' => '💬',
+                    'icon' => 'chat',
                     'name' => 'In-app chat',
                 ],
                 [
-                    'icon' => '🔎',
+                    'icon' => 'search',
                     'name' => 'Search & filters',
                 ],
                 [
-                    'icon' => '📸',
+                    'icon' => 'camera',
                     'name' => 'Camera & uploads',
                 ],
                 [
-                    'icon' => '🔗',
+                    'icon' => 'link',
                     'name' => 'Deep links',
                 ],
                 [
-                    'icon' => '📊',
+                    'icon' => 'chart',
                     'name' => 'Analytics',
                 ],
                 [
-                    'icon' => '🌍',
+                    'icon' => 'globe',
                     'name' => 'Multi-language',
                 ],
                 [
-                    'icon' => '🌙',
+                    'icon' => 'moon',
                     'name' => 'Dark mode',
                 ],
                 [
-                    'icon' => '👥',
+                    'icon' => 'users',
                     'name' => 'User roles',
                 ],
                 [
-                    'icon' => '⬆️',
+                    'icon' => 'update',
                     'name' => 'In-app updates',
                 ],
                 [
-                    'icon' => '🛟',
+                    'icon' => 'lifebuoy',
                     'name' => 'Help & support',
                 ],
                 [
-                    'icon' => '⭐',
+                    'icon' => 'star',
                     'name' => 'Review prompts',
                 ],
                 [
-                    'icon' => '♿',
+                    'icon' => 'accessibility',
                     'name' => 'Accessibility',
                 ],
             ],
@@ -301,6 +367,13 @@ before you spend',
                 self::input('hero.toast', 'Build toast')->columnSpanFull(),
             ], collapsed: true),
 
+            self::section('What’s included — Settings screen', [
+                ...self::titleFields('included'),
+                self::input('included.screen', 'Screen title'),
+                SchemaComponents\Text::make('The settings themselves are the What’s included list (Included tab). Pick each row’s icon, top to bottom:')->columnSpanFull(),
+                ...array_map(fn ($i) => self::icon("included.icons.$i.icon", 'Setting '.($i + 1).' icon'), range(0, 7)),
+            ], collapsed: true),
+
             self::section('Platforms — “One crew. Every app store.”', [
                 ...self::titleFields('platforms'),
                 ...self::items('platforms.cards', 4, 'Platform card', ['name' => 'Name', 'tag' => 'Tag', 'body' => 'Text']),
@@ -319,8 +392,10 @@ before you spend',
 
             self::section('Features — home screen icons', [
                 ...self::titleFields('features'),
-                SchemaComponents\Text::make('The icon is an emoji (paste one, e.g. 🔔).')->columnSpanFull(),
-                ...self::items('features.items', 18, 'App icon', ['icon' => 'Icon (emoji)', 'name' => 'Name']),
+                ...array_map(fn ($i) => SchemaComponents\Fieldset::make('App icon '.($i + 1))->columns(2)->columnSpanFull()->schema([
+                    self::icon("features.items.$i.icon", 'Icon'),
+                    self::input("features.items.$i.name", 'Name'),
+                ]), range(0, 17)),
             ]),
 
             self::section('Under the hood — layers', [
@@ -335,5 +410,15 @@ before you spend',
                 ...self::items('plan.checklist', 4, 'Checklist item', ['label' => 'Text']),
             ]),
         ];
+    }
+
+    /** An icon picker; empty keeps the design's icon. */
+    private static function icon(string $key, string $label): Forms\Components\Select
+    {
+        $default = self::default($key);
+
+        return Forms\Components\Select::make("copy.$key")->label($label)
+            ->options(self::ICONS)
+            ->placeholder($default !== '' ? 'Design default ('.(self::ICONS[$default] ?? $default).')' : 'Design default');
     }
 }
