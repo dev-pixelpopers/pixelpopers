@@ -19,6 +19,7 @@ class Service extends Model
         'name',
         'accent',
         'hero_lines',
+        'hero_subheading',
         'hero_intro',
         'hero_cta',
         'meta_title',
@@ -40,6 +41,7 @@ class Service extends Model
         'images',
         'social',
         'stack',
+        'screens',
         'og_image',
         'is_published',
         'sort_order',
@@ -164,6 +166,7 @@ class Service extends Model
         'images' => 'array',
         'social' => 'array',
         'stack' => 'array',
+        'screens' => 'array',
         'is_published' => 'boolean',
         'sort_order' => 'integer',
     ];

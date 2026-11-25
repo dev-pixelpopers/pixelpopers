@@ -7,6 +7,7 @@ import type { ServiceDetail } from "@/lib/service-content";
 import BeforeAfter from "./BeforeAfter";
 import BrandMotion from "./BrandMotion";
 import RevealCard from "@/components/inner/RevealCard";
+import HeroSubheading from "@/components/inner/service/HeroSubheading";
 
 /*
   Concept: the page is a brand book. Figma frame 364:21 "03.1 — Service: BRAND
@@ -78,6 +79,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               <span className="block font-haas text-[clamp(3.25rem,7.81vw,9.375rem)] leading-[1.2] tracking-[-0.05em] text-grape">{l2}</span>
               <span className="block font-display text-[clamp(1.75rem,4.17vw,5rem)] leading-[1.28] text-lagoon">{l3}</span>
             </h1>
+            <HeroSubheading text={service.heroSubheading} />
             <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">{service.heroIntro}</p>
             <PopButton href="/contact" label={service.heroCta} className="mt-[clamp(2rem,3vw,3.625rem)] [&>span:last-child]:text-ink" />
             <a href="#brand-book" className="mt-[clamp(1.5rem,1.67vw,2rem)] block w-fit font-display text-micro text-blush-deep uppercase transition-colors hover:text-grape">

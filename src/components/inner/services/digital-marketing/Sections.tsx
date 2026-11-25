@@ -15,6 +15,7 @@ import {
   cardShadow,
   type Story,
 } from "./Parts";
+import HeroSubheading from "@/components/inner/service/HeroSubheading";
 
 /*
   Concept: the page is a growth dashboard. Figma frame 371:21 "03.3 — Service:
@@ -266,6 +267,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 {l3}
               </span>
             </h1>
+            <HeroSubheading text={service.heroSubheading} />
             <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">
               {service.heroIntro}
             </p>

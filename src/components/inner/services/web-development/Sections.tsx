@@ -5,6 +5,7 @@ import { mono } from "@/lib/inner-fonts";
 import type { ServiceDetail } from "@/lib/service-content";
 import { BrowserPreview, Checklist, CmsEditor, CodeEditor, Devices, Gauge, Keyboard, Terminal } from "./Parts";
 import ShipMotion from "./ShipMotion";
+import HeroSubheading from "@/components/inner/service/HeroSubheading";
 
 /*
   Concept: code + browser. Figma frame 374:21 "03.4 — Service: WEB
@@ -66,6 +67,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               <span className="block font-haas text-[clamp(2.375rem,5.52vw,6.625rem)] leading-[1.32] tracking-[-0.04em] text-white">{l2}</span>
               <span className="block font-display text-[clamp(1.75rem,3.75vw,4.5rem)] leading-[1.28] text-lagoon">{l3}</span>
             </h1>
+            <HeroSubheading text={service.heroSubheading} />
             <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light text-white/85">{service.heroIntro}</p>
             <PopButton
               href="/contact"
@@ -143,8 +145,22 @@ export default function Sections({ service }: { service: ServiceDetail }) {
 
       {/* ── Responsive devices ─────────────────────────────────────── */}
       <section aria-labelledby="screens-title" className="shell mt-[clamp(4rem,6.77vw,8.125rem)]">
-        <SectionTitle align="center" eyebrow="Responsive by default" title={<span id="screens-title">One site. Every screen.</span>} />
+        <SectionTitle
+          align="center"
+          eyebrow={service.screens?.eyebrow?.trim() || "Responsive by default"}
+          title={
+            <span id="screens-title" className="whitespace-pre-line">
+              {service.screens?.heading?.trim() || "One site. Every screen."}
+            </span>
+          }
+        />
         <Devices className="mt-[clamp(2rem,3.23vw,3.875rem)] w-full lg:ml-[8.44%] lg:w-[90.05%]" />
+        {/* Optional copy under the devices (Services → Web Development → Screens). */}
+        {service.screens?.text?.trim() ? (
+          <p className="mx-auto mt-[clamp(1.75rem,2.6vw,3.125rem)] max-w-[56rem] text-center font-copy text-body leading-[1.64] font-light whitespace-pre-line text-ink/85">
+            {service.screens.text.trim()}
+          </p>
+        ) : null}
       </section>
 
       {/* ── Ship it: deploy terminal + pipeline ────────────────────── */}

@@ -20,6 +20,7 @@ import {
   layer,
 } from "./Parts";
 import UxMotion from "./UxMotion";
+import HeroSubheading from "@/components/inner/service/HeroSubheading";
 
 /*
   Concept: the page is a design-tool canvas. Figma frame 367:78 "03.2 — Service:
@@ -97,6 +98,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
               </span>
               <span className="mt-[clamp(0.25rem,0.42vw,0.5rem)] block font-display text-[clamp(1.75rem,4.17vw,5rem)] leading-[1.28] text-lagoon">{l3}</span>
             </h1>
+            <HeroSubheading text={service.heroSubheading} />
             <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">{service.heroIntro}</p>
             <PopButton href="/contact" label={service.heroCta} className="mt-[clamp(1.5rem,1.15vw,1.375rem)] [&>span:last-child]:text-ink" />
           </div>

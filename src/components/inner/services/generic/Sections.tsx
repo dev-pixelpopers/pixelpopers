@@ -1,6 +1,7 @@
 import Breadcrumb from "@/components/inner/Breadcrumb";
 import PopButton from "@/components/ui/PopButton";
 import type { ServiceDetail } from "@/lib/service-content";
+import HeroSubheading from "@/components/inner/service/HeroSubheading";
 
 /*
   Hero for a service added in the CMS, which has no bespoke concept page of
@@ -38,6 +39,7 @@ export default function GenericSections({ service }: { service: ServiceDetail })
               {l2 ? <span className="block font-haas text-[clamp(3.25rem,7.81vw,9.375rem)] leading-[1.2] tracking-[-0.05em] text-grape">{l2}</span> : null}
               {l3 ? <span className="block font-display text-[clamp(1.75rem,4.17vw,5rem)] leading-[1.28] text-lagoon-ink">{l3}</span> : null}
             </h1>
+            <HeroSubheading text={service.heroSubheading} />
             {service.heroIntro ? (
               <p className="mt-[clamp(1rem,1.46vw,1.75rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">{service.heroIntro}</p>
             ) : null}

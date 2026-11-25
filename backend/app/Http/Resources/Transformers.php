@@ -64,6 +64,7 @@ class Transformers
 
         return $summary + [
             'heroLines' => $s->hero_lines ?? [],
+            'heroSubheading' => $s->hero_subheading,
             'heroIntro' => $s->hero_intro,
             'heroCta' => $s->hero_cta,
             'metaTitle' => $s->meta_title,
@@ -89,6 +90,8 @@ class Transformers
             'social' => $s->social ? (object) $s->social : null,
             // Web development: the "The stack" section.
             'stack' => $s->stack ? (object) $s->stack : null,
+            // Web development: the "One site. Every screen." section.
+            'screens' => $s->screens ? (object) $s->screens : null,
             'updatedAt' => $s->updated_at?->toIso8601String(),
         ];
     }

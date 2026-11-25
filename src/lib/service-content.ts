@@ -57,6 +57,10 @@ export type ServiceDetail = {
   social?: SocialAccount;
   /** Web development: the "The stack" section (any field may be left out). */
   stack?: StackSection;
+  /** Optional <h2> under the hero headline (empty = none). */
+  heroSubheading?: string | null;
+  /** Web development: the "One site. Every screen." section (any field may be left out). */
+  screens?: { eyebrow?: string | null; heading?: string | null; text?: string | null } | null;
 };
 
 export type StackKeyTone = "white" | "lagoon" | "grape" | "blush" | "sunbeam";

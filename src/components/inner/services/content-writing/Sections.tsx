@@ -6,6 +6,7 @@ import PopButton from "@/components/ui/PopButton";
 import { serif } from "@/lib/inner-fonts";
 import type { ServiceDetail } from "@/lib/service-content";
 import ContentFx from "./ContentFx";
+import HeroSubheading from "@/components/inner/service/HeroSubheading";
 
 /*
   Concept: editorial paper. Figma frame 381:21 "03.6 — Service: CONTENT
@@ -95,6 +96,7 @@ export default function Sections({ service }: { service: ServiceDetail }) {
                 <span aria-hidden data-caret className="mt-[0.52vw] h-[1.05em] w-[max(3px,0.52vw)] shrink-0 bg-blush text-[clamp(1.75rem,4.17vw,5rem)]" />
               </span>
             </h1>
+            <HeroSubheading text={service.heroSubheading} />
             <p className="mt-[clamp(1.25rem,1.98vw,2.375rem)] max-w-[35rem] font-copy text-body leading-[1.64] font-light">{service.heroIntro}</p>
             <PopButton href="/contact" label={service.heroCta} className="mt-[clamp(1.75rem,3.54vw,4.25rem)] [&>span:last-child]:text-ink" />
           </div>

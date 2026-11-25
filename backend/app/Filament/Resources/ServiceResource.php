@@ -94,6 +94,9 @@ class ServiceResource extends Resource
                     ]),
                     Forms\Components\TagsInput::make('hero_lines')->label('Hero headline lines')
                         ->helperText('Three lines, in order (e.g. BRAND / IDENTITY / THAT STICKS).')->reorderable(),
+                    Forms\Components\TextInput::make('hero_subheading')->label('Hero subheading (H2, optional)')->maxLength(255)
+                        ->placeholder('e.g. Web development agency for fast, responsive websites')
+                        ->helperText('Shown under the headline as an H2 — good for a keyword-rich line. Leave empty for none.'),
                     Forms\Components\Textarea::make('hero_intro')->label('Hero intro')->rows(2),
                     SchemaComponents\Grid::make(3)->schema([
                         Forms\Components\TextInput::make('hero_cta')->label('Hero button label'),
@@ -210,6 +213,17 @@ class ServiceResource extends Resource
                             ->reorderable()->cloneable()->collapsible()->collapsed()
                             ->addActionLabel('Add key')
                             ->columnSpanFull(),
+                    ]),
+                SchemaComponents\Tabs\Tab::make('Screens')->icon('heroicon-o-device-phone-mobile')
+                    ->visible(fn (?Service $record) => $record?->slug === 'web-development')
+                    ->schema([
+                        SchemaComponents\Text::make('The “One site. Every screen.” section with the desktop, tablet and phone. Empty eyebrow or heading keeps the design’s wording; the paragraph shows under the devices only when filled in.'),
+                        SchemaComponents\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('screens.eyebrow')->label('Eyebrow')->placeholder('Responsive by default')->maxLength(80),
+                            Forms\Components\Textarea::make('screens.heading')->label('Heading')->rows(2)->placeholder('One site. Every screen.')->helperText('Each line shows on its own line.'),
+                            Forms\Components\Textarea::make('screens.text')->label('Paragraph')->rows(4)->columnSpanFull()
+                                ->placeholder('As a web development agency, we build responsive websites that adapt seamlessly to desktops, tablets and smartphones. Every layout is designed to maintain its visual appeal, functionality and ease of use, no matter the screen size.'),
+                        ]),
                     ]),
                 SchemaComponents\Tabs\Tab::make('Social account')->icon('heroicon-o-at-symbol')
                     ->visible(fn (?Service $record) => $record?->slug === 'digital-marketing')
